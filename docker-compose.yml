@@ -1,0 +1,122 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: postgres-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_MULTIPLE_DATABASES: auth_db,catalog_db,inventory_db,report_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./docker/postgres/init-multiple-dbs.sh:/docker-entrypoint-initdb.d/init-multiple-dbs.sh
+    networks:
+      - inventory-network
+
+  kafka:
+    image: apache/kafka:3.7.0
+    container_name: kafka-broker
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_LOG_DIRS: /tmp/kraft-combined-logs
+    ports:
+      - "9092:9092"
+    networks:
+      - inventory-network
+
+  discovery-server:
+    build:
+      context: ./discovery-server
+    container_name: discovery-server
+    ports:
+      - "8761:8761"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - inventory-network
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - discovery-server
+    environment:
+      - AUTH_SERVICE_URL=http://auth-service:8081
+      - CATALOG_SERVICE_URL=http://catalog-service:8082
+      - INVENTORY_SERVICE_URL=http://inventory-service:8083
+      - REPORT_SERVICE_URL=http://report-service:8084
+    networks:
+      - inventory-network
+
+  auth-service:
+    build:
+      context: ./auth-service
+    container_name: auth-service
+    depends_on:
+      - postgres
+      - discovery-server
+    environment:
+      - DB_HOST=postgres
+      - EUREKA_HOST=discovery-server
+    networks:
+      - inventory-network
+
+  catalog-service:
+    build:
+      context: ./catalog-service
+    container_name: catalog-service
+    depends_on:
+      - postgres
+      - discovery-server
+    environment:
+      - DB_HOST=postgres
+      - EUREKA_HOST=discovery-server
+    networks:
+      - inventory-network
+
+  inventory-service:
+    build:
+      context: ./inventory-service
+    container_name: inventory-service
+    depends_on:
+      - postgres
+      - kafka
+      - discovery-server
+    environment:
+      - DB_HOST=postgres
+      - KAFKA_HOST=kafka
+      - EUREKA_HOST=discovery-server
+    networks:
+      - inventory-network
+
+  report-service:
+    build:
+      context: ./report-service
+    container_name: report-service
+    depends_on:
+      - postgres
+      - kafka
+      - discovery-server
+    environment:
+      - DB_HOST=postgres
+      - KAFKA_HOST=kafka
+      - EUREKA_HOST=discovery-server
+    networks:
+      - inventory-network
+
+networks:
+  inventory-network:
+    driver: bridge

@@ -1,0 +1,11 @@
+com\inventory\report\listener\InventoryEventListener.class
+com\inventory\report\dto\InventoryEvent.class
+com\inventory\report\model\MovementLog.class
+com\inventory\report\repository\MovementLogRepository.class
+com\inventory\report\filter\InternalGatewayFilter.class
+com\inventory\report\repository\StockSnapshotRepository.class
+com\inventory\report\ReportServiceApplication.class
+com\inventory\report\service\ReportService.class
+com\inventory\report\controller\ReportController.class
+com\inventory\report\config\KafkaConsumerConfig.class
+com\inventory\report\model\StockSnapshot.class

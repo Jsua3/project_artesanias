@@ -1,0 +1,11 @@
+C:\Users\Predator\IdeaProjects\almacen-arle\report-service\src\main\java\com\inventory\report\config\KafkaConsumerConfig.java
+C:\Users\Predator\IdeaProjects\almacen-arle\report-service\src\main\java\com\inventory\report\controller\ReportController.java
+C:\Users\Predator\IdeaProjects\almacen-arle\report-service\src\main\java\com\inventory\report\dto\InventoryEvent.java
+C:\Users\Predator\IdeaProjects\almacen-arle\report-service\src\main\java\com\inventory\report\filter\InternalGatewayFilter.java
+C:\Users\Predator\IdeaProjects\almacen-arle\report-service\src\main\java\com\inventory\report\listener\InventoryEventListener.java
+C:\Users\Predator\IdeaProjects\almacen-arle\report-service\src\main\java\com\inventory\report\model\MovementLog.java
+C:\Users\Predator\IdeaProjects\almacen-arle\report-service\src\main\java\com\inventory\report\model\StockSnapshot.java
+C:\Users\Predator\IdeaProjects\almacen-arle\report-service\src\main\java\com\inventory\report\ReportServiceApplication.java
+C:\Users\Predator\IdeaProjects\almacen-arle\report-service\src\main\java\com\inventory\report\repository\MovementLogRepository.java
+C:\Users\Predator\IdeaProjects\almacen-arle\report-service\src\main\java\com\inventory\report\repository\StockSnapshotRepository.java
+C:\Users\Predator\IdeaProjects\almacen-arle\report-service\src\main\java\com\inventory\report\service\ReportService.java

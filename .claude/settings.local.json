@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ng version:*)",
+      "Bash(ng new:*)",
+      "Bash(ng add:*)",
+      "Bash(npm install:*)",
+      "Bash(xargs grep:*)",
+      "Bash(ng build:*)",
+      "Bash(node:*)",
+      "Bash(xargs head:*)",
+      "Bash(az:*)",
+      "Bash(swa:*)",
+      "Bash(curl:*)",
+      "Bash(xargs ls:*)",
+      "Bash(xargs cat:*)",
+      "Bash(PGPASSWORD=\"ov6QkViRVFWSV_QtRu2_CA\" psql:*)",
+      "Bash(do:*)"
+    ]
+  }
+}

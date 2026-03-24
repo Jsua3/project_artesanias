@@ -1,0 +1,52 @@
+<div class="auth-container">
+  <mat-card class="auth-card">
+    <mat-card-header>
+      <div class="brand">
+        <mat-icon>inventory_2</mat-icon>
+        <h1>Almacén Arle</h1>
+      </div>
+      <p class="subtitle">Inicia sesión en tu cuenta</p>
+    </mat-card-header>
+
+    <mat-card-content>
+      @if (error) {
+        <p class="error-msg">{{ error }}</p>
+      }
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Usuario</mat-label>
+          <mat-icon matPrefix>person</mat-icon>
+          <input matInput formControlName="username" autocomplete="username" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Contraseña</mat-label>
+          <mat-icon matPrefix>lock</mat-icon>
+          <input matInput formControlName="password"
+                 [type]="hidePassword ? 'password' : 'text'"
+                 autocomplete="current-password" />
+          <button mat-icon-button matSuffix type="button"
+                  (click)="hidePassword = !hidePassword">
+            <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" type="submit"
+                class="full-width submit-btn" [disabled]="loading">
+          @if (loading) {
+            <mat-spinner diameter="20" />
+          } @else {
+            Iniciar Sesión
+          }
+        </button>
+      </form>
+    </mat-card-content>
+
+    <mat-card-actions>
+      <p class="register-link">
+        ¿No tienes cuenta?
+        <a routerLink="/register">Regístrate</a>
+      </p>
+    </mat-card-actions>
+  </mat-card>
+</div>
