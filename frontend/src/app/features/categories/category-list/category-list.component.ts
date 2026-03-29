@@ -1,5 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
-import { finalize } from 'rxjs/operators';
+import { Component, OnInit, inject } from '@angular/core';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -26,18 +25,13 @@ export class CategoryListComponent implements OnInit {
   auth = inject(AuthService);
 
   displayedColumns = ['name', 'actions'];
-  categories: Category[] = [];
-  loading = signal(true);
 
-  ngOnInit(): void { this.load(); }
+  // Signals derivados del servicio
+  readonly categories = this.categoryService.categories;
+  readonly loading = this.categoryService.loading;
 
-  load(): void {
-    this.loading.set(true);
-    this.categoryService.getAll().pipe(
-      finalize(() => this.loading.set(false))
-    ).subscribe({
-      next: data => this.categories = data
-    });
+  ngOnInit(): void {
+    this.categoryService.loadAll();
   }
 
   openForm(category?: Category): void {
@@ -45,7 +39,9 @@ export class CategoryListComponent implements OnInit {
       width: '360px',
       data: category ?? null
     });
-    ref.afterClosed().subscribe(result => { if (result) this.load(); });
+    ref.afterClosed().subscribe(result => {
+      if (result) this.categoryService.loadAll();
+    });
   }
 
   delete(id: string): void {
@@ -53,8 +49,9 @@ export class CategoryListComponent implements OnInit {
     this.categoryService.delete(id).subscribe({
       next: () => {
         this.snackBar.open('Categoría eliminada', 'OK', { duration: 3000 });
-        this.load();
-      }
+        this.categoryService.loadAll();
+      },
+      error: () => this.snackBar.open('Error al eliminar la categoría', 'OK', { duration: 3000 })
     });
   }
 }

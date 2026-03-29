@@ -38,13 +38,16 @@ public class ProductService {
     }
 
     public Mono<ProductResponse> create(ProductRequest request) {
-        return productRepository.findBySku(request.sku())
+        String sku = (request.sku() == null || request.sku().isBlank())
+                ? "SKU-" + UUID.randomUUID().toString().replace("-", "").substring(0, 8).toUpperCase()
+                : request.sku();
+        return productRepository.findBySku(sku)
                 .flatMap(existing -> Mono.<Product>error(new RuntimeException("SKU already exists")))
                 .switchIfEmpty(Mono.defer(() -> {
                     Product product = new Product();
                     product.setId(UUID.randomUUID());
                     product.setName(request.name());
-                    product.setSku(request.sku());
+                    product.setSku(sku);
                     product.setPrice(request.price());
                     product.setCategoryId(request.categoryId());
                     return productRepository.save(product)
@@ -61,7 +64,6 @@ public class ProductService {
                 .flatMap(existing -> {
                     existing.setNew(false);
                     existing.setName(request.name());
-                    existing.setSku(request.sku());
                     existing.setPrice(request.price());
                     existing.setCategoryId(request.categoryId());
                     return productRepository.save(existing)

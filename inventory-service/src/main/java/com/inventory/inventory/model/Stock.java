@@ -25,8 +25,8 @@ public class Stock implements Persistable<UUID> {
         return isNew;
     }
 
-    public void setNew(boolean isNew) {
-        this.isNew = isNew;
+    public void markExisting() {
+        this.isNew = false;
     }
 
     public Stock() {}

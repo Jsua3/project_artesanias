@@ -8,7 +8,7 @@ export interface Product {
 
 export interface ProductRequest {
   name: string;
-  sku: string;
+  sku?: string;
   price: number;
   categoryId: string;
 }

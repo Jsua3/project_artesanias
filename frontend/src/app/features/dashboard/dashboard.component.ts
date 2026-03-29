@@ -1,11 +1,9 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, computed } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartData, ChartOptions } from 'chart.js';
-import { forkJoin, of } from 'rxjs';
-import { catchError, finalize } from 'rxjs/operators';
 import { ProductService } from '../../core/services/product.service';
 import { CategoryService } from '../../core/services/category.service';
 import { StockService } from '../../core/services/stock.service';
@@ -26,14 +24,34 @@ export class DashboardComponent implements OnInit {
   private reportService = inject(ReportService);
   auth = inject(AuthService);
 
-  loading = signal(true);
+  // Loading derivado de los servicios
+  loading = computed(() =>
+    this.productService.loading() ||
+    this.categoryService.loading() ||
+    this.stockService.loading()
+  );
 
-  stats = { products: 0, categories: 0, stockItems: 0, lowStock: 0 };
+  // Stats derivados reactivamente con computed()
+  stats = computed(() => ({
+    products: this.productService.productCount(),
+    categories: this.categoryService.categoryCount(),
+    stockItems: this.stockService.stockCount(),
+    lowStock: this.reportService.alerts().length
+  }));
 
-  barChartData: ChartData<'bar'> = {
-    labels: [],
-    datasets: [{ data: [], label: 'Cantidad en Stock', backgroundColor: '#3f51b5' }]
-  };
+  // Datos del gráfico derivados con computed()
+  barChartData = computed<ChartData<'bar'>>(() => {
+    const top10 = this.stockService.top10ByQuantity();
+    const productMap = this.productService.productMap();
+    return {
+      labels: top10.map(s => productMap.get(s.productId) ?? s.productId.substring(0, 8) + '...'),
+      datasets: [{
+        data: top10.map(s => s.quantity),
+        label: 'Stock',
+        backgroundColor: '#3f51b5'
+      }]
+    };
+  });
 
   barChartOptions: ChartOptions<'bar'> = {
     responsive: true,
@@ -42,38 +60,11 @@ export class DashboardComponent implements OnInit {
   };
 
   ngOnInit(): void {
-    const requests: any = {
-      products: this.productService.getAll().pipe(catchError(() => of([]))),
-      categories: this.categoryService.getAll().pipe(catchError(() => of([]))),
-      stock: this.stockService.getAllStock().pipe(catchError(() => of([])))
-    };
-
+    this.productService.loadAll();
+    this.categoryService.loadAll();
+    this.stockService.loadAll();
     if (this.auth.isAdmin()) {
-      requests['alerts'] = this.reportService.getAlerts(5).pipe(catchError(() => of([])));
+      this.reportService.loadAll();
     }
-
-    forkJoin(requests).pipe(
-      finalize(() => this.loading.set(false))
-    ).subscribe({
-      next: (res: any) => {
-        this.stats.products = res.products.length;
-        this.stats.categories = res.categories.length;
-        this.stats.stockItems = res.stock.length;
-        this.stats.lowStock = res.alerts?.length ?? 0;
-
-        const top10 = [...res.stock]
-          .sort((a: any, b: any) => b.quantity - a.quantity)
-          .slice(0, 10);
-
-        this.barChartData = {
-          labels: top10.map((s: any) => s.productId.substring(0, 8) + '...'),
-          datasets: [{
-            data: top10.map((s: any) => s.quantity),
-            label: 'Stock',
-            backgroundColor: '#3f51b5'
-          }]
-        };
-      }
-    });
   }
 }

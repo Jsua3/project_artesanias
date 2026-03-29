@@ -1,6 +1,5 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
-import { finalize } from 'rxjs/operators';
-import { CurrencyPipe, SlicePipe } from '@angular/common';
+import { Component, OnInit, inject, computed } from '@angular/core';
+import { CurrencyPipe } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -9,6 +8,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ProductService } from '../../../core/services/product.service';
+import { CategoryService } from '../../../core/services/category.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Product } from '../../../core/models/product.model';
 import { ProductFormComponent } from '../product-form/product-form.component';
@@ -17,7 +17,7 @@ import { ProductFormComponent } from '../product-form/product-form.component';
   selector: 'app-product-list',
   standalone: true,
   imports: [
-    CurrencyPipe, SlicePipe,
+    CurrencyPipe,
     MatTableModule, MatButtonModule,
     MatIconModule, MatCardModule, MatProgressSpinnerModule
   ],
@@ -26,25 +26,26 @@ import { ProductFormComponent } from '../product-form/product-form.component';
 })
 export class ProductListComponent implements OnInit {
   private productService = inject(ProductService);
+  private categoryService = inject(CategoryService);
   private dialog = inject(MatDialog);
   private snackBar = inject(MatSnackBar);
   auth = inject(AuthService);
 
-  displayedColumns = ['name', 'sku', 'price', 'categoryId', 'actions'];
-  products: Product[] = [];
-  loading = signal(true);
+  displayedColumns = ['name', 'sku', 'price', 'category', 'actions'];
 
-  ngOnInit(): void {
-    this.load();
+  // Signals derivados de los servicios
+  readonly products = this.productService.products;
+  readonly loading = this.productService.loading;
+  readonly categoryMap = this.categoryService.categoryMap;
+
+  /** Resuelve un categoryId a su nombre */
+  getCategoryName(categoryId: string): string {
+    return this.categoryMap().get(categoryId) ?? 'Sin categoría';
   }
 
-  load(): void {
-    this.loading.set(true);
-    this.productService.getAll().pipe(
-      finalize(() => this.loading.set(false))
-    ).subscribe({
-      next: data => this.products = data
-    });
+  ngOnInit(): void {
+    this.productService.loadAll();
+    this.categoryService.loadAll();
   }
 
   openForm(product?: Product): void {
@@ -53,7 +54,7 @@ export class ProductListComponent implements OnInit {
       data: product ?? null
     });
     ref.afterClosed().subscribe(result => {
-      if (result) this.load();
+      if (result) this.productService.loadAll();
     });
   }
 
@@ -62,8 +63,9 @@ export class ProductListComponent implements OnInit {
     this.productService.delete(id).subscribe({
       next: () => {
         this.snackBar.open('Producto eliminado', 'OK', { duration: 3000 });
-        this.load();
-      }
+        this.productService.loadAll();
+      },
+      error: () => this.snackBar.open('Error al eliminar el producto', 'OK', { duration: 3000 })
     });
   }
 }

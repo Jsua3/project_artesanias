@@ -36,6 +36,7 @@ public class StockService {
                         return Mono.error(new RuntimeException("Stock cannot be negative"));
                     }
                     stock.setQuantity(newQuantity);
+                    stock.markExisting(); // Evita que R2DBC intente INSERT en vez de UPDATE
                     return stockRepository.save(stock);
                 })
                 .switchIfEmpty(Mono.defer(() -> {

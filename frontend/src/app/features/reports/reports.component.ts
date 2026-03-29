@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTableModule } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
@@ -7,7 +7,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatChipsModule } from '@angular/material/chips';
 import { DatePipe, SlicePipe } from '@angular/common';
 import { ReportService } from '../../core/services/report.service';
-import { MovementLog, StockSnapshot } from '../../core/models/report.model';
+import { ProductService } from '../../core/services/product.service';
 
 @Component({
   selector: 'app-reports',
@@ -21,26 +21,25 @@ import { MovementLog, StockSnapshot } from '../../core/models/report.model';
 })
 export class ReportsComponent implements OnInit {
   private reportService = inject(ReportService);
+  private productService = inject(ProductService);
 
-  loading = signal(true);
-  summary: StockSnapshot[] = [];
-  history: MovementLog[] = [];
-  alerts: StockSnapshot[] = [];
+  // Signals derivados del servicio
+  readonly loading = this.reportService.loading;
+  readonly summary = this.reportService.summary;
+  readonly history = this.reportService.history;
+  readonly alerts = this.reportService.alerts;
+  readonly productMap = this.productService.productMap;
 
   summaryColumns = ['productId', 'currentQuantity', 'lastUpdated'];
   historyColumns = ['timestamp', 'productId', 'type', 'quantity', 'performedBy'];
   alertColumns = ['productId', 'currentQuantity', 'lastUpdated'];
 
   ngOnInit(): void {
-    Promise.all([
-      this.reportService.getSummary().toPromise(),
-      this.reportService.getHistory().toPromise(),
-      this.reportService.getAlerts(5).toPromise()
-    ]).then(([summary, history, alerts]) => {
-      this.summary = summary ?? [];
-      this.history = history ?? [];
-      this.alerts = alerts ?? [];
-      this.loading.set(false);
-    }).catch(() => this.loading.set(false));
+    this.reportService.loadAll();
+    this.productService.loadAll();
+  }
+
+  getProductName(productId: string): string {
+    return this.productMap().get(productId) ?? productId.substring(0, 8) + '...';
   }
 }

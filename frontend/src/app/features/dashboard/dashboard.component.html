@@ -10,7 +10,7 @@
       <mat-card class="stat-card">
         <mat-icon class="stat-icon blue">inventory</mat-icon>
         <div>
-          <p class="stat-value">{{ stats.products }}</p>
+          <p class="stat-value">{{ stats().products }}</p>
           <p class="stat-label">Productos</p>
         </div>
       </mat-card>
@@ -18,7 +18,7 @@
       <mat-card class="stat-card">
         <mat-icon class="stat-icon purple">category</mat-icon>
         <div>
-          <p class="stat-value">{{ stats.categories }}</p>
+          <p class="stat-value">{{ stats().categories }}</p>
           <p class="stat-label">Categorías</p>
         </div>
       </mat-card>
@@ -26,7 +26,7 @@
       <mat-card class="stat-card">
         <mat-icon class="stat-icon green">warehouse</mat-icon>
         <div>
-          <p class="stat-value">{{ stats.stockItems }}</p>
+          <p class="stat-value">{{ stats().stockItems }}</p>
           <p class="stat-label">Productos en Stock</p>
         </div>
       </mat-card>
@@ -35,7 +35,7 @@
         <mat-card class="stat-card">
           <mat-icon class="stat-icon red">warning</mat-icon>
           <div>
-            <p class="stat-value">{{ stats.lowStock }}</p>
+            <p class="stat-value">{{ stats().lowStock }}</p>
             <p class="stat-label">Stock Bajo (≤5)</p>
           </div>
         </mat-card>
@@ -48,7 +48,7 @@
       </mat-card-header>
       <mat-card-content>
         <canvas baseChart
-                [data]="barChartData"
+                [data]="barChartData()"
                 [options]="barChartOptions"
                 type="bar">
         </canvas>

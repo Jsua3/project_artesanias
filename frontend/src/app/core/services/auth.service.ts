@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { tap } from 'rxjs/operators';
@@ -9,12 +9,14 @@ import { AuthResponse, LoginRequest, RegisterRequest, UserProfile } from '../mod
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly API = `${environment.apiUrl}/api/auth`;
+  private http = inject(HttpClient);
+  private router = inject(Router);
 
-  currentUser = signal<UserProfile | null>(null);
+  currentUser = signal<UserProfile | null>(this.loadStoredUser());
 
-  constructor(private http: HttpClient, private router: Router) {
+  private loadStoredUser(): UserProfile | null {
     const stored = localStorage.getItem('user');
-    if (stored) this.currentUser.set(JSON.parse(stored));
+    return stored ? JSON.parse(stored) : null;
   }
 
   login(req: LoginRequest): Observable<AuthResponse> {

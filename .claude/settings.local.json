@@ -15,7 +15,10 @@
       "Bash(xargs ls:*)",
       "Bash(xargs cat:*)",
       "Bash(PGPASSWORD=\"ov6QkViRVFWSV_QtRu2_CA\" psql:*)",
-      "Bash(do:*)"
+      "Bash(do:*)",
+      "Bash(docker:*)",
+      "Bash(mvn clean:*)",
+      "Bash(az containerapp:*)"
     ]
   }
 }

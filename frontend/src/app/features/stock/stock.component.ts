@@ -1,12 +1,11 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
-import { finalize } from 'rxjs/operators';
+import { Component, OnInit, inject } from '@angular/core';
 import { MatTableModule } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatChipsModule } from '@angular/material/chips';
 import { StockService } from '../../core/services/stock.service';
-import { StockResponse } from '../../core/models/stock.model';
+import { ProductService } from '../../core/services/product.service';
 
 @Component({
   selector: 'app-stock',
@@ -17,17 +16,22 @@ import { StockResponse } from '../../core/models/stock.model';
 })
 export class StockComponent implements OnInit {
   private stockService = inject(StockService);
+  private productService = inject(ProductService);
 
-  displayedColumns = ['productId', 'quantity', 'status'];
-  stock: StockResponse[] = [];
-  loading = signal(true);
+  displayedColumns = ['product', 'quantity', 'status'];
+
+  // Signals derivados de los servicios
+  readonly stock = this.stockService.stock;
+  readonly loading = this.stockService.loading;
+  readonly productMap = this.productService.productMap;
 
   ngOnInit(): void {
-    this.stockService.getAllStock().pipe(
-      finalize(() => this.loading.set(false))
-    ).subscribe({
-      next: data => this.stock = data
-    });
+    this.stockService.loadAll();
+    this.productService.loadAll();
+  }
+
+  getProductName(productId: string): string {
+    return this.productMap().get(productId) ?? productId.substring(0, 8) + '...';
   }
 
   getStatus(qty: number): { label: string; color: string } {

@@ -7,7 +7,7 @@
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Producto</mat-label>
           <mat-select formControlName="productId">
-            @for (p of products; track p.id) {
+            @for (p of products(); track p.id) {
               <mat-option [value]="p.id">{{ p.name }} — <code>{{ p.sku }}</code></mat-option>
             }
           </mat-select>
@@ -25,7 +25,7 @@
         </mat-form-field>
 
         <button mat-raised-button color="primary" type="submit"
-                [disabled]="form.invalid || loading">
+                [disabled]="form.invalid || loading()">
           <mat-icon>save</mat-icon> Registrar Entrada
         </button>
       </form>

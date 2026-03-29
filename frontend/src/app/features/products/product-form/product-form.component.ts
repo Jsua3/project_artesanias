@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -8,8 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ProductService } from '../../../core/services/product.service';
 import { CategoryService } from '../../../core/services/category.service';
-import { Product } from '../../../core/models/product.model';
-import { Category } from '../../../core/models/category.model';
+import { Product, ProductRequest } from '../../../core/models/product.model';
 
 @Component({
   selector: 'app-product-form',
@@ -27,32 +26,45 @@ export class ProductFormComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<ProductFormComponent>);
   data: Product | null = inject(MAT_DIALOG_DATA);
 
-  categories: Category[] = [];
-  loading = false;
+  // Signal derivado del servicio
+  readonly categories = this.categoryService.categories;
+  loading = signal(false);
 
   form = this.fb.group({
     name: ['', Validators.required],
-    sku: ['', Validators.required],
     price: [0, [Validators.required, Validators.min(0)]],
     categoryId: ['', Validators.required]
   });
 
   ngOnInit(): void {
-    this.categoryService.getAll().subscribe(cats => this.categories = cats);
-    if (this.data) this.form.patchValue(this.data as any);
+    this.categoryService.loadAll();
+    if (this.data) {
+      this.form.patchValue({
+        name: this.data.name,
+        price: this.data.price,
+        categoryId: this.data.categoryId
+      });
+    }
   }
 
   submit(): void {
     if (this.form.invalid) return;
-    this.loading = true;
-    const req = this.form.value as any;
+    this.loading.set(true);
+
+    const req: ProductRequest = {
+      name: this.form.value.name!,
+      sku: this.data ? this.data.sku : undefined,
+      price: this.form.value.price!,
+      categoryId: this.form.value.categoryId!
+    };
+
     const op = this.data
       ? this.productService.update(this.data.id, req)
       : this.productService.create(req);
 
     op.subscribe({
       next: () => this.dialogRef.close(true),
-      error: () => this.loading = false
+      error: () => this.loading.set(false)
     });
   }
 }

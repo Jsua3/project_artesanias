@@ -7,10 +7,9 @@
       <input matInput formControlName="name" />
     </mat-form-field>
 
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>SKU</mat-label>
-      <input matInput formControlName="sku" />
-    </mat-form-field>
+    @if (data) {
+      <p class="sku-readonly"><strong>SKU:</strong> {{ data.sku }}</p>
+    }
 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Precio</mat-label>
@@ -21,7 +20,7 @@
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Categoría</mat-label>
       <mat-select formControlName="categoryId">
-        @for (cat of categories; track cat.id) {
+        @for (cat of categories(); track cat.id) {
           <mat-option [value]="cat.id">{{ cat.name }}</mat-option>
         }
       </mat-select>
@@ -31,7 +30,7 @@
 
 <mat-dialog-actions align="end">
   <button mat-button mat-dialog-close>Cancelar</button>
-  <button mat-raised-button color="primary" (click)="submit()" [disabled]="loading">
-    @if (loading) { <mat-spinner diameter="18" /> } @else { Guardar }
+  <button mat-raised-button color="primary" (click)="submit()" [disabled]="loading()">
+    @if (loading()) { <mat-spinner diameter="18" /> } @else { Guardar }
   </button>
 </mat-dialog-actions>

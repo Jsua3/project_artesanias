@@ -5,7 +5,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { CategoryService } from '../../../core/services/category.service';
-import { Category } from '../../../core/models/category.model';
+import { Category, CategoryRequest } from '../../../core/models/category.model';
 
 @Component({
   selector: 'app-category-form',
@@ -41,10 +41,15 @@ export class CategoryFormComponent implements OnInit {
 
   submit(): void {
     if (this.form.invalid) return;
-    const req = this.form.value as any;
+
+    const req: CategoryRequest = {
+      name: this.form.value.name!
+    };
+
     const op = this.data
       ? this.categoryService.update(this.data.id, req)
       : this.categoryService.create(req);
+
     op.subscribe({ next: () => this.dialogRef.close(true) });
   }
 }

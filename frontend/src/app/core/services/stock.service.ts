@@ -1,14 +1,45 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { StockResponse, EntryRequest, ExitRequest } from '../models/stock.model';
 
 @Injectable({ providedIn: 'root' })
 export class StockService {
   private readonly BASE = environment.apiUrl;
+  private http = inject(HttpClient);
 
-  constructor(private http: HttpClient) {}
+  // Estado reactivo
+  private _stock = signal<StockResponse[]>([]);
+  private _loading = signal(false);
+
+  // Signals de solo lectura
+  readonly stock = this._stock.asReadonly();
+  readonly loading = this._loading.asReadonly();
+  readonly stockCount = computed(() => this._stock().length);
+
+  /** Top 10 productos por cantidad de stock */
+  readonly top10ByQuantity = computed(() =>
+    [...this._stock()]
+      .sort((a, b) => b.quantity - a.quantity)
+      .slice(0, 10)
+  );
+
+  /** Cantidad de productos con stock bajo (≤ 5) */
+  readonly lowStockCount = computed(() =>
+    this._stock().filter(s => s.quantity <= 5).length
+  );
+
+  loadAll(): void {
+    this._loading.set(true);
+    this.http.get<StockResponse[]>(`${this.BASE}/api/stock`).subscribe({
+      next: data => {
+        this._stock.set(data);
+        this._loading.set(false);
+      },
+      error: () => this._loading.set(false)
+    });
+  }
 
   getAllStock(): Observable<StockResponse[]> {
     return this.http.get<StockResponse[]>(`${this.BASE}/api/stock`);
@@ -18,11 +49,15 @@ export class StockService {
     return this.http.get<StockResponse>(`${this.BASE}/api/stock/${productId}`);
   }
 
-  createEntry(req: EntryRequest): Observable<any> {
-    return this.http.post(`${this.BASE}/api/entries`, req);
+  createEntry(req: EntryRequest): Observable<StockResponse> {
+    return this.http.post<StockResponse>(`${this.BASE}/api/entries`, req).pipe(
+      tap(() => this.loadAll())
+    );
   }
 
-  createExit(req: ExitRequest): Observable<any> {
-    return this.http.post(`${this.BASE}/api/exits`, req);
+  createExit(req: ExitRequest): Observable<StockResponse> {
+    return this.http.post<StockResponse>(`${this.BASE}/api/exits`, req).pipe(
+      tap(() => this.loadAll())
+    );
   }
 }
