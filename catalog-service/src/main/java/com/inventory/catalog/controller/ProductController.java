@@ -4,8 +4,8 @@ import com.inventory.catalog.dto.ProductRequest;
 import com.inventory.catalog.dto.ProductResponse;
 import com.inventory.catalog.service.ProductService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -22,42 +22,59 @@ public class ProductController {
     }
 
     @GetMapping
-    public Flux<ProductResponse> findAll() {
-        return productService.findAll();
+    public Flux<ProductResponse> getAllProducts() {
+        return productService.getAllProducts();
     }
 
     @GetMapping("/{id}")
-    public Mono<ProductResponse> findById(@PathVariable UUID id) {
-        return productService.findById(id);
+    public Mono<ResponseEntity<ProductResponse>> getProduct(@PathVariable UUID id) {
+        return productService.getProduct(id)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/category/{categoryId}")
+    public Flux<ProductResponse> getProductsByCategory(@PathVariable UUID categoryId) {
+        return productService.getProductsByCategory(categoryId);
+    }
+
+    @GetMapping("/artesano/{artesanoId}")
+    public Flux<ProductResponse> getProductsByArtesano(@PathVariable UUID artesanoId) {
+        return productService.getProductsByArtesano(artesanoId);
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public Mono<ProductResponse> create(@RequestBody ProductRequest request,
-                                        @RequestHeader("X-User-Role") String role) {
-        validateAdmin(role);
-        return productService.create(request);
+    public Mono<ResponseEntity<ProductResponse>> createProduct(
+            @RequestBody ProductRequest request,
+            @RequestHeader(value = "X-User-Role", defaultValue = "") String userRole) {
+        if (!"ADMIN".equals(userRole)) {
+            return Mono.just(ResponseEntity.status(HttpStatus.FORBIDDEN).build());
+        }
+        return productService.createProduct(request)
+                .map(response -> ResponseEntity.status(HttpStatus.CREATED).body(response));
     }
 
     @PutMapping("/{id}")
-    public Mono<ProductResponse> update(@PathVariable UUID id,
-                                        @RequestBody ProductRequest request,
-                                        @RequestHeader("X-User-Role") String role) {
-        validateAdmin(role);
-        return productService.update(id, request);
+    public Mono<ResponseEntity<ProductResponse>> updateProduct(
+            @PathVariable UUID id,
+            @RequestBody ProductRequest request,
+            @RequestHeader(value = "X-User-Role", defaultValue = "") String userRole) {
+        if (!"ADMIN".equals(userRole)) {
+            return Mono.just(ResponseEntity.status(HttpStatus.FORBIDDEN).build());
+        }
+        return productService.updateProduct(id, request)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public Mono<Void> delete(@PathVariable UUID id,
-                               @RequestHeader("X-User-Role") String role) {
-        validateAdmin(role);
-        return productService.delete(id);
-    }
-
-    private void validateAdmin(String role) {
-        if (!"ADMIN".equals(role)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only ADMIN can perform this action");
+    public Mono<ResponseEntity<Void>> deleteProduct(
+            @PathVariable UUID id,
+            @RequestHeader(value = "X-User-Role", defaultValue = "") String userRole) {
+        if (!"ADMIN".equals(userRole)) {
+            return Mono.just(ResponseEntity.status(HttpStatus.FORBIDDEN).build());
         }
+        return productService.deleteProduct(id)
+                .then(Mono.just(ResponseEntity.<Void>noContent().build()));
     }
 }

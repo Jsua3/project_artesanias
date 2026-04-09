@@ -4,8 +4,8 @@ import com.inventory.catalog.dto.CategoryRequest;
 import com.inventory.catalog.dto.CategoryResponse;
 import com.inventory.catalog.service.CategoryService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -22,42 +22,49 @@ public class CategoryController {
     }
 
     @GetMapping
-    public Flux<CategoryResponse> findAll() {
-        return categoryService.findAll();
+    public Flux<CategoryResponse> getAllCategories() {
+        return categoryService.getAllCategories();
     }
 
     @GetMapping("/{id}")
-    public Mono<CategoryResponse> findById(@PathVariable UUID id) {
-        return categoryService.findById(id);
+    public Mono<ResponseEntity<CategoryResponse>> getCategory(@PathVariable UUID id) {
+        return categoryService.getCategory(id)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public Mono<CategoryResponse> create(@RequestBody CategoryRequest request,
-                                         @RequestHeader("X-User-Role") String role) {
-        validateAdmin(role);
-        return categoryService.create(request);
+    public Mono<ResponseEntity<CategoryResponse>> createCategory(
+            @RequestBody CategoryRequest request,
+            @RequestHeader(value = "X-User-Role", defaultValue = "") String userRole) {
+        if (!"ADMIN".equals(userRole)) {
+            return Mono.just(ResponseEntity.status(HttpStatus.FORBIDDEN).build());
+        }
+        return categoryService.createCategory(request)
+                .map(response -> ResponseEntity.status(HttpStatus.CREATED).body(response));
     }
 
     @PutMapping("/{id}")
-    public Mono<CategoryResponse> update(@PathVariable UUID id,
-                                         @RequestBody CategoryRequest request,
-                                         @RequestHeader("X-User-Role") String role) {
-        validateAdmin(role);
-        return categoryService.update(id, request);
+    public Mono<ResponseEntity<CategoryResponse>> updateCategory(
+            @PathVariable UUID id,
+            @RequestBody CategoryRequest request,
+            @RequestHeader(value = "X-User-Role", defaultValue = "") String userRole) {
+        if (!"ADMIN".equals(userRole)) {
+            return Mono.just(ResponseEntity.status(HttpStatus.FORBIDDEN).build());
+        }
+        return categoryService.updateCategory(id, request)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public Mono<Void> delete(@PathVariable UUID id,
-                               @RequestHeader("X-User-Role") String role) {
-        validateAdmin(role);
-        return categoryService.delete(id);
-    }
-
-    private void validateAdmin(String role) {
-        if (!"ADMIN".equals(role)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only ADMIN can perform this action");
+    public Mono<ResponseEntity<Void>> deleteCategory(
+            @PathVariable UUID id,
+            @RequestHeader(value = "X-User-Role", defaultValue = "") String userRole) {
+        if (!"ADMIN".equals(userRole)) {
+            return Mono.just(ResponseEntity.status(HttpStatus.FORBIDDEN).build());
         }
+        return categoryService.deleteCategory(id)
+                .then(Mono.just(ResponseEntity.<Void>noContent().build()));
     }
 }

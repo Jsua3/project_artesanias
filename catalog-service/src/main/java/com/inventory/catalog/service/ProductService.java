@@ -5,9 +5,11 @@ import com.inventory.catalog.dto.ProductResponse;
 import com.inventory.catalog.model.Product;
 import com.inventory.catalog.repository.ProductRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
@@ -19,73 +21,110 @@ public class ProductService {
         this.productRepository = productRepository;
     }
 
-    public Flux<ProductResponse> findAll() {
-        return productRepository.findAll()
-                .map(p -> {
-                    p.setNew(false);
-                    return p;
-                })
+    @Transactional
+    public Mono<ProductResponse> createProduct(ProductRequest request) {
+        UUID id = UUID.randomUUID();
+        Product product = new Product(
+                id,
+                request.name(),
+                request.description(),
+                request.sku(),
+                request.price(),
+                request.imageUrl(),
+                request.stockMinimo(),
+                request.categoryId(),
+                request.artesanoId(),
+                true,
+                LocalDateTime.now(),
+                LocalDateTime.now()
+        );
+        return productRepository.save(product.withIsNew(true))
                 .map(this::toResponse);
     }
 
-    public Mono<ProductResponse> findById(UUID id) {
+    public Mono<ProductResponse> getProduct(UUID id) {
         return productRepository.findById(id)
-                .map(p -> {
-                    p.setNew(false);
-                    return p;
-                })
+                .filter(p -> Boolean.TRUE.equals(p.active()))
                 .map(this::toResponse);
     }
 
-    public Mono<ProductResponse> create(ProductRequest request) {
-        String sku = (request.sku() == null || request.sku().isBlank())
-                ? "SKU-" + UUID.randomUUID().toString().replace("-", "").substring(0, 8).toUpperCase()
-                : request.sku();
-        return productRepository.findBySku(sku)
-                .flatMap(existing -> Mono.<Product>error(new RuntimeException("SKU already exists")))
-                .switchIfEmpty(Mono.defer(() -> {
-                    Product product = new Product();
-                    product.setId(UUID.randomUUID());
-                    product.setName(request.name());
-                    product.setSku(sku);
-                    product.setPrice(request.price());
-                    product.setCategoryId(request.categoryId());
-                    return productRepository.save(product)
-                            .map(p -> {
-                                p.setNew(false);
-                                return p;
-                            });
-                }))
+    public Flux<ProductResponse> getAllProducts() {
+        return productRepository.findByActiveTrue()
                 .map(this::toResponse);
     }
 
-    public Mono<ProductResponse> update(UUID id, ProductRequest request) {
+    public Flux<ProductResponse> getProductsByCategory(UUID categoryId) {
+        return productRepository.findByCategoryId(categoryId)
+                .filter(p -> Boolean.TRUE.equals(p.active()))
+                .map(this::toResponse);
+    }
+
+    public Flux<ProductResponse> getProductsByArtesano(UUID artesanoId) {
+        return productRepository.findByArtesanoId(artesanoId)
+                .filter(p -> Boolean.TRUE.equals(p.active()))
+                .map(this::toResponse);
+    }
+
+    @Transactional
+    public Mono<ProductResponse> updateProduct(UUID id, ProductRequest request) {
         return productRepository.findById(id)
                 .flatMap(existing -> {
-                    existing.setNew(false);
-                    existing.setName(request.name());
-                    existing.setPrice(request.price());
-                    existing.setCategoryId(request.categoryId());
-                    return productRepository.save(existing)
-                            .map(p -> {
-                                p.setNew(false);
-                                return p;
-                            });
+                    Product updated = new Product(
+                            id,
+                            request.name(),
+                            request.description(),
+                            request.sku(),
+                            request.price(),
+                            request.imageUrl(),
+                            request.stockMinimo(),
+                            request.categoryId(),
+                            request.artesanoId(),
+                            existing.active(),
+                            existing.createdAt(),
+                            LocalDateTime.now()
+                    );
+                    return productRepository.save(updated);
                 })
                 .map(this::toResponse);
     }
 
-    public Mono<Void> delete(UUID id) {
-        return productRepository.deleteById(id);
+    @Transactional
+    public Mono<Void> deleteProduct(UUID id) {
+        return productRepository.findById(id)
+                .flatMap(existing -> {
+                    Product softDeleted = new Product(
+                            id,
+                            existing.name(),
+                            existing.description(),
+                            existing.sku(),
+                            existing.price(),
+                            existing.imageUrl(),
+                            existing.stockMinimo(),
+                            existing.categoryId(),
+                            existing.artesanoId(),
+                            false,
+                            existing.createdAt(),
+                            existing.updatedAt()
+                    );
+                    return productRepository.save(softDeleted);
+                })
+                .then();
     }
 
     private ProductResponse toResponse(Product product) {
         return new ProductResponse(
-                product.getId(),
-                product.getName(),
-                product.getSku(),
-                product.getPrice(),
-                product.getCategoryId()
+                product.id(),
+                product.name(),
+                product.description(),
+                product.sku(),
+                product.price(),
+                product.imageUrl(),
+                product.stockMinimo(),
+                product.categoryId(),
+                product.artesanoId(),
+                product.active(),
+                product.createdAt(),
+                product.updatedAt()
         );
     }
 }

@@ -1,5 +1,5 @@
 com\inventory\gateway\filter\JwtAuthGatewayFilterFactory$Config.class
 com\inventory\gateway\service\JwtTokenService.class
-com\inventory\gateway\ApiGatewayApplication.class
 com\inventory\gateway\config\JwtProperties.class
+com\inventory\gateway\ApiGatewayApplication.class
 com\inventory\gateway\filter\JwtAuthGatewayFilterFactory.class
