@@ -1,0 +1,22 @@
+# Add these routes to your existing spring.cloud.gateway.routes configuration
+# This is an example addition - merge with your existing routes
+
+spring:
+  cloud:
+    gateway:
+      routes:
+        # Catalog Service - Products, Categories, Artesanos
+        - id: catalog-service
+          uri: http://catalog-service:8082
+          predicates:
+            - Path=/api/products/**,/api/categories/**,/api/artesanos/**
+          filters:
+            - name: JwtAuth
+
+        # Inventory Service - Clients and Sales
+        - id: ventas-service
+          uri: http://inventory-service:8083
+          predicates:
+            - Path=/api/ventas/**,/api/clientes/**
+          filters:
+            - name: JwtAuth

@@ -1,0 +1,57 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        # Rutas públicas Auth
+        - id: auth-service-public
+          uri: ${AUTH_SERVICE_URL:http://localhost:8081}
+          predicates:
+            - Path=/api/auth/login, /api/auth/register, /api/auth/refresh
+
+        # Rutas privadas Auth
+        - id: auth-service-private
+          uri: ${AUTH_SERVICE_URL:http://localhost:8081}
+          predicates:
+            - Path=/api/auth/me, /api/auth/users
+          filters:
+            - JwtAuth
+
+        # Catalog Service
+        - id: catalog-service
+          uri: ${CATALOG_SERVICE_URL:http://localhost:8082}
+          predicates:
+            - Path=/api/categories, /api/categories/**, /api/products, /api/products/**
+          filters:
+            - JwtAuth
+
+        # Inventory Service
+        - id: inventory-service
+          uri: ${INVENTORY_SERVICE_URL:http://localhost:8083}
+          predicates:
+            - Path=/api/stock/**, /api/entries/**, /api/exits/**
+          filters:
+            - JwtAuth
+
+        # Report Service
+        - id: report-service
+          uri: ${REPORT_SERVICE_URL:http://localhost:8084}
+          predicates:
+            - Path=/api/reports/**
+          filters:
+            - JwtAuth
+
+security:
+  jwt:
+    secret: ${JWT_SECRET:32-character-long-secret-key-for-jwt-generation-and-validation}
+    internal-token: ${INTERNAL_TOKEN:my-super-secret-internal-token}
+
+eureka:
+  client:
+    enabled: false
+    register-with-eureka: false
+    fetch-registry: false
