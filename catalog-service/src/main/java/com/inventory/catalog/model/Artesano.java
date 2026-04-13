@@ -18,6 +18,7 @@ public class Artesano implements Persistable<UUID> {
     private String email;
     private String especialidad;
     private String ubicacion;
+    private String imageUrl;
     private Boolean active;
     private LocalDateTime createdAt;
 
@@ -62,6 +63,10 @@ public class Artesano implements Persistable<UUID> {
 
     public String ubicacion() {
         return ubicacion;
+    }
+
+    public String imageUrl() {
+        return imageUrl;
     }
 
     public Boolean active() {
@@ -119,6 +124,14 @@ public class Artesano implements Persistable<UUID> {
 
     public void setUbicacion(String ubicacion) {
         this.ubicacion = ubicacion;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public Boolean getActive() {

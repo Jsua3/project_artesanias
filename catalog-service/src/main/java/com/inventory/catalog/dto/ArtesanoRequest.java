@@ -5,5 +5,6 @@ public record ArtesanoRequest(
     String telefono,
     String email,
     String especialidad,
-    String ubicacion
+    String ubicacion,
+    String imageUrl
 ) {}

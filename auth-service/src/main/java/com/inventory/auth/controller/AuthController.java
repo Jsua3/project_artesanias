@@ -23,7 +23,8 @@ public class AuthController {
     @PostMapping("/register")
     public Mono<UserProfileResponse> register(@RequestBody RegisterRequest request) {
         return authService.register(request)
-                .map(user -> new UserProfileResponse(user.getId(), user.getUsername(), user.getRole().name()));
+                .map(user -> new UserProfileResponse(user.getId(), user.getUsername(), user.getRole().name(),
+                        user.getDisplayName(), user.getAvatarUrl()));
     }
 
     @PostMapping("/login")
@@ -39,6 +40,13 @@ public class AuthController {
     @GetMapping("/me")
     public Mono<UserProfileResponse> me(@AuthenticationPrincipal UUID userId) {
         return authService.me(userId);
+    }
+
+    @PutMapping("/profile")
+    public Mono<UserProfileResponse> updateProfile(
+            @RequestHeader("X-User-Id") String userId,
+            @RequestBody ProfileUpdateRequest request) {
+        return authService.updateProfile(UUID.fromString(userId), request);
     }
 
     @GetMapping("/users")

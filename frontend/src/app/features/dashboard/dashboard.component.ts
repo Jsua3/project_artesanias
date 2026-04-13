@@ -48,15 +48,37 @@ export class DashboardComponent implements OnInit {
       datasets: [{
         data: top10.map(s => s.quantity),
         label: 'Stock',
-        backgroundColor: '#3f51b5'
+        backgroundColor: '#A67C52',
+        borderRadius: 8,
+        borderSkipped: false
       }]
     };
   });
 
   barChartOptions: ChartOptions<'bar'> = {
     responsive: true,
-    plugins: { legend: { display: false } },
-    scales: { y: { beginAtZero: true } }
+    maintainAspectRatio: true,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: '#3A3530',
+        titleFont: { family: 'Outfit' },
+        bodyFont: { family: 'Outfit' },
+        cornerRadius: 8,
+        padding: 12
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        grid: { color: 'rgba(166,124,82,0.08)' },
+        ticks: { font: { family: 'Outfit', size: 12 }, color: '#7A7370' }
+      },
+      x: {
+        grid: { display: false },
+        ticks: { font: { family: 'Outfit', size: 11 }, color: '#7A7370', maxRotation: 45 }
+      }
+    }
   };
 
   ngOnInit(): void {

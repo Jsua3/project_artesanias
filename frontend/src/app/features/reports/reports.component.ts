@@ -4,7 +4,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatChipsModule } from '@angular/material/chips';
+// MatChipsModule removed — using custom status-badge spans
 import { DatePipe, SlicePipe } from '@angular/common';
 import { ReportService } from '../../core/services/report.service';
 import { ProductService } from '../../core/services/product.service';
@@ -14,7 +14,7 @@ import { ProductService } from '../../core/services/product.service';
   standalone: true,
   imports: [
     MatTabsModule, MatTableModule, MatCardModule,
-    MatIconModule, MatProgressSpinnerModule, MatChipsModule, DatePipe, SlicePipe
+    MatIconModule, MatProgressSpinnerModule, DatePipe, SlicePipe
   ],
   templateUrl: './reports.component.html',
   styleUrl: './reports.component.scss'

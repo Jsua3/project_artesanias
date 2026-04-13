@@ -1,11 +1,1 @@
-.page-container { padding: 24px; }
-.page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-.page-title { font-size: 1.5rem; font-weight: 600; margin: 0; color: #1a237e; }
-.loading-center { display: flex; justify-content: center; padding: 60px; }
-.full-width { width: 100%; }
-.empty-msg { text-align: center; color: #9e9e9e; padding: 32px; }
+// Category list uses global shared styles from styles.scss

@@ -1,58 +1,67 @@
-<div class="page-container">
-  <h2 class="page-title">Dashboard</h2>
+<div class="page-container animate-in">
+  <div class="page-header">
+    <h2 class="page-title">Dashboard</h2>
+    <p class="page-subtitle">Resumen general del inventario</p>
+  </div>
 
   @if (loading()) {
-    <div class="loading-center">
-      <mat-spinner />
-    </div>
+    <div class="loading-center"><mat-spinner /></div>
   } @else {
     <div class="stats-grid">
-      <mat-card class="stat-card">
-        <mat-icon class="stat-icon blue">inventory</mat-icon>
-        <div>
-          <p class="stat-value">{{ stats().products }}</p>
-          <p class="stat-label">Productos</p>
+      <div class="stat-card">
+        <div class="stat-icon-wrap terracotta">
+          <mat-icon>palette</mat-icon>
         </div>
-      </mat-card>
+        <div class="stat-content">
+          <p class="stat-value">{{ stats().products }}</p>
+          <p class="stat-label">Artesanías</p>
+        </div>
+      </div>
 
-      <mat-card class="stat-card">
-        <mat-icon class="stat-icon purple">category</mat-icon>
-        <div>
+      <div class="stat-card">
+        <div class="stat-icon-wrap mauve">
+          <mat-icon>category</mat-icon>
+        </div>
+        <div class="stat-content">
           <p class="stat-value">{{ stats().categories }}</p>
           <p class="stat-label">Categorías</p>
         </div>
-      </mat-card>
+      </div>
 
-      <mat-card class="stat-card">
-        <mat-icon class="stat-icon green">warehouse</mat-icon>
-        <div>
-          <p class="stat-value">{{ stats().stockItems }}</p>
-          <p class="stat-label">Productos en Stock</p>
+      <div class="stat-card">
+        <div class="stat-icon-wrap sage">
+          <mat-icon>warehouse</mat-icon>
         </div>
-      </mat-card>
+        <div class="stat-content">
+          <p class="stat-value">{{ stats().stockItems }}</p>
+          <p class="stat-label">En Stock</p>
+        </div>
+      </div>
 
       @if (auth.isAdmin()) {
-        <mat-card class="stat-card">
-          <mat-icon class="stat-icon red">warning</mat-icon>
-          <div>
-            <p class="stat-value">{{ stats().lowStock }}</p>
-            <p class="stat-label">Stock Bajo (≤5)</p>
+        <div class="stat-card">
+          <div class="stat-icon-wrap danger">
+            <mat-icon>warning_amber</mat-icon>
           </div>
-        </mat-card>
+          <div class="stat-content">
+            <p class="stat-value">{{ stats().lowStock }}</p>
+            <p class="stat-label">Stock Bajo</p>
+          </div>
+        </div>
       }
     </div>
 
-    <mat-card class="chart-card">
-      <mat-card-header>
-        <mat-card-title>Top 10 Productos por Stock</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
+    <div class="chart-card">
+      <div class="chart-header">
+        <h3>Top 10 Artesanías por Stock</h3>
+      </div>
+      <div class="chart-body">
         <canvas baseChart
                 [data]="barChartData()"
                 [options]="barChartOptions"
                 type="bar">
         </canvas>
-      </mat-card-content>
-    </mat-card>
+      </div>
+    </div>
   }
 </div>

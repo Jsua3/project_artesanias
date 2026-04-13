@@ -1,0 +1,99 @@
+<div class="page-container animate-in">
+  <div class="page-header">
+    <h2 class="page-title">Ventas</h2>
+    <button mat-raised-button color="primary" (click)="openForm()">
+      <mat-icon>add_shopping_cart</mat-icon> Nueva Venta
+    </button>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-center"><mat-spinner /></div>
+  } @else {
+    <!-- DESKTOP TABLE -->
+    <div class="desktop-table">
+      <mat-card>
+        <table mat-table [dataSource]="ventas()" class="full-width">
+          <ng-container matColumnDef="fecha">
+            <th mat-header-cell *matHeaderCellDef>Fecha</th>
+            <td mat-cell *matCellDef="let v">{{ v.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="cliente">
+            <th mat-header-cell *matHeaderCellDef>Cliente</th>
+            <td mat-cell *matCellDef="let v">{{ getClienteNombre(v.clienteId) }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="total">
+            <th mat-header-cell *matHeaderCellDef>Total</th>
+            <td mat-cell *matCellDef="let v">
+              <strong>{{ v.total | currency:'COP':'symbol':'1.0-0' }}</strong>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="estado">
+            <th mat-header-cell *matHeaderCellDef>Estado</th>
+            <td mat-cell *matCellDef="let v">
+              <span class="status-badge" [class.completada]="v.estado === 'COMPLETADA'" [class.anulada]="v.estado === 'ANULADA'">
+                {{ v.estado }}
+              </span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let v">
+              @if (auth.isAdmin() && v.estado === 'COMPLETADA') {
+                <button mat-icon-button color="warn" (click)="anular(v)" title="Anular venta">
+                  <mat-icon>cancel</mat-icon>
+                </button>
+              }
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+
+        @if (ventas().length === 0) {
+          <p class="empty-msg">No hay ventas registradas.</p>
+        }
+      </mat-card>
+    </div>
+
+    <!-- MOBILE CARDS -->
+    <div class="mobile-cards">
+      @if (ventas().length === 0) {
+        <p class="empty-msg">No hay ventas registradas.</p>
+      } @else {
+        <div class="cards-grid">
+          @for (v of ventas(); track v.id) {
+            <div class="data-card">
+              <div class="data-card-header">
+                <div>
+                  <p class="data-card-title">{{ v.total | currency:'COP':'symbol':'1.0-0' }}</p>
+                  <p class="data-card-subtitle">{{ v.createdAt | date:'dd/MM/yyyy HH:mm' }}</p>
+                </div>
+                <span class="status-badge" [class.completada]="v.estado === 'COMPLETADA'" [class.anulada]="v.estado === 'ANULADA'">
+                  {{ v.estado }}
+                </span>
+              </div>
+              <div class="data-card-body">
+                <div class="data-card-row">
+                  <span class="label">Cliente</span>
+                  <span class="value">{{ getClienteNombre(v.clienteId) }}</span>
+                </div>
+              </div>
+              @if (auth.isAdmin() && v.estado === 'COMPLETADA') {
+                <div class="data-card-actions">
+                  <button mat-icon-button color="warn" (click)="anular(v)" title="Anular venta">
+                    <mat-icon>cancel</mat-icon>
+                  </button>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

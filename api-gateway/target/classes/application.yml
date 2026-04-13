@@ -21,19 +21,19 @@ spring:
           filters:
             - JwtAuth
 
-        # Catalog Service
+        # Catalog Service (categorías, productos, artesanos)
         - id: catalog-service
           uri: ${CATALOG_SERVICE_URL:http://localhost:8082}
           predicates:
-            - Path=/api/categories, /api/categories/**, /api/products, /api/products/**
+            - Path=/api/categories, /api/categories/**, /api/products, /api/products/**, /api/artesanos, /api/artesanos/**
           filters:
             - JwtAuth
 
-        # Inventory Service
+        # Inventory Service (stock, entradas, salidas, clientes, ventas)
         - id: inventory-service
           uri: ${INVENTORY_SERVICE_URL:http://localhost:8083}
           predicates:
-            - Path=/api/stock/**, /api/entries/**, /api/exits/**
+            - Path=/api/stock/**, /api/entries/**, /api/exits/**, /api/clientes, /api/clientes/**, /api/ventas, /api/ventas/**
           filters:
             - JwtAuth
 

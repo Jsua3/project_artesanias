@@ -1,0 +1,97 @@
+<div class="page-container animate-in">
+  <div class="page-header">
+    <h2 class="page-title">Clientes</h2>
+    <button mat-raised-button color="primary" (click)="openForm()">
+      <mat-icon>add</mat-icon> Nuevo Cliente
+    </button>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-center"><mat-spinner /></div>
+  } @else {
+    <!-- DESKTOP TABLE -->
+    <div class="desktop-table">
+      <mat-card>
+        <table mat-table [dataSource]="clientes()" class="full-width">
+          <ng-container matColumnDef="nombre">
+            <th mat-header-cell *matHeaderCellDef>Nombre</th>
+            <td mat-cell *matCellDef="let c">{{ c.nombre }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="telefono">
+            <th mat-header-cell *matHeaderCellDef>Teléfono</th>
+            <td mat-cell *matCellDef="let c">{{ c.telefono ?? '—' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="email">
+            <th mat-header-cell *matHeaderCellDef>Email</th>
+            <td mat-cell *matCellDef="let c">{{ c.email ?? '—' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="direccion">
+            <th mat-header-cell *matHeaderCellDef>Dirección</th>
+            <td mat-cell *matCellDef="let c">{{ c.direccion ?? '—' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let c">
+              <button mat-icon-button color="primary" (click)="openForm(c)" title="Editar">
+                <mat-icon>edit</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+
+        @if (clientes().length === 0) {
+          <p class="empty-msg">No hay clientes registrados.</p>
+        }
+      </mat-card>
+    </div>
+
+    <!-- MOBILE CARDS -->
+    <div class="mobile-cards">
+      @if (clientes().length === 0) {
+        <p class="empty-msg">No hay clientes registrados.</p>
+      } @else {
+        <div class="cards-grid">
+          @for (c of clientes(); track c.id) {
+            <div class="data-card">
+              <div class="data-card-header">
+                <p class="data-card-title">{{ c.nombre }}</p>
+              </div>
+              <div class="data-card-body">
+                @if (c.telefono) {
+                  <div class="data-card-row">
+                    <span class="label">Teléfono</span>
+                    <span class="value">{{ c.telefono }}</span>
+                  </div>
+                }
+                @if (c.email) {
+                  <div class="data-card-row">
+                    <span class="label">Email</span>
+                    <span class="value">{{ c.email }}</span>
+                  </div>
+                }
+                @if (c.direccion) {
+                  <div class="data-card-row">
+                    <span class="label">Dirección</span>
+                    <span class="value">{{ c.direccion }}</span>
+                  </div>
+                }
+              </div>
+              <div class="data-card-actions">
+                <button mat-icon-button color="primary" (click)="openForm(c)" title="Editar">
+                  <mat-icon>edit</mat-icon>
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

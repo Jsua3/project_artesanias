@@ -1,0 +1,1850 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>REBBECA — Ecosistema Artesanal</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F5F0E6;
+    --cream-dark: #EDE6D8;
+    --terracotta: #A67C52;
+    --terracotta-light: #C49A6C;
+    --terracotta-deep: #8B6340;
+    --mauve: #B8899A;
+    --mauve-light: #D4B0BF;
+    --mauve-deep: #9A6E7E;
+    --sage: #8A9A7B;
+    --sage-light: #A8B89A;
+    --sage-deep: #6B7D5E;
+    --charcoal: #3A3530;
+    --warm-white: #FDFBF7;
+    --text: #4A4340;
+    --text-light: #7A7370;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html {
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+  }
+
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--warm-white);
+    color: var(--text);
+    overflow-x: hidden;
+  }
+
+  /* ===== NOISE TEXTURE OVERLAY ===== */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* ===== NAVIGATION ===== */
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding: 1.2rem 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.5s ease;
+    background: transparent;
+  }
+
+  nav.scrolled {
+    background: rgba(245, 240, 230, 0.92);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 1px 20px rgba(166, 124, 82, 0.08);
+    padding: 0.8rem 3rem;
+  }
+
+  .nav-brand {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+    font-size: 1.6rem;
+    color: var(--terracotta-deep);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+
+  .nav-brand span {
+    font-weight: 300;
+    font-size: 0.75rem;
+    letter-spacing: 4px;
+    display: block;
+    color: var(--sage-deep);
+    margin-top: -2px;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    text-decoration: none;
+    color: var(--text);
+    font-size: 0.85rem;
+    font-weight: 400;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    position: relative;
+    transition: color 0.3s;
+  }
+
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 1.5px;
+    background: var(--terracotta);
+    transition: width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .nav-links a:hover { color: var(--terracotta); }
+  .nav-links a:hover::after { width: 100%; }
+
+  /* ===== HERO ===== */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background: linear-gradient(160deg, var(--cream) 0%, var(--cream-dark) 40%, #E8DFD0 100%);
+    overflow: hidden;
+  }
+
+  .hero-bg-spiral {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 700px;
+    height: 700px;
+    opacity: 0.06;
+    animation: slowSpin 80s linear infinite;
+  }
+
+  @keyframes slowSpin {
+    from { transform: translate(-50%, -50%) rotate(0deg); }
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+  }
+
+  .hero-organic-1 {
+    position: absolute;
+    top: -100px;
+    right: -100px;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(ellipse, var(--mauve-light) 0%, transparent 70%);
+    opacity: 0.2;
+    border-radius: 60% 40% 50% 50%;
+    animation: float1 12s ease-in-out infinite;
+  }
+
+  .hero-organic-2 {
+    position: absolute;
+    bottom: -80px;
+    left: -80px;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(ellipse, var(--sage-light) 0%, transparent 70%);
+    opacity: 0.2;
+    border-radius: 40% 60% 50% 50%;
+    animation: float2 15s ease-in-out infinite;
+  }
+
+  .hero-organic-3 {
+    position: absolute;
+    top: 20%;
+    left: 8%;
+    width: 250px;
+    height: 250px;
+    background: radial-gradient(ellipse, var(--terracotta-light) 0%, transparent 70%);
+    opacity: 0.12;
+    border-radius: 50% 50% 40% 60%;
+    animation: float3 18s ease-in-out infinite;
+  }
+
+  @keyframes float1 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(-30px, 20px) scale(1.05); }
+  }
+  @keyframes float2 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(20px, -30px) scale(1.08); }
+  }
+  @keyframes float3 {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(15px, 15px); }
+  }
+
+  .hero-content {
+    text-align: center;
+    position: relative;
+    z-index: 2;
+    padding: 0 2rem;
+  }
+
+  .hero-logo-img {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 1.5rem;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 8px 40px rgba(166, 124, 82, 0.15);
+    animation: fadeUp 1s ease-out 0.2s both;
+  }
+
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(3rem, 7vw, 6rem);
+    font-weight: 300;
+    color: var(--terracotta-deep);
+    letter-spacing: 8px;
+    text-transform: uppercase;
+    line-height: 1;
+    animation: fadeUp 1s ease-out 0.4s both;
+  }
+
+  .hero-subtitle {
+    font-family: 'Outfit', sans-serif;
+    font-size: clamp(0.8rem, 1.5vw, 1rem);
+    font-weight: 300;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: var(--sage-deep);
+    margin-top: 0.5rem;
+    animation: fadeUp 1s ease-out 0.6s both;
+  }
+
+  .hero-divider {
+    width: 60px;
+    height: 1.5px;
+    background: var(--terracotta);
+    margin: 2rem auto;
+    animation: fadeUp 1s ease-out 0.8s both;
+  }
+
+  .hero-tagline {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1.1rem, 2vw, 1.5rem);
+    font-weight: 400;
+    font-style: italic;
+    color: var(--text-light);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+    animation: fadeUp 1s ease-out 1s both;
+  }
+
+  .hero-cta {
+    margin-top: 2.5rem;
+    animation: fadeUp 1s ease-out 1.2s both;
+  }
+
+  .btn-primary {
+    display: inline-block;
+    padding: 1rem 2.8rem;
+    background: var(--terracotta);
+    color: var(--warm-white);
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    border-radius: 50px;
+    transition: all 0.4s ease;
+    border: 2px solid var(--terracotta);
+  }
+
+  .btn-primary:hover {
+    background: transparent;
+    color: var(--terracotta-deep);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(166, 124, 82, 0.2);
+  }
+
+  .btn-secondary {
+    display: inline-block;
+    padding: 1rem 2.8rem;
+    background: transparent;
+    color: var(--terracotta-deep);
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    border-radius: 50px;
+    border: 1.5px solid var(--terracotta);
+    transition: all 0.4s ease;
+    margin-left: 1rem;
+  }
+
+  .btn-secondary:hover {
+    background: var(--terracotta);
+    color: var(--warm-white);
+    transform: translateY(-2px);
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .scroll-indicator {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: fadeUp 1s ease-out 1.5s both;
+  }
+
+  .scroll-indicator span {
+    display: block;
+    width: 1.5px;
+    height: 40px;
+    background: linear-gradient(to bottom, var(--terracotta), transparent);
+    margin: 0 auto;
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.3; transform: scaleY(1); }
+    50% { opacity: 0.8; transform: scaleY(1.2); }
+  }
+
+  /* ===== SECTIONS COMMON ===== */
+  section {
+    padding: 6rem 2rem;
+  }
+
+  .section-label {
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: var(--sage-deep);
+    margin-bottom: 1rem;
+  }
+
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 400;
+    color: var(--charcoal);
+    line-height: 1.2;
+    max-width: 700px;
+  }
+
+  .section-title em {
+    color: var(--terracotta);
+    font-style: italic;
+  }
+
+  /* ===== ABOUT / QUÉ HACEMOS ===== */
+  .about {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+    padding: 8rem 3rem;
+  }
+
+  .about-text p {
+    font-size: 1.05rem;
+    line-height: 1.85;
+    color: var(--text-light);
+    margin-top: 1.5rem;
+    font-weight: 300;
+  }
+
+  .about-visual {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .about-card {
+    background: var(--cream);
+    border-radius: 20px;
+    padding: 3rem;
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+  }
+
+  .about-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--terracotta), var(--mauve), var(--sage));
+  }
+
+  .about-card-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .about-card h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem;
+    font-weight: 500;
+    color: var(--charcoal);
+    margin-bottom: 0.8rem;
+  }
+
+  .about-card p {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: var(--text-light);
+    font-weight: 300;
+  }
+
+  .about-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+
+  .stat-item {
+    text-align: center;
+    padding: 1.2rem;
+    background: var(--warm-white);
+    border-radius: 12px;
+  }
+
+  .stat-number {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--terracotta);
+  }
+
+  .stat-label {
+    font-size: 0.7rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-light);
+    margin-top: 0.3rem;
+  }
+
+  /* ===== PROBLEM SECTION ===== */
+  .problem {
+    background: var(--charcoal);
+    color: var(--cream);
+    padding: 6rem 3rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .problem::before {
+    content: '';
+    position: absolute;
+    top: -200px;
+    right: -200px;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(ellipse, var(--terracotta-deep) 0%, transparent 70%);
+    opacity: 0.08;
+    border-radius: 50%;
+  }
+
+  .problem-inner {
+    max-width: 1000px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+  }
+
+  .problem .section-label { color: var(--terracotta-light); }
+  .problem .section-title { color: var(--cream); max-width: 800px; }
+  .problem .section-title em { color: var(--mauve-light); }
+
+  .problem-quote {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1.3rem, 2.5vw, 1.8rem);
+    font-style: italic;
+    font-weight: 300;
+    line-height: 1.7;
+    color: rgba(245, 240, 230, 0.75);
+    margin-top: 2rem;
+    max-width: 750px;
+    border-left: 2px solid var(--terracotta);
+    padding-left: 2rem;
+  }
+
+  .problem-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-top: 3rem;
+  }
+
+  .problem-stat {
+    padding: 1.5rem;
+    border: 1px solid rgba(245, 240, 230, 0.1);
+    border-radius: 14px;
+    text-align: center;
+    transition: all 0.3s;
+  }
+
+  .problem-stat:hover {
+    border-color: var(--terracotta);
+    background: rgba(166, 124, 82, 0.06);
+  }
+
+  .problem-stat-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: var(--terracotta-light);
+  }
+
+  .problem-stat-text {
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    color: rgba(245, 240, 230, 0.6);
+    margin-top: 0.3rem;
+    line-height: 1.4;
+  }
+
+  /* ===== SERVICES ===== */
+  .services {
+    padding: 8rem 3rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .services-header {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+
+  .services-header .section-title {
+    margin: 0 auto;
+  }
+
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+  }
+
+  .service-card {
+    padding: 2.5rem;
+    border-radius: 20px;
+    background: var(--cream);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    cursor: default;
+  }
+
+  .service-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 0;
+    transition: height 0.5s ease;
+    z-index: 0;
+    border-radius: 20px;
+  }
+
+  .service-card:nth-child(1)::after { background: linear-gradient(to top, rgba(166, 124, 82, 0.06), transparent); }
+  .service-card:nth-child(2)::after { background: linear-gradient(to top, rgba(184, 137, 154, 0.06), transparent); }
+  .service-card:nth-child(3)::after { background: linear-gradient(to top, rgba(138, 154, 123, 0.06), transparent); }
+  .service-card:nth-child(4)::after { background: linear-gradient(to top, rgba(58, 53, 48, 0.04), transparent); }
+
+  .service-card:hover::after { height: 100%; }
+  .service-card:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(0,0,0,0.06); }
+
+  .service-card > * { position: relative; z-index: 1; }
+
+  .service-number {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 3rem;
+    font-weight: 300;
+    color: var(--terracotta-light);
+    opacity: 0.5;
+    line-height: 1;
+  }
+
+  .service-card h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: var(--charcoal);
+    margin: 0.8rem 0;
+  }
+
+  .service-card p {
+    font-size: 0.92rem;
+    line-height: 1.7;
+    color: var(--text-light);
+    font-weight: 300;
+  }
+
+  .service-tag {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 0.4rem 1rem;
+    font-size: 0.65rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border-radius: 50px;
+    font-weight: 500;
+  }
+
+  .service-card:nth-child(1) .service-tag { background: rgba(166, 124, 82, 0.12); color: var(--terracotta-deep); }
+  .service-card:nth-child(2) .service-tag { background: rgba(184, 137, 154, 0.12); color: var(--mauve-deep); }
+  .service-card:nth-child(3) .service-tag { background: rgba(138, 154, 123, 0.12); color: var(--sage-deep); }
+  .service-card:nth-child(4) .service-tag { background: rgba(58, 53, 48, 0.08); color: var(--charcoal); }
+
+  /* ===== TERRITORY SECTION ===== */
+  .territory {
+    background: linear-gradient(135deg, var(--cream) 0%, var(--cream-dark) 100%);
+    padding: 8rem 3rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .territory-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+
+  .territory-text p {
+    font-size: 1.05rem;
+    line-height: 1.85;
+    color: var(--text-light);
+    margin-top: 1.5rem;
+    font-weight: 300;
+  }
+
+  .territory-municipalities {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    margin-top: 2rem;
+  }
+
+  .municipality-tag {
+    padding: 0.6rem 1.3rem;
+    background: var(--warm-white);
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text);
+    letter-spacing: 1px;
+    border: 1px solid rgba(166, 124, 82, 0.15);
+    transition: all 0.3s;
+  }
+
+  .municipality-tag:hover {
+    background: var(--terracotta);
+    color: var(--warm-white);
+    border-color: var(--terracotta);
+  }
+
+  .territory-visual {
+    position: relative;
+  }
+
+  .territory-feature-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+
+  .territory-feature {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: var(--warm-white);
+    border-radius: 14px;
+    transition: all 0.3s;
+  }
+
+  .territory-feature:hover {
+    transform: translateX(8px);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.04);
+  }
+
+  .territory-feature-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--cream);
+    border-radius: 10px;
+  }
+
+  .territory-feature h4 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--charcoal);
+  }
+
+  .territory-feature p {
+    font-size: 0.82rem;
+    color: var(--text-light);
+    font-weight: 300;
+    margin-top: 0.2rem;
+    line-height: 1.5;
+  }
+
+  /* ===== PLANS ===== */
+  .plans {
+    padding: 8rem 3rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .plans-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .plans-header .section-title { margin: 0 auto; }
+
+  .plans-header p {
+    max-width: 550px;
+    margin: 1rem auto 0;
+    font-size: 0.95rem;
+    color: var(--text-light);
+    font-weight: 300;
+    line-height: 1.7;
+  }
+
+  .plans-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+
+  .plan-card {
+    padding: 2.5rem 2rem;
+    border-radius: 20px;
+    border: 1.5px solid rgba(166, 124, 82, 0.12);
+    background: var(--warm-white);
+    transition: all 0.4s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .plan-card.featured {
+    border-color: var(--terracotta);
+    background: var(--cream);
+  }
+
+  .plan-card.featured::before {
+    content: 'Popular';
+    position: absolute;
+    top: 1.2rem;
+    right: -2rem;
+    background: var(--terracotta);
+    color: var(--warm-white);
+    font-size: 0.6rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 0.3rem 2.5rem;
+    transform: rotate(45deg);
+  }
+
+  .plan-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.06);
+  }
+
+  .plan-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--charcoal);
+  }
+
+  .plan-price {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.5rem;
+    font-weight: 500;
+    color: var(--terracotta);
+    margin: 0.8rem 0 0.2rem;
+  }
+
+  .plan-price span {
+    font-size: 0.85rem;
+    font-family: 'Outfit', sans-serif;
+    color: var(--text-light);
+    font-weight: 300;
+  }
+
+  .plan-desc {
+    font-size: 0.85rem;
+    color: var(--text-light);
+    font-weight: 300;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(166, 124, 82, 0.1);
+  }
+
+  .plan-features {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .plan-features li {
+    font-size: 0.85rem;
+    color: var(--text);
+    font-weight: 300;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .plan-features li::before {
+    content: '◆';
+    font-size: 0.4rem;
+    color: var(--terracotta);
+  }
+
+  .plan-btn {
+    display: block;
+    width: 100%;
+    margin-top: 2rem;
+    padding: 0.9rem;
+    border: 1.5px solid var(--terracotta);
+    background: transparent;
+    color: var(--terracotta-deep);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: 500;
+    text-align: center;
+    text-decoration: none;
+  }
+
+  .plan-btn:hover, .plan-card.featured .plan-btn {
+    background: var(--terracotta);
+    color: var(--warm-white);
+  }
+
+  .plan-card.featured .plan-btn:hover {
+    background: var(--terracotta-deep);
+  }
+
+  /* ===== CTA SECTION ===== */
+  .cta-section {
+    background: linear-gradient(160deg, var(--terracotta-deep) 0%, var(--terracotta) 50%, var(--mauve-deep) 100%);
+    padding: 6rem 3rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    opacity: 0.04;
+  }
+
+  .cta-content {
+    position: relative;
+    z-index: 2;
+  }
+
+  .cta-section .section-title {
+    color: var(--warm-white);
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .cta-section .section-title em { color: var(--cream-dark); }
+
+  .cta-text {
+    color: rgba(253, 251, 247, 0.75);
+    font-size: 1rem;
+    font-weight: 300;
+    max-width: 550px;
+    margin: 1.5rem auto 2.5rem;
+    line-height: 1.7;
+  }
+
+  .btn-white {
+    display: inline-block;
+    padding: 1rem 3rem;
+    background: var(--warm-white);
+    color: var(--terracotta-deep);
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    border-radius: 50px;
+    transition: all 0.4s;
+  }
+
+  .btn-white:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  }
+
+  /* ===== TEAM STRIP ===== */
+  .team-strip {
+    padding: 5rem 3rem;
+    text-align: center;
+    background: var(--cream);
+  }
+
+  .team-strip .section-label { margin-bottom: 2rem; }
+
+  .team-members {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    flex-wrap: wrap;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .team-member {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .team-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--terracotta-light), var(--mauve));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--warm-white);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    font-weight: 600;
+  }
+
+  .team-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--charcoal);
+  }
+
+  .team-role {
+    font-size: 0.72rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-light);
+  }
+
+  /* ===== FOOTER ===== */
+  footer {
+    background: var(--charcoal);
+    padding: 3rem;
+    text-align: center;
+  }
+
+  .footer-brand {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    font-weight: 500;
+    color: var(--cream);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+  }
+
+  .footer-brand span {
+    display: block;
+    font-size: 0.65rem;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 300;
+    letter-spacing: 3px;
+    color: var(--sage-light);
+    margin-top: 0.3rem;
+  }
+
+  .footer-copy {
+    font-size: 0.75rem;
+    color: rgba(245, 240, 230, 0.35);
+    margin-top: 1.5rem;
+    font-weight: 300;
+  }
+
+  .footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 1rem;
+  }
+
+  .footer-links a {
+    font-size: 0.72rem;
+    color: rgba(245, 240, 230, 0.5);
+    text-decoration: none;
+    letter-spacing: 1px;
+    transition: color 0.3s;
+  }
+
+  .footer-links a:hover { color: var(--terracotta-light); }
+
+  /* ===== SCROLL ANIMATIONS ===== */
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+  .reveal-delay-4 { transition-delay: 0.4s; }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 900px) {
+    nav { padding: 1rem 1.5rem; }
+    nav.scrolled { padding: 0.7rem 1.5rem; }
+    .nav-links { display: none; }
+    .about { grid-template-columns: 1fr; gap: 2rem; padding: 4rem 1.5rem; }
+    .services-grid { grid-template-columns: 1fr; }
+    .territory-inner { grid-template-columns: 1fr; gap: 2rem; }
+    .plans-grid { grid-template-columns: 1fr; }
+    .about-stats { grid-template-columns: repeat(3, 1fr); }
+    .hero-cta { display: flex; flex-direction: column; align-items: center; gap: 1rem; }
+    .btn-secondary { margin-left: 0; }
+    .team-members { gap: 2rem; }
+  }
+
+  @media (max-width: 600px) {
+    section { padding: 4rem 1.5rem; }
+    .problem { padding: 4rem 1.5rem; }
+    .territory { padding: 4rem 1.5rem; }
+    .plans { padding: 4rem 1.5rem; }
+    .hero-title { letter-spacing: 4px; }
+  }
+
+  /* ===== ANIMACIONES AVANZADAS DE BOTONES ===== */
+
+  .btn-primary,
+  .btn-secondary,
+  .btn-white,
+  .plan-btn {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-primary::before,
+  .btn-secondary::before,
+  .btn-white::before,
+  .plan-btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.25);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s ease, height 0.6s ease;
+  }
+
+  .btn-primary:hover::before,
+  .btn-secondary:hover::before,
+  .btn-white:hover::before,
+  .plan-btn:hover::before {
+    width: 300px;
+    height: 300px;
+  }
+
+  /* Shine sweep */
+  .btn-primary::after,
+  .btn-white::after,
+  .plan-btn::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -75%;
+    width: 50%;
+    height: 200%;
+    background: linear-gradient(to right, transparent 0%, rgba(255,255,255,0.15) 50%, transparent 100%);
+    transform: skewX(-25deg);
+    transition: none;
+  }
+
+  .btn-primary:hover::after,
+  .btn-white:hover::after,
+  .plan-btn:hover::after {
+    animation: shineSweep 0.6s ease forwards;
+  }
+
+  @keyframes shineSweep {
+    0% { left: -75%; }
+    100% { left: 125%; }
+  }
+
+  /* Enhanced hover transforms */
+  .btn-primary {
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 12px 35px rgba(166, 124, 82, 0.25);
+  }
+
+  .btn-primary:active {
+    transform: translateY(-1px) scale(0.98);
+    box-shadow: 0 5px 15px rgba(166, 124, 82, 0.15);
+    transition: all 0.1s ease;
+  }
+
+  .btn-secondary {
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .btn-secondary:hover {
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 10px 30px rgba(166, 124, 82, 0.18);
+  }
+
+  .btn-secondary:active {
+    transform: translateY(-1px) scale(0.98);
+    transition: all 0.1s ease;
+  }
+
+  .btn-white {
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .btn-white:hover {
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 12px 35px rgba(0,0,0,0.18);
+  }
+
+  .btn-white:active {
+    transform: translateY(-1px) scale(0.98);
+    transition: all 0.1s ease;
+  }
+
+  .plan-btn {
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .plan-btn:hover {
+    transform: scale(1.04);
+    box-shadow: 0 8px 25px rgba(166, 124, 82, 0.2);
+  }
+
+  .plan-btn:active {
+    transform: scale(0.97);
+    transition: all 0.1s ease;
+  }
+
+  /* ===== ANIMACIONES DE TARJETAS ===== */
+
+  .service-card {
+    transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .service-card:hover {
+    transform: translateY(-8px) rotate(-0.5deg);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+  }
+
+  .service-card:hover .service-number {
+    animation: iconBounce 0.5s ease;
+    opacity: 0.8;
+  }
+
+  @keyframes iconBounce {
+    0% { transform: scale(1); }
+    30% { transform: scale(1.25); }
+    50% { transform: scale(0.95); }
+    70% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+  }
+
+  .service-card:hover .service-tag {
+    transform: translateX(4px);
+    letter-spacing: 3px;
+    transition: all 0.3s ease;
+  }
+
+  /* Plan cards */
+  .plan-card {
+    transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .plan-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+  }
+
+  .plan-card:hover .plan-price {
+    animation: countPulse 0.4s ease;
+  }
+
+  @keyframes countPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+    100% { transform: scale(1); }
+  }
+
+  /* Stat items */
+  .stat-item {
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .stat-item:hover {
+    transform: translateY(-4px) scale(1.03);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+  }
+
+  .stat-item:hover .stat-number {
+    animation: countPulse 0.4s ease;
+  }
+
+  /* Problem stats */
+  .problem-stat {
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .problem-stat:hover {
+    transform: scale(1.05);
+    border-color: var(--terracotta);
+    background: rgba(166, 124, 82, 0.08);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  }
+
+  .problem-stat:hover .problem-stat-num {
+    animation: countPulse 0.4s ease;
+  }
+
+  /* Territory features */
+  .territory-feature {
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .territory-feature:hover {
+    transform: translateX(10px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+  }
+
+  .territory-feature:hover .territory-feature-icon {
+    animation: iconPulse 0.8s ease infinite;
+  }
+
+  @keyframes iconPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+  }
+
+  /* Municipality tags */
+  .municipality-tag {
+    transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .municipality-tag:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(166, 124, 82, 0.2);
+  }
+
+  /* Team members */
+  .team-member {
+    transition: all 0.4s ease;
+  }
+
+  .team-member:hover {
+    transform: translateY(-5px);
+  }
+
+  .team-avatar {
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .team-member:hover .team-avatar {
+    transform: scale(1.1);
+    box-shadow: 0 8px 25px rgba(166, 124, 82, 0.25);
+  }
+
+  /* Nav links elastic underline */
+  .nav-links a::after {
+    transition: width 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+  }
+
+  /* Plan features on hover */
+  .plan-features li {
+    transition: all 0.3s ease;
+  }
+
+  .plan-card:hover .plan-features li {
+    transform: translateX(4px);
+  }
+
+  /* Footer links */
+  .footer-links a {
+    transition: color 0.3s, transform 0.3s ease;
+    display: inline-block;
+  }
+
+  .footer-links a:hover {
+    transform: translateY(-2px);
+  }
+
+  /* ===== SCROLL REVEAL VARIANTS ===== */
+
+  .reveal-left {
+    opacity: 0;
+    transform: translateX(-40px);
+    transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .reveal-left.visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .reveal-right {
+    opacity: 0;
+    transform: translateX(40px);
+    transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .reveal-right.visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .reveal-scale {
+    opacity: 0;
+    transform: scale(0.9);
+    transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .reveal-scale.visible {
+    opacity: 1;
+    transform: scale(1);
+  }
+</style>
+</head>
+<body>
+
+<!-- NAVIGATION -->
+<nav id="mainNav">
+  <a href="#" class="nav-brand">
+    Rebbeca
+    <span>ecosistema artesanal</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#nosotros">Nosotros</a></li>
+    <li><a href="#servicios">Servicios</a></li>
+    <li><a href="#territorio">Territorio</a></li>
+    <li><a href="#planes">Planes</a></li>
+    <li><a href="#contacto">Contacto</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-organic-1"></div>
+  <div class="hero-organic-2"></div>
+  <div class="hero-organic-3"></div>
+
+  <!-- Background spiral SVG -->
+  <svg class="hero-bg-spiral" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M200 200 C200 160, 240 140, 260 170 C280 200, 250 240, 210 230 C170 220, 150 180, 180 155 C210 130, 270 130, 290 175 C310 220, 275 275, 215 270 C155 265, 120 210, 145 155 C170 100, 250 85, 300 140 C350 195, 310 300, 220 305 C130 310, 75 230, 110 145 C145 60, 265 25, 340 110" stroke="#A67C52" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+  </svg>
+
+  <div class="hero-content">
+    <img src="62075.jpg" alt="REBBECA Logo" class="hero-logo-img" onerror="this.style.display='none'">
+    <h1 class="hero-title">Rebbeca</h1>
+    <p class="hero-subtitle">ecosistema artesanal</p>
+    <div class="hero-divider"></div>
+    <p class="hero-tagline">
+      Donde la tradición encuentra su camino hacia la sostenibilidad. 
+      Acompañamos artesanos del Quindío a transformar su talento en prosperidad.
+    </p>
+    <div class="hero-cta">
+      <a href="#servicios" class="btn-primary">Descubre cómo</a>
+      <a href="#contacto" class="btn-secondary">Contáctanos</a>
+    </div>
+  </div>
+
+  <div class="scroll-indicator">
+    <span></span>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="nosotros">
+  <div class="about">
+    <div class="about-text">
+      <p class="section-label reveal">Quiénes somos</p>
+      <h2 class="section-title reveal reveal-delay-1">
+        Un puente entre el <em>talento artesanal</em> y la estabilidad económica
+      </h2>
+      <p class="reveal reveal-delay-2">
+        REBBECA nace desde el corazón del Quindío como un ecosistema de acompañamiento integral 
+        para artesanos y agrotransformadores del territorio. No somos una capacitación más — somos 
+        el aliado que camina junto al productor, fortaleciendo su gestión para que cada pieza, cada 
+        producto, cada historia se convierta en un negocio sostenible.
+      </p>
+      <p class="reveal reveal-delay-3">
+        Integramos diagnóstico empresarial, estructuración financiera, articulación comercial con el 
+        sector turístico y seguimiento continuo. Porque el problema nunca fue la calidad del producto, 
+        sino la falta de herramientas para convertir ese potencial en estabilidad real.
+      </p>
+    </div>
+    <div class="about-visual">
+      <div class="about-card reveal">
+        <div class="about-card-icon">🌿</div>
+        <h3>Nuestra visión</h3>
+        <p>Posicionar a los artesanos del Quindío como emprendedores sostenibles, conectados con el mercado turístico y con la identidad cultural que los hace únicos.</p>
+        <div class="about-stats">
+          <div class="stat-item">
+            <div class="stat-number">100%</div>
+            <div class="stat-label">Reconocen la necesidad</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">70%</div>
+            <div class="stat-label">Quieren el servicio</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">60%</div>
+            <div class="stat-label">Dispuestos a pagar</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEM -->
+<section class="problem">
+  <div class="problem-inner">
+    <p class="section-label reveal">El desafío</p>
+    <h2 class="section-title reveal reveal-delay-1">
+      El Quindío tiene el talento. <em>Falta la estructura.</em>
+    </h2>
+    <p class="problem-quote reveal reveal-delay-2">
+      "9 de cada 10 artesanos encuestados no cuentan con una gestión financiera sólida. 
+      El problema no es producir — es convertir la producción en sostenibilidad."
+    </p>
+    <div class="problem-grid">
+      <div class="problem-stat reveal reveal-delay-1">
+        <div class="problem-stat-num">90%</div>
+        <div class="problem-stat-text">Sin control financiero organizado</div>
+      </div>
+      <div class="problem-stat reveal reveal-delay-2">
+        <div class="problem-stat-num">60%</div>
+        <div class="problem-stat-text">Dificultad para conseguir clientes</div>
+      </div>
+      <div class="problem-stat reveal reveal-delay-3">
+        <div class="problem-stat-num">40%</div>
+        <div class="problem-stat-text">Problemas con costos y precios</div>
+      </div>
+      <div class="problem-stat reveal reveal-delay-4">
+        <div class="problem-stat-num">80%</div>
+        <div class="problem-stat-text">Negocios con +3 años sin estructuración</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="servicios" class="services">
+  <div class="services-header">
+    <p class="section-label reveal">Nuestros pilares</p>
+    <h2 class="section-title reveal reveal-delay-1">
+      Cuatro dimensiones para <em>transformar</em> tu emprendimiento
+    </h2>
+  </div>
+  <div class="services-grid">
+    <div class="service-card reveal">
+      <div class="service-number">01</div>
+      <h3>Diagnóstico Empresarial</h3>
+      <p>Identificamos el estado real de tu negocio: costos, precios, organización, ventas y relación con el mercado. Cada emprendimiento es único, y así lo tratamos.</p>
+      <span class="service-tag">Análisis inicial</span>
+    </div>
+    <div class="service-card reveal reveal-delay-1">
+      <div class="service-number">02</div>
+      <h3>Estructuración Financiera</h3>
+      <p>Construimos contigo herramientas de control de costos, organización de ingresos y gastos, planeación financiera y análisis de rentabilidad adaptadas a tu realidad.</p>
+      <span class="service-tag">Gestión financiera</span>
+    </div>
+    <div class="service-card reveal reveal-delay-2">
+      <div class="service-number">03</div>
+      <h3>Articulación Comercial</h3>
+      <p>Fortalecemos la conexión entre tu producto y el mercado turístico del Quindío. Visibilidad, diferenciación y propuesta de valor para competir con identidad.</p>
+      <span class="service-tag">Mercado turístico</span>
+    </div>
+    <div class="service-card reveal reveal-delay-3">
+      <div class="service-number">04</div>
+      <h3>Seguimiento Continuo</h3>
+      <p>No te dejamos solo. Monitoreamos avances, ajustamos decisiones y acompañamos la implementación para que cada cambio se traduzca en resultados reales.</p>
+      <span class="service-tag">Acompañamiento</span>
+    </div>
+  </div>
+</section>
+
+<!-- TERRITORY -->
+<section id="territorio" class="territory">
+  <div class="territory-inner">
+    <div class="territory-text">
+      <p class="section-label reveal">Nuestro territorio</p>
+      <h2 class="section-title reveal reveal-delay-1">
+        Desde el corazón del <em>Paisaje Cultural Cafetero</em>
+      </h2>
+      <p class="reveal reveal-delay-2">
+        El Quindío es reconocido mundialmente por su identidad cultural, su turismo y su tradición 
+        artesanal. REBBECA nace aquí porque aquí está el talento — y aquí es donde más se necesita 
+        un modelo que conecte esa riqueza con una gestión empresarial sólida.
+      </p>
+      <div class="territory-municipalities reveal reveal-delay-3">
+        <span class="municipality-tag">Armenia</span>
+        <a href="salento.html" class="municipality-tag" style="text-decoration:none;cursor:pointer;">Salento</a>
+        <a href="filandia.html" class="municipality-tag" style="text-decoration:none;cursor:pointer;">Filandia</a>
+        <span class="municipality-tag">Córdoba</span>
+        <span class="municipality-tag">Pijao</span>
+        <span class="municipality-tag">Circasia</span>
+        <span class="municipality-tag">Calarcá</span>
+      </div>
+    </div>
+    <div class="territory-visual">
+      <div class="territory-feature-list">
+        <div class="territory-feature reveal">
+          <div class="territory-feature-icon">☕</div>
+          <div>
+            <h4>Paisaje Cultural Cafetero</h4>
+            <p>Patrimonio de la Humanidad UNESCO, motor del turismo regional</p>
+          </div>
+        </div>
+        <div class="territory-feature reveal reveal-delay-1">
+          <div class="territory-feature-icon">🎨</div>
+          <div>
+            <h4>Tradición Artesanal Viva</h4>
+            <p>Productos con identidad territorial, valor cultural y simbólico</p>
+          </div>
+        </div>
+        <div class="territory-feature reveal reveal-delay-2">
+          <div class="territory-feature-icon">📈</div>
+          <div>
+            <h4>Turismo en Crecimiento</h4>
+            <p>Flujo turístico sostenido que crea oportunidades para productores locales</p>
+          </div>
+        </div>
+        <div class="territory-feature reveal reveal-delay-3">
+          <div class="territory-feature-icon">🤝</div>
+          <div>
+            <h4>Ecosistema Institucional</h4>
+            <p>Cámara de Comercio, Artesanías de Colombia, asociaciones locales</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PLANS -->
+<section id="planes" class="plans">
+  <div class="plans-header">
+    <p class="section-label reveal">Planes</p>
+    <h2 class="section-title reveal reveal-delay-1">
+      Elige el nivel de <em>acompañamiento</em> que necesitas
+    </h2>
+    <p class="reveal reveal-delay-2">
+      Diseñados para adaptarse a la realidad de cada artesano. Crece a tu ritmo, con respaldo en cada paso.
+    </p>
+  </div>
+  <div class="plans-grid">
+    <!-- Basic -->
+    <div class="plan-card reveal">
+      <div class="plan-name">Semilla</div>
+      <div class="plan-price">$80.000 <span>/ mes</span></div>
+      <p class="plan-desc">Primeros pasos hacia la organización de tu negocio artesanal.</p>
+      <ul class="plan-features">
+        <li>Herramienta base de gestión</li>
+        <li>Seguimiento general mensual</li>
+        <li>Orientación inicial personalizada</li>
+        <li>Acceso a la comunidad REBBECA</li>
+      </ul>
+      <a href="#contacto" class="plan-btn">Comenzar</a>
+    </div>
+    <!-- Featured -->
+    <div class="plan-card featured reveal reveal-delay-1">
+      <div class="plan-name">Raíz</div>
+      <div class="plan-price">$150.000 <span>/ mes</span></div>
+      <p class="plan-desc">Acompañamiento personalizado para estructurar tu negocio.</p>
+      <ul class="plan-features">
+        <li>Todo del plan Semilla</li>
+        <li>Acompañamiento personalizado</li>
+        <li>Revisión de costos y precios</li>
+        <li>Seguimiento periódico quincenal</li>
+        <li>Articulación con mercado turístico</li>
+      </ul>
+      <a href="#contacto" class="plan-btn">Elegir plan</a>
+    </div>
+    <!-- Advanced -->
+    <div class="plan-card reveal reveal-delay-2">
+      <div class="plan-name">Florecer</div>
+      <div class="plan-price">$250.000 <span>/ mes</span></div>
+      <p class="plan-desc">Transformación integral para escalar tu emprendimiento.</p>
+      <ul class="plan-features">
+        <li>Todo del plan Raíz</li>
+        <li>Acompañamiento intensivo semanal</li>
+        <li>Análisis administrativo-financiero</li>
+        <li>Soporte ampliado y prioridad</li>
+        <li>Estrategia de visibilidad comercial</li>
+        <li>Indicadores de desempeño</li>
+      </ul>
+      <a href="#contacto" class="plan-btn">Elegir plan</a>
+    </div>
+  </div>
+</section>
+
+<!-- TEAM -->
+<section class="team-strip">
+  <p class="section-label reveal">El equipo detrás de REBBECA</p>
+  <div class="team-members">
+    <div class="team-member reveal">
+      <div class="team-avatar">GG</div>
+      <div class="team-name">Gabriel Gallego</div>
+      <div class="team-role">Cofundador · Estrategia</div>
+    </div>
+    <div class="team-member reveal reveal-delay-1">
+      <div class="team-avatar">EA</div>
+      <div class="team-name">Emerson Ángel</div>
+      <div class="team-role">Cofundador · Tecnología</div>
+    </div>
+    <div class="team-member reveal reveal-delay-2">
+      <div class="team-avatar">SA</div>
+      <div class="team-name">Sua</div>
+      <div class="team-role">Cofundador · Tecnología</div>
+    </div>
+    <div class="team-member reveal reveal-delay-3">
+      <div class="team-avatar">MJ</div>
+      <div class="team-name">Maria José Silva</div>
+      <div class="team-role">Equipo de Investigación</div>
+    </div>
+    <div class="team-member reveal reveal-delay-4">
+      <div class="team-avatar">JP</div>
+      <div class="team-name">Juan Pablo Arroyave</div>
+      <div class="team-role">Equipo de Investigación</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="contacto" class="cta-section">
+  <div class="cta-content">
+    <h2 class="section-title reveal">
+      Tu talento merece <em>prosperar</em>
+    </h2>
+    <p class="cta-text reveal reveal-delay-1">
+      Estamos construyendo el primer ecosistema de gestión artesanal del Quindío. 
+      Únete y sé parte de los primeros emprendedores en transformar su negocio.
+    </p>
+    <a href="#" class="btn-white reveal reveal-delay-2">Quiero más información</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">
+    Rebbeca
+    <span>ecosistema artesanal · Quindío, Colombia</span>
+  </div>
+  <div class="footer-links">
+    <a href="#">Instagram</a>
+    <a href="#">WhatsApp</a>
+    <a href="#">Correo</a>
+  </div>
+  <p class="footer-copy">© 2026 REBBECA — Ecosistema Artesanal. Todos los derechos reservados.</p>
+</footer>
+
+<script>
+  // Nav scroll effect
+  const nav = document.getElementById('mainNav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 50);
+  });
+
+  // Scroll reveal for .reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // Scroll reveal for .reveal-left, .reveal-right, .reveal-scale
+  const revealVariants = document.querySelectorAll('.reveal-left, .reveal-right, .reveal-scale');
+  const variantObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+  revealVariants.forEach(el => variantObserver.observe(el));
+
+  // Smooth scroll for anchor links
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  // Parallax effect on hero organic shapes
+  const organics = document.querySelectorAll('.hero-organic-1, .hero-organic-2, .hero-organic-3');
+  window.addEventListener('scroll', () => {
+    const scrollY = window.scrollY;
+    organics.forEach((el, i) => {
+      const speed = (i + 1) * 0.15;
+      el.style.transform = `translateY(${scrollY * speed}px)`;
+    });
+  });
+
+  // Animated counters for stat numbers
+  function easeOutCubic(t) {
+    return 1 - Math.pow(1 - t, 3);
+  }
+
+  function animateCounter(el) {
+    const text = el.textContent.trim();
+    const match = text.match(/^(\d+)/);
+    if (!match) return;
+    const target = parseInt(match[1]);
+    const suffix = text.replace(/^\d+/, '');
+    const duration = 2000;
+    const start = performance.now();
+
+    function update(now) {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = easeOutCubic(progress);
+      const current = Math.round(target * eased);
+      el.textContent = current + suffix;
+      if (progress < 1) requestAnimationFrame(update);
+    }
+    requestAnimationFrame(update);
+  }
+
+  const counterObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && !entry.target.dataset.counted) {
+        entry.target.dataset.counted = 'true';
+        animateCounter(entry.target);
+      }
+    });
+  }, { threshold: 0.5 });
+
+  document.querySelectorAll('.stat-number, .problem-stat-num').forEach(el => {
+    counterObserver.observe(el);
+  });
+
+  // Staggered card entrance for services-grid and plans-grid
+  function staggerEntrance(gridSelector, cardSelector) {
+    const grid = document.querySelector(gridSelector);
+    if (!grid) return;
+    const cards = grid.querySelectorAll(cardSelector);
+
+    const gridObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          cards.forEach((card, i) => {
+            setTimeout(() => {
+              card.style.opacity = '1';
+              card.style.transform = 'translateY(0)';
+            }, i * 150);
+          });
+          gridObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+
+    cards.forEach(card => {
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(40px)';
+      card.style.transition = 'opacity 0.6s cubic-bezier(0.22,1,0.36,1), transform 0.6s cubic-bezier(0.22,1,0.36,1)';
+    });
+
+    gridObserver.observe(grid);
+  }
+
+  staggerEntrance('.services-grid', '.service-card');
+  staggerEntrance('.plans-grid', '.plan-card');
+
+  // Footer link hover effects
+  document.querySelectorAll('.footer-links a').forEach(link => {
+    link.addEventListener('mouseenter', () => {
+      link.style.transform = 'translateY(-2px)';
+    });
+    link.addEventListener('mouseleave', () => {
+      link.style.transform = 'translateY(0)';
+    });
+  });
+</script>
+
+</body>
+</html>

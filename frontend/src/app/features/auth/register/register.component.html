@@ -1,21 +1,32 @@
 <div class="auth-container">
-  <mat-card class="auth-card">
-    <mat-card-header>
-      <div class="brand">
-        <mat-icon>inventory_2</mat-icon>
-        <h1>Almacén Arle</h1>
-      </div>
-      <p class="subtitle">Crear nueva cuenta</p>
-    </mat-card-header>
+  <div class="organic organic-1"></div>
+  <div class="organic organic-2"></div>
+  <div class="organic organic-3"></div>
 
-    <mat-card-content>
+  <div class="auth-card">
+    <div class="auth-header">
+      <div class="auth-logo">
+        <svg viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="25" cy="25" r="22" stroke="currentColor" stroke-width="1.5" opacity="0.3"/>
+          <path d="M25 7C25 7 17 15 17 25C17 35 25 43 25 43C25 43 33 35 33 25C33 15 25 7 25 7Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+          <circle cx="25" cy="25" r="5" stroke="currentColor" stroke-width="1.5"/>
+        </svg>
+      </div>
+      <h1 class="auth-title">Artesanías</h1>
+      <p class="auth-subtitle">Crear nueva cuenta</p>
+    </div>
+
+    <div class="auth-body">
       @if (error) {
-        <p class="error-msg">{{ error }}</p>
+        <div class="error-msg">
+          <mat-icon>error_outline</mat-icon>
+          <span>{{ error }}</span>
+        </div>
       }
       <form [formGroup]="form" (ngSubmit)="submit()">
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Usuario</mat-label>
-          <mat-icon matPrefix>person</mat-icon>
+          <mat-icon matPrefix>person_outline</mat-icon>
           <input matInput formControlName="username" />
           @if (form.get('username')?.hasError('minlength')) {
             <mat-error>Mínimo 3 caracteres</mat-error>
@@ -24,7 +35,7 @@
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Contraseña</mat-label>
-          <mat-icon matPrefix>lock</mat-icon>
+          <mat-icon matPrefix>lock_outline</mat-icon>
           <input matInput formControlName="password"
                  [type]="hidePassword ? 'password' : 'text'" />
           <button mat-icon-button matSuffix type="button"
@@ -45,13 +56,10 @@
           }
         </button>
       </form>
-    </mat-card-content>
+    </div>
 
-    <mat-card-actions>
-      <p class="login-link">
-        ¿Ya tienes cuenta?
-        <a routerLink="/login">Inicia sesión</a>
-      </p>
-    </mat-card-actions>
-  </mat-card>
+    <div class="auth-footer">
+      <p>¿Ya tienes cuenta? <a routerLink="/login">Inicia sesión</a></p>
+    </div>
+  </div>
 </div>

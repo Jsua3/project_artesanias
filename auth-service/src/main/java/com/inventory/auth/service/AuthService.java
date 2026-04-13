@@ -100,7 +100,8 @@ public class AuthService {
         return userRepository.findById(userId)
                 .map(user -> {
                     user.setNew(false);
-                    return new UserProfileResponse(user.getId(), user.getUsername(), user.getRole().name());
+                    return new UserProfileResponse(user.getId(), user.getUsername(), user.getRole().name(),
+                            user.getDisplayName(), user.getAvatarUrl());
                 });
     }
 
@@ -108,7 +109,24 @@ public class AuthService {
         return userRepository.findAll()
                 .map(user -> {
                     user.setNew(false);
-                    return new UserProfileResponse(user.getId(), user.getUsername(), user.getRole().name());
+                    return new UserProfileResponse(user.getId(), user.getUsername(), user.getRole().name(),
+                            user.getDisplayName(), user.getAvatarUrl());
                 });
+    }
+
+    public Mono<UserProfileResponse> updateProfile(UUID userId, ProfileUpdateRequest request) {
+        return userRepository.findById(userId)
+                .flatMap(user -> {
+                    user.setNew(false);
+                    if (request.displayName() != null) {
+                        user.setDisplayName(request.displayName());
+                    }
+                    if (request.avatarUrl() != null) {
+                        user.setAvatarUrl(request.avatarUrl());
+                    }
+                    return userRepository.save(user);
+                })
+                .map(user -> new UserProfileResponse(user.getId(), user.getUsername(), user.getRole().name(),
+                        user.getDisplayName(), user.getAvatarUrl()));
     }
 }

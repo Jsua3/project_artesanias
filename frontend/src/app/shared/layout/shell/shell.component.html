@@ -1,61 +1,136 @@
-<mat-sidenav-container class="sidenav-container">
-  <mat-sidenav mode="side" opened class="sidenav">
-    <div class="brand">
-      <mat-icon>inventory_2</mat-icon>
-      <span>Almacén Arle</span>
-    </div>
-    <mat-divider />
+<!-- Mobile toolbar -->
+@if (isMobile()) {
+  <mat-toolbar class="mobile-toolbar">
+    <button mat-icon-button (click)="toggleSidenav()" class="menu-btn">
+      <mat-icon>{{ sidenavOpen() ? 'close' : 'menu' }}</mat-icon>
+    </button>
+    <span class="toolbar-brand">Artesanías</span>
+    <span class="toolbar-spacer"></span>
+    @if (auth.currentUser()?.avatarUrl) {
+      <img [src]="auth.currentUser()?.avatarUrl" class="toolbar-avatar" alt="Avatar" />
+    } @else {
+      <span class="toolbar-user">{{ auth.currentUser()?.username?.charAt(0)?.toUpperCase() }}</span>
+    }
+  </mat-toolbar>
+}
 
-    <mat-nav-list>
-      <a mat-list-item routerLink="/dashboard" routerLinkActive="active-link">
-        <mat-icon matListItemIcon>dashboard</mat-icon>
-        <span matListItemTitle>Dashboard</span>
-      </a>
-      <a mat-list-item routerLink="/products" routerLinkActive="active-link">
-        <mat-icon matListItemIcon>inventory</mat-icon>
-        <span matListItemTitle>Productos</span>
-      </a>
-      <a mat-list-item routerLink="/categories" routerLinkActive="active-link">
-        <mat-icon matListItemIcon>category</mat-icon>
-        <span matListItemTitle>Categorías</span>
-      </a>
-      <a mat-list-item routerLink="/stock" routerLinkActive="active-link">
-        <mat-icon matListItemIcon>warehouse</mat-icon>
-        <span matListItemTitle>Stock</span>
-      </a>
-      <a mat-list-item routerLink="/inventory/entries" routerLinkActive="active-link">
-        <mat-icon matListItemIcon>add_circle</mat-icon>
-        <span matListItemTitle>Entradas</span>
-      </a>
-      <a mat-list-item routerLink="/inventory/exits" routerLinkActive="active-link">
-        <mat-icon matListItemIcon>remove_circle</mat-icon>
-        <span matListItemTitle>Salidas</span>
-      </a>
-      @if (auth.isAdmin()) {
-        <mat-divider />
-        <a mat-list-item routerLink="/reports" routerLinkActive="active-link">
-          <mat-icon matListItemIcon>bar_chart</mat-icon>
-          <span matListItemTitle>Reportes</span>
+<mat-sidenav-container class="sidenav-container">
+  <!-- Backdrop for mobile -->
+  @if (isMobile() && sidenavOpen()) {
+    <div class="mobile-backdrop" (click)="closeMobileSidenav()"></div>
+  }
+
+  <mat-sidenav
+    [mode]="isMobile() ? 'over' : 'side'"
+    [opened]="sidenavOpen()"
+    (closedStart)="sidenavOpen.set(false)"
+    class="sidenav"
+    [class.mobile]="isMobile()">
+
+    <div class="brand" routerLink="/dashboard" (click)="closeMobileSidenav()">
+      <div class="brand-icon">
+        <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="20" cy="20" r="18" stroke="currentColor" stroke-width="1.5" opacity="0.3"/>
+          <path d="M20 8C20 8 14 14 14 20C14 26 20 32 20 32C20 32 26 26 26 20C26 14 20 8 20 8Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+          <circle cx="20" cy="20" r="4" stroke="currentColor" stroke-width="1.5"/>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <span class="brand-name">Artesanías</span>
+        <span class="brand-sub">sistema de inventario</span>
+      </div>
+    </div>
+
+    <div class="nav-scroll">
+      <mat-nav-list>
+        <a mat-list-item routerLink="/dashboard" routerLinkActive="active-link"
+           (click)="closeMobileSidenav()">
+          <mat-icon matListItemIcon>dashboard</mat-icon>
+          <span matListItemTitle>Dashboard</span>
         </a>
-      }
-    </mat-nav-list>
+
+        <p class="nav-section">Catálogo</p>
+
+        <a mat-list-item routerLink="/artesanos" routerLinkActive="active-link"
+           (click)="closeMobileSidenav()">
+          <mat-icon matListItemIcon>person_pin</mat-icon>
+          <span matListItemTitle>Artesanos</span>
+        </a>
+        <a mat-list-item routerLink="/categories" routerLinkActive="active-link"
+           (click)="closeMobileSidenav()">
+          <mat-icon matListItemIcon>category</mat-icon>
+          <span matListItemTitle>Categorías</span>
+        </a>
+        <a mat-list-item routerLink="/products" routerLinkActive="active-link"
+           (click)="closeMobileSidenav()">
+          <mat-icon matListItemIcon>palette</mat-icon>
+          <span matListItemTitle>Artesanías</span>
+        </a>
+
+        <p class="nav-section">Ventas</p>
+
+        <a mat-list-item routerLink="/clientes" routerLinkActive="active-link"
+           (click)="closeMobileSidenav()">
+          <mat-icon matListItemIcon>people</mat-icon>
+          <span matListItemTitle>Clientes</span>
+        </a>
+        <a mat-list-item routerLink="/ventas" routerLinkActive="active-link"
+           (click)="closeMobileSidenav()">
+          <mat-icon matListItemIcon>point_of_sale</mat-icon>
+          <span matListItemTitle>Ventas</span>
+        </a>
+
+        <p class="nav-section">Inventario</p>
+
+        <a mat-list-item routerLink="/stock" routerLinkActive="active-link"
+           (click)="closeMobileSidenav()">
+          <mat-icon matListItemIcon>warehouse</mat-icon>
+          <span matListItemTitle>Stock</span>
+        </a>
+        <a mat-list-item routerLink="/inventory/entries" routerLinkActive="active-link"
+           (click)="closeMobileSidenav()">
+          <mat-icon matListItemIcon>add_circle_outline</mat-icon>
+          <span matListItemTitle>Entradas</span>
+        </a>
+        <a mat-list-item routerLink="/inventory/exits" routerLinkActive="active-link"
+           (click)="closeMobileSidenav()">
+          <mat-icon matListItemIcon>remove_circle_outline</mat-icon>
+          <span matListItemTitle>Salidas</span>
+        </a>
+
+        @if (auth.isAdmin()) {
+          <p class="nav-section">Admin</p>
+          <a mat-list-item routerLink="/reports" routerLinkActive="active-link"
+             (click)="closeMobileSidenav()">
+            <mat-icon matListItemIcon>assessment</mat-icon>
+            <span matListItemTitle>Reportes</span>
+          </a>
+        }
+      </mat-nav-list>
+    </div>
 
     <div class="sidenav-footer">
-      <mat-divider />
-      <div class="user-info">
-        <mat-icon>person</mat-icon>
-        <div>
-          <p class="username">{{ auth.currentUser()?.username }}</p>
+      <div class="user-card" (click)="openProfileDialog()" style="cursor: pointer;" title="Editar perfil">
+        <div class="user-avatar" [class.has-avatar]="auth.currentUser()?.avatarUrl">
+          @if (auth.currentUser()?.avatarUrl) {
+            <img [src]="auth.currentUser()?.avatarUrl" alt="Avatar" />
+          } @else {
+            {{ auth.currentUser()?.username?.charAt(0)?.toUpperCase() }}
+          }
+        </div>
+        <div class="user-info">
+          <p class="username">{{ auth.currentUser()?.displayName || auth.currentUser()?.username }}</p>
           <p class="role">{{ auth.currentUser()?.role }}</p>
         </div>
+        <mat-icon class="edit-profile-icon">edit</mat-icon>
       </div>
-      <button mat-button color="warn" (click)="auth.logout()">
-        <mat-icon>logout</mat-icon> Salir
+      <button mat-button class="logout-btn" (click)="auth.logout()">
+        <mat-icon>logout</mat-icon> Cerrar sesión
       </button>
     </div>
   </mat-sidenav>
 
-  <mat-sidenav-content class="main-content">
+  <mat-sidenav-content class="main-content" [class.mobile]="isMobile()">
     <router-outlet />
   </mat-sidenav-content>
 </mat-sidenav-container>

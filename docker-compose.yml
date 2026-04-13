@@ -1,21 +1,32 @@
 services:
+
+  # ==================== INFRASTRUCTURE ====================
+
   postgres:
     image: postgres:17-alpine
     container_name: postgres-db
+    restart: unless-stopped
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
       POSTGRES_MULTIPLE_DATABASES: auth_db,catalog_db,inventory_db,report_db
     ports:
       - "5432:5432"
     volumes:
+      - postgres-data:/var/lib/postgresql/data
       - ./docker/postgres/init-multiple-dbs.sh:/docker-entrypoint-initdb.d/init-multiple-dbs.sh
     networks:
       - inventory-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   kafka:
     image: apache/kafka:3.7.0
     container_name: kafka-broker
+    restart: unless-stopped
     environment:
       KAFKA_NODE_ID: 1
       KAFKA_PROCESS_ROLES: broker,controller
@@ -33,89 +44,206 @@ services:
       - "9092:9092"
     networks:
       - inventory-network
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server localhost:9092 > /dev/null 2>&1"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 384M
+
+  # ==================== MICROSERVICES ====================
 
   discovery-server:
     build:
-      context: ./discovery-server
+      context: .
+      dockerfile: discovery-server/Dockerfile
     container_name: discovery-server
+    restart: unless-stopped
     ports:
       - "8761:8761"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - JAVA_TOOL_OPTIONS=-Xmx128m -Xms64m
     networks:
       - inventory-network
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8761/actuator/health || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 192M
 
   api-gateway:
     build:
-      context: ./api-gateway
+      context: .
+      dockerfile: api-gateway/Dockerfile
     container_name: api-gateway
+    restart: unless-stopped
     ports:
       - "8080:8080"
     depends_on:
-      - discovery-server
+      discovery-server:
+        condition: service_healthy
     environment:
       - AUTH_SERVICE_URL=http://auth-service:8081
       - CATALOG_SERVICE_URL=http://catalog-service:8082
       - INVENTORY_SERVICE_URL=http://inventory-service:8083
       - REPORT_SERVICE_URL=http://report-service:8084
+      - JWT_SECRET=${JWT_SECRET:-32-character-long-secret-key-for-jwt-generation-and-validation}
+      - INTERNAL_TOKEN=${INTERNAL_TOKEN:-my-super-secret-internal-token}
+      - JAVA_TOOL_OPTIONS=-Xmx128m -Xms64m
     networks:
       - inventory-network
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/actuator/health || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          memory: 192M
 
   auth-service:
     build:
-      context: ./auth-service
+      context: .
+      dockerfile: auth-service/Dockerfile
     container_name: auth-service
+    restart: unless-stopped
     depends_on:
-      - postgres
-      - discovery-server
+      postgres:
+        condition: service_healthy
+      discovery-server:
+        condition: service_healthy
     environment:
       - DB_HOST=postgres
+      - DB_USER=${DB_USER:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-postgres}
       - EUREKA_HOST=discovery-server
+      - JWT_SECRET=${JWT_SECRET:-32-character-long-secret-key-for-jwt-generation-and-validation}
+      - INTERNAL_TOKEN=${INTERNAL_TOKEN:-my-super-secret-internal-token}
+      - JAVA_TOOL_OPTIONS=-Xmx128m -Xms64m
     networks:
       - inventory-network
+    deploy:
+      resources:
+        limits:
+          memory: 192M
 
   catalog-service:
     build:
-      context: ./catalog-service
+      context: .
+      dockerfile: catalog-service/Dockerfile
     container_name: catalog-service
+    restart: unless-stopped
     depends_on:
-      - postgres
-      - discovery-server
+      postgres:
+        condition: service_healthy
+      discovery-server:
+        condition: service_healthy
     environment:
       - DB_HOST=postgres
+      - DB_USER=${DB_USER:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-postgres}
       - EUREKA_HOST=discovery-server
+      - INTERNAL_TOKEN=${INTERNAL_TOKEN:-my-super-secret-internal-token}
+      - JAVA_TOOL_OPTIONS=-Xmx128m -Xms64m
     networks:
       - inventory-network
+    deploy:
+      resources:
+        limits:
+          memory: 192M
 
   inventory-service:
     build:
-      context: ./inventory-service
+      context: .
+      dockerfile: inventory-service/Dockerfile
     container_name: inventory-service
+    restart: unless-stopped
     depends_on:
-      - postgres
-      - kafka
-      - discovery-server
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      discovery-server:
+        condition: service_healthy
     environment:
       - DB_HOST=postgres
+      - DB_USER=${DB_USER:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-postgres}
       - KAFKA_HOST=kafka
       - EUREKA_HOST=discovery-server
+      - INTERNAL_TOKEN=${INTERNAL_TOKEN:-my-super-secret-internal-token}
+      - JAVA_TOOL_OPTIONS=-Xmx128m -Xms64m
     networks:
       - inventory-network
+    deploy:
+      resources:
+        limits:
+          memory: 192M
 
   report-service:
     build:
-      context: ./report-service
+      context: .
+      dockerfile: report-service/Dockerfile
     container_name: report-service
+    restart: unless-stopped
     depends_on:
-      - postgres
-      - kafka
-      - discovery-server
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      discovery-server:
+        condition: service_healthy
     environment:
       - DB_HOST=postgres
+      - DB_USER=${DB_USER:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-postgres}
       - KAFKA_HOST=kafka
       - EUREKA_HOST=discovery-server
+      - INTERNAL_TOKEN=${INTERNAL_TOKEN:-my-super-secret-internal-token}
+      - JAVA_TOOL_OPTIONS=-Xmx128m -Xms64m
     networks:
       - inventory-network
+    deploy:
+      resources:
+        limits:
+          memory: 192M
+
+  # ==================== FRONTEND ====================
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      api-gateway:
+        condition: service_healthy
+    networks:
+      - inventory-network
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+
+# ==================== VOLUMES & NETWORKS ====================
+
+volumes:
+  postgres-data:
 
 networks:
   inventory-network:

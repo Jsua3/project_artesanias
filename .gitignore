@@ -1,0 +1,16 @@
+# Environment variables (contains secrets)
+.env
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Build artifacts
+**/target/
+**/node_modules/
+**/dist/
+
+# OS
+.DS_Store
+Thumbs.db

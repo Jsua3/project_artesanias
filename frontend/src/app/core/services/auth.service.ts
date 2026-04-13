@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { AuthResponse, LoginRequest, RegisterRequest, UserProfile } from '../models/auth.model';
+import { AuthResponse, LoginRequest, RegisterRequest, UserProfile, ProfileUpdateRequest } from '../models/auth.model';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -27,6 +27,8 @@ export class AuthService {
         const user: UserProfile = { id: '', username: res.username, role: res.role };
         localStorage.setItem('user', JSON.stringify(user));
         this.currentUser.set(user);
+        // Fetch full profile (with avatar, displayName)
+        this.loadProfile();
       })
     );
   }
@@ -59,5 +61,31 @@ export class AuthService {
 
   getMe(): Observable<UserProfile> {
     return this.http.get<UserProfile>(`${this.API}/me`);
+  }
+
+  /** Load full profile from /me and update local state */
+  loadProfile(): void {
+    this.getMe().subscribe({
+      next: (profile) => {
+        const current = this.currentUser();
+        const merged: UserProfile = {
+          ...current,
+          ...profile
+        };
+        localStorage.setItem('user', JSON.stringify(merged));
+        this.currentUser.set(merged);
+      }
+    });
+  }
+
+  /** Update profile (display name, avatar) */
+  updateProfile(req: ProfileUpdateRequest): Observable<UserProfile> {
+    return this.http.put<UserProfile>(`${this.API}/profile`, req).pipe(
+      tap(profile => {
+        const merged: UserProfile = { ...this.currentUser(), ...profile };
+        localStorage.setItem('user', JSON.stringify(merged));
+        this.currentUser.set(merged);
+      })
+    );
   }
 }

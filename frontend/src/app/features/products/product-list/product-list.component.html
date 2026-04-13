@@ -1,59 +1,93 @@
-<div class="page-container">
+<div class="page-container animate-in">
   <div class="page-header">
-    <h2 class="page-title">Productos</h2>
+    <div>
+      <h2 class="page-title">Artesanías</h2>
+      <p class="page-subtitle">Catálogo de piezas artesanales</p>
+    </div>
     @if (auth.isAdmin()) {
       <button mat-raised-button color="primary" (click)="openForm()">
-        <mat-icon>add</mat-icon> Nuevo Producto
+        <mat-icon>add</mat-icon> Nueva Artesanía
       </button>
     }
   </div>
 
   @if (loading()) {
     <div class="loading-center"><mat-spinner /></div>
-  } @else {
-    <mat-card>
-      <table mat-table [dataSource]="products()" class="full-width">
-        <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef>Nombre</th>
-          <td mat-cell *matCellDef="let p">{{ p.name }}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="sku">
-          <th mat-header-cell *matHeaderCellDef>SKU</th>
-          <td mat-cell *matCellDef="let p"><code>{{ p.sku }}</code></td>
-        </ng-container>
-
-        <ng-container matColumnDef="price">
-          <th mat-header-cell *matHeaderCellDef>Precio</th>
-          <td mat-cell *matCellDef="let p">{{ p.price | currency:'COP':'symbol':'1.0-0' }}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="category">
-          <th mat-header-cell *matHeaderCellDef>Categoría</th>
-          <td mat-cell *matCellDef="let p">{{ getCategoryName(p.categoryId) }}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef>Acciones</th>
-          <td mat-cell *matCellDef="let p">
-            @if (auth.isAdmin()) {
-              <button mat-icon-button color="primary" (click)="openForm(p)" title="Editar">
-                <mat-icon>edit</mat-icon>
-              </button>
-              <button mat-icon-button color="warn" (click)="delete(p.id)" title="Eliminar">
-                <mat-icon>delete</mat-icon>
-              </button>
-            }
-          </td>
-        </ng-container>
-
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-      </table>
-
-      @if (products().length === 0) {
-        <p class="empty-msg">No hay productos registrados.</p>
+  } @else if (products().length === 0) {
+    <div class="empty-state">
+      <mat-icon>palette</mat-icon>
+      <p>No hay artesanías registradas aún.</p>
+      @if (auth.isAdmin()) {
+        <button mat-raised-button color="primary" (click)="openForm()">
+          <mat-icon>add</mat-icon> Crear primera artesanía
+        </button>
       }
-    </mat-card>
+    </div>
+  } @else {
+    <div class="gallery-grid">
+      @for (p of products(); track p.id) {
+        <div class="product-card" [class.low-stock-card]="isLowStock(p.id, p.stockMinimo)">
+          <!-- Image -->
+          <div class="card-image" (click)="openForm(p)">
+            @if (p.imageUrl) {
+              <img [src]="p.imageUrl" [alt]="p.name" />
+            } @else {
+              <div class="placeholder-image">
+                <mat-icon>palette</mat-icon>
+              </div>
+            }
+            <!-- Category badge -->
+            <span class="category-badge">{{ getCategoryName(p.categoryId) }}</span>
+            <!-- Low stock alert -->
+            @if (isLowStock(p.id, p.stockMinimo)) {
+              <span class="stock-alert-badge">
+                <mat-icon>warning</mat-icon>
+                Stock bajo
+              </span>
+            }
+          </div>
+
+          <!-- Info -->
+          <div class="card-body">
+            <h3 class="card-title">{{ p.name }}</h3>
+
+            @if (p.artesanoId) {
+              <p class="card-artesano">
+                <mat-icon>person</mat-icon>
+                {{ getArtesanoName(p.artesanoId) }}
+              </p>
+            }
+
+            @if (p.description) {
+              <p class="card-desc">{{ p.description }}</p>
+            }
+
+            <div class="card-footer">
+              <div class="card-price">
+                {{ p.price | currency:'COP':'symbol':'1.0-0' }}
+              </div>
+
+              <div class="card-stock" [class.danger]="getStockQty(p.id) === 0"
+                   [class.warning]="getStockQty(p.id) > 0 && isLowStock(p.id, p.stockMinimo)"
+                   [class.ok]="!isLowStock(p.id, p.stockMinimo)">
+                <mat-icon>inventory_2</mat-icon>
+                {{ getStockQty(p.id) }} uds
+              </div>
+            </div>
+
+            @if (auth.isAdmin()) {
+              <div class="card-actions">
+                <button mat-icon-button color="primary" (click)="openForm(p)" title="Editar">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button color="warn" (click)="delete(p.id)" title="Eliminar">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
   }
 </div>

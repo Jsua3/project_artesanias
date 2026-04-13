@@ -1,27 +1,62 @@
-<h2 mat-dialog-title>{{ data ? 'Editar Producto' : 'Nuevo Producto' }}</h2>
+<h2 mat-dialog-title>{{ data ? 'Editar Artesanía' : 'Nueva Artesanía' }}</h2>
 
 <mat-dialog-content>
-  <form [formGroup]="form" class="form-grid">
+  <form [formGroup]="form" class="dialog-form">
+    <!-- Image Upload -->
+    <app-image-upload
+      [currentImage]="imageSignal"
+      placeholder="Foto de la artesanía"
+      alt="Artesanía"
+      (imageChange)="onImageChange($event)">
+    </app-image-upload>
+
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Nombre</mat-label>
       <input matInput formControlName="name" />
     </mat-form-field>
 
     @if (data) {
-      <p class="sku-readonly"><strong>SKU:</strong> {{ data.sku }}</p>
+      <p class="sku-readonly"><strong>SKU:</strong> <code>{{ data.sku }}</code></p>
     }
 
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Precio</mat-label>
-      <span matPrefix>$&nbsp;</span>
-      <input matInput type="number" formControlName="price" />
+      <mat-label>Descripción</mat-label>
+      <textarea matInput formControlName="description" rows="3"
+                placeholder="Describe la artesanía, materiales, técnica..."></textarea>
     </mat-form-field>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Precio</mat-label>
+        <span matPrefix>$&nbsp;</span>
+        <input matInput type="number" formControlName="price" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Stock mínimo</mat-label>
+        <input matInput type="number" formControlName="stockMinimo" min="0" />
+        <mat-icon matSuffix>inventory_2</mat-icon>
+      </mat-form-field>
+    </div>
 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Categoría</mat-label>
       <mat-select formControlName="categoryId">
         @for (cat of categories(); track cat.id) {
           <mat-option [value]="cat.id">{{ cat.name }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Artesano creador</mat-label>
+      <mat-select formControlName="artesanoId">
+        <mat-option [value]="''">— Sin asignar —</mat-option>
+        @for (a of artesanos(); track a.id) {
+          <mat-option [value]="a.id">
+            {{ a.nombre }}
+            @if (a.especialidad) { <small> — {{ a.especialidad }}</small> }
+          </mat-option>
         }
       </mat-select>
     </mat-form-field>

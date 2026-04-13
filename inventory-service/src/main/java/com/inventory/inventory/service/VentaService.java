@@ -36,7 +36,7 @@ public class VentaService {
     public Mono<VentaResponse> createVenta(VentaRequest request, UUID vendedorId) {
         UUID ventaId = UUID.randomUUID();
 
-        return Mono.fromIterable(request.items())
+        return Flux.fromIterable(request.items())
                 .flatMap(item -> fetchProductPrice(item.productId())
                         .map(price -> new VentaDetalle(
                                 UUID.randomUUID(),
@@ -57,14 +57,12 @@ public class VentaService {
                                            total, "COMPLETADA", LocalDateTime.now());
 
                     return ventaRepository.save(venta.withIsNew(true))
-                            .flatMapMany(savedVenta ->
+                            .flatMap(savedVenta ->
                                     Flux.fromIterable(detalles)
                                         .flatMap(d -> ventaDetalleRepository.save(d.withIsNew(true)))
+                                        .collectList()
                             )
-                            .collectList()
-                            .map(savedDetalles -> toResponse(new Venta(ventaId, request.clienteId(),
-                                                                       vendedorId, total, "COMPLETADA",
-                                                                       LocalDateTime.now()), savedDetalles));
+                            .map(savedDetalles -> toResponse(venta, savedDetalles));
                 });
     }
 

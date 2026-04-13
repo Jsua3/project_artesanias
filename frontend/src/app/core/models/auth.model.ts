@@ -19,6 +19,13 @@ export interface UserProfile {
   id: string;
   username: string;
   role: string;
+  displayName?: string;
+  avatarUrl?: string;
+}
+
+export interface ProfileUpdateRequest {
+  displayName?: string;
+  avatarUrl?: string;
 }
 
 export interface RefreshRequest {

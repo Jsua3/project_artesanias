@@ -3,14 +3,14 @@ import { MatTableModule } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatChipsModule } from '@angular/material/chips';
+// MatChipsModule removed — using custom status-badge spans
 import { StockService } from '../../core/services/stock.service';
 import { ProductService } from '../../core/services/product.service';
 
 @Component({
   selector: 'app-stock',
   standalone: true,
-  imports: [MatTableModule, MatCardModule, MatIconModule, MatProgressSpinnerModule, MatChipsModule],
+  imports: [MatTableModule, MatCardModule, MatIconModule, MatProgressSpinnerModule],
   templateUrl: './stock.component.html',
   styleUrl: './stock.component.scss'
 })

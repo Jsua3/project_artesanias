@@ -6,7 +6,6 @@ import com.inventory.inventory.service.ClienteService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ServerHttpRequest;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -37,9 +36,8 @@ public class ClienteController {
     @PostMapping
     public Mono<ResponseEntity<ClienteResponse>> createCliente(
             @RequestBody ClienteRequest request,
-            ServerHttpRequest serverRequest) {
-        String userId = serverRequest.getHeaders().getFirst("X-User-Id");
-        if (userId == null) {
+            @RequestHeader(value = "X-User-Id", defaultValue = "") String userId) {
+        if (userId.isEmpty()) {
             return Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
         }
         return clienteService.createCliente(request)
@@ -50,9 +48,8 @@ public class ClienteController {
     public Mono<ResponseEntity<ClienteResponse>> updateCliente(
             @PathVariable UUID id,
             @RequestBody ClienteRequest request,
-            ServerHttpRequest serverRequest) {
-        String userId = serverRequest.getHeaders().getFirst("X-User-Id");
-        if (userId == null) {
+            @RequestHeader(value = "X-User-Id", defaultValue = "") String userId) {
+        if (userId.isEmpty()) {
             return Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
         }
         return clienteService.updateCliente(id, request)

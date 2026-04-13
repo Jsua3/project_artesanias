@@ -1,0 +1,23 @@
+# Git
+.git
+.gitignore
+
+# IDE
+.idea
+.vscode
+*.iml
+
+# Build artifacts (we build inside Docker)
+**/target/
+**/node_modules/
+**/dist/
+
+# Docker
+docker-compose.override.yml
+
+# Docs
+*.md
+LICENSE
+
+# Environment
+.env

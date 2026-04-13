@@ -1,4 +1,4 @@
-<div class="page-container">
+<div class="page-container animate-in">
   <div class="page-header">
     <h2 class="page-title">Categorías</h2>
     @if (auth.isAdmin()) {
@@ -11,33 +11,63 @@
   @if (loading()) {
     <div class="loading-center"><mat-spinner /></div>
   } @else {
-    <mat-card>
-      <table mat-table [dataSource]="categories()" class="full-width">
-        <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef>Nombre</th>
-          <td mat-cell *matCellDef="let c">{{ c.name }}</td>
-        </ng-container>
+    <!-- DESKTOP TABLE -->
+    <div class="desktop-table">
+      <mat-card>
+        <table mat-table [dataSource]="categories()" class="full-width">
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Nombre</th>
+            <td mat-cell *matCellDef="let c">{{ c.name }}</td>
+          </ng-container>
 
-        <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef>Acciones</th>
-          <td mat-cell *matCellDef="let c">
-            @if (auth.isAdmin()) {
-              <button mat-icon-button color="primary" (click)="openForm(c)">
-                <mat-icon>edit</mat-icon>
-              </button>
-              <button mat-icon-button color="warn" (click)="delete(c.id)">
-                <mat-icon>delete</mat-icon>
-              </button>
-            }
-          </td>
-        </ng-container>
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let c">
+              @if (auth.isAdmin()) {
+                <button mat-icon-button color="primary" (click)="openForm(c)">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button color="warn" (click)="delete(c.id)">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              }
+            </td>
+          </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-      </table>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+        @if (categories().length === 0) {
+          <p class="empty-msg">No hay categorías registradas.</p>
+        }
+      </mat-card>
+    </div>
+
+    <!-- MOBILE CARDS -->
+    <div class="mobile-cards">
       @if (categories().length === 0) {
         <p class="empty-msg">No hay categorías registradas.</p>
+      } @else {
+        <div class="cards-grid">
+          @for (c of categories(); track c.id) {
+            <div class="data-card">
+              <div class="data-card-header">
+                <p class="data-card-title">{{ c.name }}</p>
+              </div>
+              @if (auth.isAdmin()) {
+                <div class="data-card-actions">
+                  <button mat-icon-button color="primary" (click)="openForm(c)">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button mat-icon-button color="warn" (click)="delete(c.id)">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              }
+            </div>
+          }
+        </div>
       }
-    </mat-card>
+    </div>
   }
 </div>

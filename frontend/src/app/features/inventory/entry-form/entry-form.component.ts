@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
-import { MatCardModule } from '@angular/material/card';
+// MatCardModule removed — using plain styled div
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -15,7 +15,7 @@ import { EntryRequest } from '../../../core/models/stock.model';
   selector: 'app-entry-form',
   standalone: true,
   imports: [
-    ReactiveFormsModule, MatCardModule, MatFormFieldModule,
+    ReactiveFormsModule, MatFormFieldModule,
     MatInputModule, MatSelectModule, MatButtonModule, MatIconModule
   ],
   templateUrl: './entry-form.component.html',

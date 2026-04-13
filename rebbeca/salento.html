@@ -1,0 +1,2035 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Salento — REBBECA Ecosistema Artesanal</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F5F0E6;
+    --cream-dark: #EDE6D8;
+    --terracotta: #A67C52;
+    --terracotta-light: #C49A6C;
+    --terracotta-deep: #8B6340;
+    --mauve: #B8899A;
+    --mauve-light: #D4B0BF;
+    --mauve-deep: #9A6E7E;
+    --sage: #8A9A7B;
+    --sage-light: #A8B89A;
+    --sage-deep: #6B7D5E;
+    --charcoal: #3A3530;
+    --warm-white: #FDFBF7;
+    --text: #4A4340;
+    --text-light: #7A7370;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html {
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+  }
+
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--warm-white);
+    color: var(--text);
+    overflow-x: hidden;
+  }
+
+  /* ===== NOISE TEXTURE OVERLAY ===== */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* ===== NAVIGATION ===== */
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding: 1.2rem 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.5s ease;
+    background: transparent;
+  }
+
+  nav.scrolled {
+    background: rgba(245, 240, 230, 0.92);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 1px 20px rgba(166, 124, 82, 0.08);
+    padding: 0.8rem 3rem;
+  }
+
+  .nav-brand {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+    font-size: 1.6rem;
+    color: var(--terracotta-deep);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+
+  .nav-brand span {
+    font-weight: 300;
+    font-size: 0.75rem;
+    letter-spacing: 4px;
+    display: block;
+    color: var(--sage-deep);
+    margin-top: -2px;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    text-decoration: none;
+    color: var(--text);
+    font-size: 0.85rem;
+    font-weight: 400;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    position: relative;
+    transition: color 0.3s;
+  }
+
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 1.5px;
+    background: var(--terracotta);
+    transition: width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .nav-links a:hover { color: var(--terracotta); }
+  .nav-links a:hover::after { width: 100%; }
+
+  /* ===== HERO SALENTO ===== */
+  .hero-salento {
+    min-height: 85vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background: linear-gradient(160deg, var(--cream) 0%, var(--cream-dark) 40%, #E8DFD0 100%);
+    overflow: hidden;
+  }
+
+  .hero-salento::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url('https://images.unsplash.com/photo-1578398192993-b64a40ecb690?w=1600&q=80') center/cover no-repeat;
+    opacity: 0.08;
+    z-index: 0;
+  }
+
+  .hero-salento .hero-organic-1 {
+    position: absolute;
+    top: -100px;
+    right: -100px;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(ellipse, var(--sage-light) 0%, transparent 70%);
+    opacity: 0.2;
+    border-radius: 60% 40% 50% 50%;
+    animation: float1 12s ease-in-out infinite;
+  }
+
+  .hero-salento .hero-organic-2 {
+    position: absolute;
+    bottom: -80px;
+    left: -80px;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(ellipse, var(--terracotta-light) 0%, transparent 70%);
+    opacity: 0.15;
+    border-radius: 40% 60% 50% 50%;
+    animation: float2 15s ease-in-out infinite;
+  }
+
+  .hero-salento .hero-organic-3 {
+    position: absolute;
+    top: 25%;
+    left: 5%;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(ellipse, var(--mauve-light) 0%, transparent 70%);
+    opacity: 0.1;
+    border-radius: 50% 50% 40% 60%;
+    animation: float3 18s ease-in-out infinite;
+  }
+
+  @keyframes float1 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(-30px, 20px) scale(1.05); }
+  }
+  @keyframes float2 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(20px, -30px) scale(1.08); }
+  }
+  @keyframes float3 {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(15px, 15px); }
+  }
+
+  .hero-salento-content {
+    text-align: center;
+    position: relative;
+    z-index: 2;
+    padding: 0 2rem;
+  }
+
+  .hero-back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    color: var(--sage-deep);
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+    transition: color 0.3s;
+    animation: fadeUp 1s ease-out 0.2s both;
+  }
+
+  .hero-back-link:hover { color: var(--terracotta); }
+
+  .hero-back-link svg {
+    width: 16px;
+    height: 16px;
+    transition: transform 0.3s;
+  }
+
+  .hero-back-link:hover svg { transform: translateX(-4px); }
+
+  .hero-salento-badge {
+    display: inline-block;
+    padding: 0.5rem 1.5rem;
+    background: rgba(138, 154, 123, 0.15);
+    border: 1px solid rgba(138, 154, 123, 0.25);
+    border-radius: 50px;
+    font-size: 0.68rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--sage-deep);
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+    animation: fadeUp 1s ease-out 0.3s both;
+  }
+
+  .hero-salento-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.8rem, 6.5vw, 5.5rem);
+    font-weight: 300;
+    color: var(--terracotta-deep);
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    line-height: 1;
+    animation: fadeUp 1s ease-out 0.5s both;
+  }
+
+  .hero-salento-subtitle {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1rem, 2vw, 1.4rem);
+    font-weight: 400;
+    font-style: italic;
+    color: var(--text-light);
+    max-width: 600px;
+    margin: 1.5rem auto 0;
+    line-height: 1.6;
+    animation: fadeUp 1s ease-out 0.7s both;
+  }
+
+  .hero-salento-divider {
+    width: 60px;
+    height: 1.5px;
+    background: var(--terracotta);
+    margin: 2rem auto;
+    animation: fadeUp 1s ease-out 0.9s both;
+  }
+
+  .hero-salento-tags {
+    display: flex;
+    justify-content: center;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+    animation: fadeUp 1s ease-out 1.1s both;
+  }
+
+  .hero-tag {
+    padding: 0.45rem 1.2rem;
+    background: var(--warm-white);
+    border-radius: 50px;
+    font-size: 0.72rem;
+    font-weight: 400;
+    color: var(--text);
+    letter-spacing: 1px;
+    border: 1px solid rgba(166, 124, 82, 0.15);
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .scroll-indicator {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: fadeUp 1s ease-out 1.4s both;
+  }
+
+  .scroll-indicator span {
+    display: block;
+    width: 1.5px;
+    height: 40px;
+    background: linear-gradient(to bottom, var(--terracotta), transparent);
+    margin: 0 auto;
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.3; transform: scaleY(1); }
+    50% { opacity: 0.8; transform: scaleY(1.2); }
+  }
+
+  /* ===== SECTIONS COMMON ===== */
+  section {
+    padding: 6rem 2rem;
+  }
+
+  .section-label {
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: var(--sage-deep);
+    margin-bottom: 1rem;
+  }
+
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 400;
+    color: var(--charcoal);
+    line-height: 1.2;
+    max-width: 700px;
+  }
+
+  .section-title em {
+    color: var(--terracotta);
+    font-style: italic;
+  }
+
+  /* ===== IMAGE COMPONENTS ===== */
+  .img-rounded {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 20px;
+  }
+
+  .img-container {
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+  }
+
+  .img-container::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 20px;
+    border: 1px solid rgba(166, 124, 82, 0.15);
+    pointer-events: none;
+  }
+
+  .img-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1.5rem;
+    background: linear-gradient(to top, rgba(58, 53, 48, 0.7), transparent);
+    border-radius: 0 0 20px 20px;
+    color: var(--cream);
+  }
+
+  .img-overlay-label {
+    font-size: 0.65rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    opacity: 0.8;
+  }
+
+  .img-overlay-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem;
+    font-weight: 500;
+    margin-top: 0.2rem;
+  }
+
+  .photo-gallery {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 200px 200px;
+    gap: 1rem;
+  }
+
+  .photo-gallery .img-container:first-child {
+    grid-row: 1 / 3;
+  }
+
+  .photo-gallery .img-container {
+    height: 100%;
+  }
+
+  /* ===== PERFIL MUNICIPIO ===== */
+  .perfil {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+    padding: 8rem 3rem;
+  }
+
+  .perfil-text p {
+    font-size: 1.05rem;
+    line-height: 1.85;
+    color: var(--text-light);
+    margin-top: 1.5rem;
+    font-weight: 300;
+  }
+
+  .perfil-datos {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+    margin-top: 2rem;
+  }
+
+  .dato-card {
+    padding: 1.5rem;
+    background: var(--cream);
+    border-radius: 14px;
+    text-align: center;
+    transition: all 0.3s;
+  }
+
+  .dato-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+  }
+
+  .dato-icon {
+    font-size: 1.6rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .dato-valor {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: var(--terracotta);
+  }
+
+  .dato-label {
+    font-size: 0.7rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-light);
+    margin-top: 0.2rem;
+  }
+
+  .perfil-visual {
+    position: relative;
+  }
+
+  .perfil-card {
+    background: var(--cream);
+    border-radius: 20px;
+    padding: 2.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .perfil-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--sage), var(--terracotta), var(--mauve));
+  }
+
+  .perfil-card h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: var(--charcoal);
+    margin-bottom: 1rem;
+  }
+
+  .perfil-card p {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: var(--text-light);
+    font-weight: 300;
+  }
+
+  .reconocimiento-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-top: 1.5rem;
+    padding: 0.7rem 1.3rem;
+    background: rgba(138, 154, 123, 0.12);
+    border-radius: 12px;
+    font-size: 0.8rem;
+    color: var(--sage-deep);
+    font-weight: 500;
+  }
+
+  .reconocimiento-badge span {
+    font-size: 1.2rem;
+  }
+
+  /* ===== TRADICIÓN CAFETERA ===== */
+  .tradicion {
+    background: var(--charcoal);
+    color: var(--cream);
+    padding: 6rem 3rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .tradicion::before {
+    content: '';
+    position: absolute;
+    top: -200px;
+    right: -200px;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(ellipse, var(--sage-deep) 0%, transparent 70%);
+    opacity: 0.08;
+    border-radius: 50%;
+  }
+
+  .tradicion-inner {
+    max-width: 1000px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+  }
+
+  .tradicion .section-label { color: var(--terracotta-light); }
+  .tradicion .section-title { color: var(--cream); max-width: 800px; }
+  .tradicion .section-title em { color: var(--sage-light); }
+
+  .tradicion-desc {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1.2rem, 2.2vw, 1.6rem);
+    font-style: italic;
+    font-weight: 300;
+    line-height: 1.7;
+    color: rgba(245, 240, 230, 0.75);
+    margin-top: 2rem;
+    max-width: 750px;
+    border-left: 2px solid var(--sage);
+    padding-left: 2rem;
+  }
+
+  .tradicion-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+    margin-top: 3rem;
+  }
+
+  .tradicion-item {
+    padding: 2rem 1.5rem;
+    border: 1px solid rgba(245, 240, 230, 0.1);
+    border-radius: 14px;
+    transition: all 0.3s;
+  }
+
+  .tradicion-item:hover {
+    border-color: var(--sage);
+    background: rgba(138, 154, 123, 0.06);
+  }
+
+  .tradicion-item-icon {
+    font-size: 2rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .tradicion-item h4 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: var(--cream);
+    margin-bottom: 0.5rem;
+  }
+
+  .tradicion-item p {
+    font-size: 0.82rem;
+    color: rgba(245, 240, 230, 0.6);
+    line-height: 1.5;
+    font-weight: 300;
+  }
+
+  /* ===== CATÁLOGO DE EMPRENDIMIENTOS ===== */
+  .catalogo {
+    padding: 8rem 3rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .catalogo-header {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+
+  .catalogo-header .section-title {
+    margin: 0 auto;
+  }
+
+  .catalogo-header p {
+    max-width: 600px;
+    margin: 1rem auto 0;
+    font-size: 0.95rem;
+    color: var(--text-light);
+    font-weight: 300;
+    line-height: 1.7;
+  }
+
+  .catalogo-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+  }
+
+  .emprendimiento-card {
+    padding: 2.2rem;
+    border-radius: 20px;
+    background: var(--cream);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    cursor: default;
+  }
+
+  .emprendimiento-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 0;
+    transition: height 0.5s ease;
+    z-index: 0;
+    border-radius: 20px;
+  }
+
+  .emprendimiento-card:nth-child(1)::after { background: linear-gradient(to top, rgba(138, 154, 123, 0.06), transparent); }
+  .emprendimiento-card:nth-child(2)::after { background: linear-gradient(to top, rgba(166, 124, 82, 0.06), transparent); }
+  .emprendimiento-card:nth-child(3)::after { background: linear-gradient(to top, rgba(184, 137, 154, 0.06), transparent); }
+  .emprendimiento-card:nth-child(4)::after { background: linear-gradient(to top, rgba(107, 125, 94, 0.06), transparent); }
+  .emprendimiento-card:nth-child(5)::after { background: linear-gradient(to top, rgba(196, 154, 108, 0.06), transparent); }
+  .emprendimiento-card:nth-child(6)::after { background: linear-gradient(to top, rgba(154, 110, 126, 0.06), transparent); }
+
+  .emprendimiento-card:hover::after { height: 100%; }
+  .emprendimiento-card:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(0,0,0,0.06); }
+
+  .emprendimiento-card > * { position: relative; z-index: 1; }
+
+  .emprendimiento-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .emprendimiento-card:nth-child(1) .emprendimiento-icon { background: rgba(138, 154, 123, 0.15); }
+  .emprendimiento-card:nth-child(2) .emprendimiento-icon { background: rgba(166, 124, 82, 0.15); }
+  .emprendimiento-card:nth-child(3) .emprendimiento-icon { background: rgba(184, 137, 154, 0.15); }
+  .emprendimiento-card:nth-child(4) .emprendimiento-icon { background: rgba(107, 125, 94, 0.15); }
+  .emprendimiento-card:nth-child(5) .emprendimiento-icon { background: rgba(196, 154, 108, 0.15); }
+  .emprendimiento-card:nth-child(6) .emprendimiento-icon { background: rgba(154, 110, 126, 0.15); }
+
+  .emprendimiento-card h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.35rem;
+    font-weight: 500;
+    color: var(--charcoal);
+    margin-bottom: 0.5rem;
+  }
+
+  .emprendimiento-tipo {
+    display: inline-block;
+    padding: 0.3rem 0.8rem;
+    font-size: 0.6rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border-radius: 50px;
+    font-weight: 500;
+    margin-bottom: 0.8rem;
+  }
+
+  .tipo-artesania { background: rgba(138, 154, 123, 0.15); color: var(--sage-deep); }
+  .tipo-agro { background: rgba(166, 124, 82, 0.15); color: var(--terracotta-deep); }
+  .tipo-cafe { background: rgba(184, 137, 154, 0.15); color: var(--mauve-deep); }
+  .tipo-gastro { background: rgba(196, 154, 108, 0.15); color: var(--terracotta-deep); }
+
+  .emprendimiento-card p {
+    font-size: 0.88rem;
+    line-height: 1.65;
+    color: var(--text-light);
+    font-weight: 300;
+  }
+
+  /* ===== TURISMO ===== */
+  .turismo {
+    background: linear-gradient(135deg, var(--cream) 0%, var(--cream-dark) 100%);
+    padding: 8rem 3rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .turismo-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .turismo-header {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+
+  .turismo-header .section-title {
+    margin: 0 auto;
+  }
+
+  .turismo-header p {
+    max-width: 600px;
+    margin: 1rem auto 0;
+    font-size: 0.95rem;
+    color: var(--text-light);
+    font-weight: 300;
+    line-height: 1.7;
+  }
+
+  .turismo-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+  }
+
+  .turismo-card {
+    padding: 2rem;
+    background: var(--warm-white);
+    border-radius: 18px;
+    display: flex;
+    align-items: flex-start;
+    gap: 1.2rem;
+    transition: all 0.3s;
+    border: 1px solid rgba(166, 124, 82, 0.08);
+  }
+
+  .turismo-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 35px rgba(0,0,0,0.05);
+    border-color: rgba(166, 124, 82, 0.2);
+  }
+
+  .turismo-card-icon {
+    font-size: 1.8rem;
+    flex-shrink: 0;
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--cream);
+    border-radius: 14px;
+  }
+
+  .turismo-card-content h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--charcoal);
+    margin-bottom: 0.4rem;
+  }
+
+  .turismo-card-content p {
+    font-size: 0.88rem;
+    color: var(--text-light);
+    font-weight: 300;
+    line-height: 1.6;
+  }
+
+  /* ===== CONEXIÓN REBBECA ===== */
+  .conexion {
+    padding: 8rem 3rem;
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+
+  .conexion-text p {
+    font-size: 1.05rem;
+    line-height: 1.85;
+    color: var(--text-light);
+    margin-top: 1.5rem;
+    font-weight: 300;
+  }
+
+  .conexion-pilares {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  .pilar-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.2rem;
+    background: var(--cream);
+    border-radius: 12px;
+    transition: all 0.3s;
+  }
+
+  .pilar-item:hover {
+    transform: translateX(8px);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.04);
+  }
+
+  .pilar-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: var(--terracotta);
+    width: 36px;
+    flex-shrink: 0;
+  }
+
+  .pilar-item h4 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--charcoal);
+  }
+
+  .pilar-item p {
+    font-size: 0.78rem;
+    color: var(--text-light);
+    font-weight: 300;
+    margin-top: 0.1rem;
+  }
+
+  .conexion-visual {
+    position: relative;
+  }
+
+  .conexion-card {
+    background: var(--charcoal);
+    border-radius: 20px;
+    padding: 3rem;
+    color: var(--cream);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .conexion-card::before {
+    content: '';
+    position: absolute;
+    top: -100px;
+    right: -100px;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(ellipse, var(--terracotta-deep) 0%, transparent 70%);
+    opacity: 0.15;
+    border-radius: 50%;
+  }
+
+  .conexion-card > * { position: relative; z-index: 1; }
+
+  .conexion-card h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem;
+    font-weight: 500;
+    margin-bottom: 1rem;
+  }
+
+  .conexion-card p {
+    font-size: 0.92rem;
+    line-height: 1.7;
+    color: rgba(245, 240, 230, 0.7);
+    font-weight: 300;
+  }
+
+  .conexion-stat-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  .conexion-stat {
+    text-align: center;
+    padding: 1.2rem;
+    border: 1px solid rgba(245, 240, 230, 0.1);
+    border-radius: 12px;
+  }
+
+  .conexion-stat-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--terracotta-light);
+  }
+
+  .conexion-stat-text {
+    font-size: 0.7rem;
+    letter-spacing: 1px;
+    color: rgba(245, 240, 230, 0.5);
+    margin-top: 0.2rem;
+  }
+
+  /* ===== CTA SECTION ===== */
+  .cta-section {
+    background: linear-gradient(160deg, var(--sage-deep) 0%, var(--terracotta) 60%, var(--mauve-deep) 100%);
+    padding: 6rem 3rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    opacity: 0.04;
+  }
+
+  .cta-content {
+    position: relative;
+    z-index: 2;
+  }
+
+  .cta-section .section-title {
+    color: var(--warm-white);
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .cta-section .section-title em { color: var(--cream-dark); }
+
+  .cta-text {
+    color: rgba(253, 251, 247, 0.75);
+    font-size: 1rem;
+    font-weight: 300;
+    max-width: 550px;
+    margin: 1.5rem auto 2.5rem;
+    line-height: 1.7;
+  }
+
+  .btn-white {
+    display: inline-block;
+    padding: 1rem 3rem;
+    background: var(--warm-white);
+    color: var(--terracotta-deep);
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    border-radius: 50px;
+    transition: all 0.4s;
+  }
+
+  .btn-white:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  }
+
+  .btn-outline-white {
+    display: inline-block;
+    padding: 1rem 3rem;
+    background: transparent;
+    color: var(--warm-white);
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    border-radius: 50px;
+    border: 1.5px solid rgba(253, 251, 247, 0.5);
+    transition: all 0.4s;
+    margin-left: 1rem;
+  }
+
+  .btn-outline-white:hover {
+    background: rgba(253, 251, 247, 0.15);
+    border-color: var(--warm-white);
+    transform: translateY(-2px);
+  }
+
+  /* ===== FOOTER ===== */
+  footer {
+    background: var(--charcoal);
+    padding: 3rem;
+    text-align: center;
+  }
+
+  .footer-brand {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    font-weight: 500;
+    color: var(--cream);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+  }
+
+  .footer-brand span {
+    display: block;
+    font-size: 0.65rem;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 300;
+    letter-spacing: 3px;
+    color: var(--sage-light);
+    margin-top: 0.3rem;
+  }
+
+  .footer-copy {
+    font-size: 0.75rem;
+    color: rgba(245, 240, 230, 0.35);
+    margin-top: 1.5rem;
+    font-weight: 300;
+  }
+
+  .footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 1rem;
+  }
+
+  .footer-links a {
+    font-size: 0.72rem;
+    color: rgba(245, 240, 230, 0.5);
+    text-decoration: none;
+    letter-spacing: 1px;
+    transition: color 0.3s;
+  }
+
+  .footer-links a:hover { color: var(--terracotta-light); }
+
+  /* ===== SCROLL ANIMATIONS ===== */
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+  .reveal-delay-4 { transition-delay: 0.4s; }
+  .reveal-delay-5 { transition-delay: 0.5s; }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 900px) {
+    nav { padding: 1rem 1.5rem; }
+    nav.scrolled { padding: 0.7rem 1.5rem; }
+    .nav-links { display: none; }
+    .perfil { grid-template-columns: 1fr; gap: 2rem; padding: 4rem 1.5rem; }
+    .catalogo-grid { grid-template-columns: 1fr 1fr; }
+    .turismo-grid { grid-template-columns: 1fr; }
+    .conexion { grid-template-columns: 1fr; gap: 2rem; padding: 4rem 1.5rem; }
+    .perfil-datos { grid-template-columns: repeat(2, 1fr); }
+    .cta-buttons { display: flex; flex-direction: column; align-items: center; gap: 1rem; }
+    .btn-outline-white { margin-left: 0; }
+  }
+
+  @media (max-width: 600px) {
+    section { padding: 4rem 1.5rem; }
+    .tradicion { padding: 4rem 1.5rem; }
+    .turismo { padding: 4rem 1.5rem; }
+    .catalogo { padding: 4rem 1.5rem; }
+    .catalogo-grid { grid-template-columns: 1fr; }
+    .hero-salento-title { letter-spacing: 4px; }
+    .conexion-stat-row { grid-template-columns: 1fr; }
+    .photo-gallery { grid-template-columns: 1fr; grid-template-rows: auto; }
+    .photo-gallery .img-container:first-child { grid-row: auto; }
+    .photo-gallery .img-container { height: 180px; }
+  }
+
+  /* ===== ANIMACIONES AVANZADAS DE BOTONES ===== */
+
+  /* Ripple effect base */
+  .btn-white,
+  .btn-outline-white,
+  .hero-back-link,
+  .plan-btn {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-white::before,
+  .btn-outline-white::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s ease, height 0.6s ease;
+  }
+
+  .btn-white:hover::before {
+    width: 300px;
+    height: 300px;
+  }
+
+  .btn-outline-white::before {
+    background: rgba(253, 251, 247, 0.15);
+  }
+
+  .btn-outline-white:hover::before {
+    width: 300px;
+    height: 300px;
+  }
+
+  /* Shine sweep animation on buttons */
+  .btn-white::after,
+  .btn-outline-white::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -75%;
+    width: 50%;
+    height: 200%;
+    background: linear-gradient(
+      to right,
+      transparent 0%,
+      rgba(255, 255, 255, 0.15) 50%,
+      transparent 100%
+    );
+    transform: skewX(-25deg);
+    transition: none;
+  }
+
+  .btn-white:hover::after,
+  .btn-outline-white:hover::after {
+    animation: shineSweep 0.6s ease forwards;
+  }
+
+  @keyframes shineSweep {
+    0% { left: -75%; }
+    100% { left: 125%; }
+  }
+
+  /* Enhanced button hover transforms */
+  .btn-white {
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .btn-white:hover {
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.18);
+  }
+
+  .btn-white:active {
+    transform: translateY(-1px) scale(0.98);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.12);
+    transition: all 0.1s ease;
+  }
+
+  .btn-outline-white {
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .btn-outline-white:hover {
+    transform: translateY(-3px) scale(1.03);
+    background: rgba(253, 251, 247, 0.15);
+    border-color: var(--warm-white);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+  }
+
+  .btn-outline-white:active {
+    transform: translateY(-1px) scale(0.98);
+    transition: all 0.1s ease;
+  }
+
+  /* Back link animated arrow */
+  .hero-back-link {
+    transition: all 0.4s ease;
+  }
+
+  .hero-back-link svg {
+    transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+  }
+
+  .hero-back-link:hover svg {
+    transform: translateX(-6px);
+  }
+
+  .hero-back-link:hover {
+    letter-spacing: 3px;
+  }
+
+  /* Hero tags float animation */
+  .hero-tag {
+    transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    cursor: default;
+  }
+
+  .hero-tag:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(166, 124, 82, 0.12);
+    background: var(--cream);
+    border-color: var(--terracotta-light);
+    color: var(--terracotta-deep);
+  }
+
+  /* ===== ANIMACIONES DE TARJETAS ===== */
+
+  .emprendimiento-card {
+    transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .emprendimiento-card:hover {
+    transform: translateY(-8px) rotate(-0.5deg);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
+  }
+
+  .emprendimiento-card:hover .emprendimiento-icon {
+    animation: iconBounce 0.5s ease;
+  }
+
+  @keyframes iconBounce {
+    0% { transform: scale(1); }
+    30% { transform: scale(1.2); }
+    50% { transform: scale(0.95); }
+    70% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+  }
+
+  .turismo-card {
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .turismo-card:hover {
+    transform: translateY(-5px) translateX(4px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.07);
+    border-color: var(--terracotta-light);
+  }
+
+  .turismo-card:hover .turismo-card-icon {
+    animation: iconPulse 0.8s ease infinite;
+  }
+
+  @keyframes iconPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+  }
+
+  .dato-card {
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .dato-card:hover {
+    transform: translateY(-5px) scale(1.03);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+    background: var(--warm-white);
+  }
+
+  .dato-card:hover .dato-valor {
+    animation: countPulse 0.4s ease;
+  }
+
+  @keyframes countPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.12); }
+    100% { transform: scale(1); }
+  }
+
+  /* ===== ANIMACIONES DE IMÁGENES ===== */
+
+  .img-container {
+    transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .img-container:hover {
+    transform: scale(1.02);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
+  }
+
+  .img-container:hover .img-rounded {
+    transform: scale(1.06);
+    transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .img-rounded {
+    transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .img-container:hover .img-overlay {
+    background: linear-gradient(to top, rgba(58, 53, 48, 0.85), transparent 80%);
+  }
+
+  .img-overlay {
+    transition: all 0.4s ease;
+  }
+
+  /* ===== PILAR ITEMS ANIMACIÓN ===== */
+
+  .pilar-item {
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .pilar-item:hover {
+    transform: translateX(12px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
+    background: var(--warm-white);
+  }
+
+  .pilar-item:hover .pilar-num {
+    animation: numGlow 0.5s ease forwards;
+  }
+
+  @keyframes numGlow {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); color: var(--terracotta-deep); }
+    100% { transform: scale(1.1); color: var(--terracotta-deep); }
+  }
+
+  /* ===== TRADICIÓN ITEMS ===== */
+
+  .tradicion-item {
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .tradicion-item:hover {
+    transform: translateY(-6px);
+    border-color: var(--sage);
+    background: rgba(138, 154, 123, 0.08);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+  }
+
+  .tradicion-item:hover .tradicion-item-icon {
+    animation: iconBounce 0.5s ease;
+  }
+
+  /* ===== CONEXIÓN STATS ===== */
+
+  .conexion-stat {
+    transition: all 0.3s ease;
+  }
+
+  .conexion-stat:hover {
+    border-color: var(--terracotta-light);
+    background: rgba(166, 124, 82, 0.08);
+    transform: scale(1.04);
+  }
+
+  .conexion-stat:hover .conexion-stat-num {
+    animation: countPulse 0.4s ease;
+  }
+
+  /* ===== RECONOCIMIENTO BADGE ===== */
+
+  .reconocimiento-badge {
+    transition: all 0.35s ease;
+    cursor: default;
+  }
+
+  .reconocimiento-badge:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(138, 154, 123, 0.15);
+    background: rgba(138, 154, 123, 0.18);
+  }
+
+  .reconocimiento-badge:hover span {
+    animation: trophyShake 0.5s ease;
+  }
+
+  @keyframes trophyShake {
+    0%, 100% { transform: rotate(0deg); }
+    20% { transform: rotate(-12deg); }
+    40% { transform: rotate(12deg); }
+    60% { transform: rotate(-8deg); }
+    80% { transform: rotate(8deg); }
+  }
+
+  /* ===== NAV LINKS UNDERLINE ANIMATION ===== */
+
+  .nav-links a::after {
+    transition: width 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+  }
+
+  /* ===== SCROLL REVEAL VARIANTS ===== */
+
+  .reveal-left {
+    opacity: 0;
+    transform: translateX(-40px);
+    transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .reveal-left.visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .reveal-right {
+    opacity: 0;
+    transform: translateX(40px);
+    transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .reveal-right.visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .reveal-scale {
+    opacity: 0;
+    transform: scale(0.9);
+    transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .reveal-scale.visible {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  /* ===== FLOATING ANIMATION FOR HERO ===== */
+
+  @keyframes gentleFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  .hero-salento-badge {
+    animation: fadeUp 1s ease-out 0.3s both;
+  }
+
+  .hero-salento-badge:hover {
+    animation: gentleFloat 2s ease-in-out infinite;
+    background: rgba(138, 154, 123, 0.25);
+  }
+
+  /* ===== PARALLAX-LIKE SCROLL FOR ORGANIC SHAPES ===== */
+
+  .hero-salento .hero-organic-1 {
+    transition: transform 0.3s ease-out;
+  }
+
+  .hero-salento .hero-organic-2 {
+    transition: transform 0.3s ease-out;
+  }
+
+  /* ===== CURSOR GLOW EFFECT ON CTA SECTION ===== */
+
+  .cta-section {
+    transition: background-position 0.5s ease;
+  }
+
+  /* ===== SMOOTH BORDER ANIMATION FOR EMPRENDIMIENTO TIPO TAGS ===== */
+
+  .emprendimiento-tipo {
+    transition: all 0.3s ease;
+  }
+
+  .emprendimiento-card:hover .emprendimiento-tipo {
+    transform: translateX(4px);
+    letter-spacing: 3px;
+  }
+</style>
+</head>
+<body>
+
+<!-- NAVIGATION -->
+<nav id="mainNav">
+  <a href="rebbeca-landing.html" class="nav-brand">
+    Rebbeca
+    <span>ecosistema artesanal</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#perfil">Salento</a></li>
+    <li><a href="#tradicion">Tradición</a></li>
+    <li><a href="#emprendimientos">Emprendimientos</a></li>
+    <li><a href="#turismo">Turismo</a></li>
+    <li><a href="#contacto">Contacto</a></li>
+  </ul>
+</nav>
+
+<!-- HERO SALENTO -->
+<section class="hero-salento">
+  <div class="hero-organic-1"></div>
+  <div class="hero-organic-2"></div>
+  <div class="hero-organic-3"></div>
+
+  <div class="hero-salento-content">
+    <a href="rebbeca-landing.html" class="hero-back-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+      Volver a REBBECA
+    </a>
+    <div class="hero-salento-badge">Municipio del Quindío</div>
+    <h1 class="hero-salento-title">Salento</h1>
+    <p class="hero-salento-subtitle">
+      Donde las palmas de cera tocan el cielo y la tradición cafetera cobra vida.
+      La puerta al Valle de Cocora.
+    </p>
+    <div class="hero-salento-divider"></div>
+    <div class="hero-salento-tags">
+      <span class="hero-tag">Valle de Cocora</span>
+      <span class="hero-tag">Cultura Cafetera</span>
+      <span class="hero-tag">Turismo</span>
+      <span class="hero-tag">Artesanía</span>
+    </div>
+  </div>
+
+  <div class="scroll-indicator">
+    <span></span>
+  </div>
+</section>
+
+<!-- PERFIL DEL MUNICIPIO -->
+<section id="perfil">
+  <div class="perfil">
+    <div class="perfil-text">
+      <p class="section-label reveal">Perfil del municipio</p>
+      <h2 class="section-title reveal reveal-delay-1">
+        La <em>puerta al Valle de Cocora</em> y al corazón cafetero
+      </h2>
+      <p class="reveal reveal-delay-2">
+        Salento es el municipio más antiguo del Quindío, fundado en 1842. Enclavado entre montañas
+        y palmas de cera — el árbol nacional de Colombia —, es la puerta de entrada al legendario
+        Valle de Cocora. Sus calles empedradas, fachadas coloniales de colores vibrantes y el aroma
+        permanente a café lo convierten en uno de los destinos más visitados del Eje Cafetero.
+      </p>
+      <p class="reveal reveal-delay-3">
+        Su economía gira en torno al turismo, la caficultura y la producción artesanal. Artesanos y
+        agrotransformadores elaboran café de origen, trucha, dulces tradicionales, tejidos y piezas en
+        guadua. Sin embargo, muchos operan sin estructura financiera ni estrategia comercial — exactamente
+        el vacío que REBBECA busca llenar.
+      </p>
+      <div class="perfil-datos reveal reveal-delay-4">
+        <div class="dato-card">
+          <div class="dato-icon">🏔️</div>
+          <div class="dato-valor">1895m</div>
+          <div class="dato-label">Altitud</div>
+        </div>
+        <div class="dato-card">
+          <div class="dato-icon">🌡️</div>
+          <div class="dato-valor">18°C</div>
+          <div class="dato-label">Temperatura media</div>
+        </div>
+        <div class="dato-card">
+          <div class="dato-icon">📅</div>
+          <div class="dato-valor">1842</div>
+          <div class="dato-label">Fundación</div>
+        </div>
+        <div class="dato-card">
+          <div class="dato-icon">🏘️</div>
+          <div class="dato-valor">~7800</div>
+          <div class="dato-label">Habitantes</div>
+        </div>
+      </div>
+    </div>
+    <div class="perfil-visual">
+      <div class="photo-gallery reveal">
+        <div class="img-container">
+          <img src="https://images.unsplash.com/photo-1570197820006-3e46f5ee01bb?w=600&h=420&fit=crop&q=80" alt="Calle Real de Salento con balcones coloridos" class="img-rounded">
+          <div class="img-overlay">
+            <div class="img-overlay-label">Salento, Quindío</div>
+            <div class="img-overlay-title">Calle Real y fachadas coloniales</div>
+          </div>
+        </div>
+        <div class="img-container">
+          <img src="https://images.unsplash.com/photo-1642044538550-eb8fa33889c8?w=400&h=200&fit=crop&q=80" alt="Montañas verdes del Quindío desde Salento" class="img-rounded">
+          <div class="img-overlay">
+            <div class="img-overlay-label">Paisaje cafetero</div>
+          </div>
+        </div>
+        <div class="img-container">
+          <img src="https://images.unsplash.com/photo-1729866787198-ea202eea335e?w=400&h=200&fit=crop&q=80" alt="Casa tradicional con colores vivos en Salento" class="img-rounded">
+          <div class="img-overlay">
+            <div class="img-overlay-label">Arquitectura tradicional</div>
+          </div>
+        </div>
+      </div>
+      <div class="reconocimiento-badge reveal reveal-delay-1" style="margin-top:1.2rem;">
+        <span>🌴</span>
+        Hogar de la palma de cera del Quindío, árbol nacional de Colombia
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRADICIÓN CAFETERA -->
+<section id="tradicion" class="tradicion">
+  <div class="tradicion-inner">
+    <p class="section-label reveal">Identidad cafetera</p>
+    <h2 class="section-title reveal reveal-delay-1">
+      La cultura del café: <em>alma de Salento</em>
+    </h2>
+    <p class="tradicion-desc reveal reveal-delay-2">
+      "Salento está en el corazón del Paisaje Cultural Cafetero, declarado Patrimonio de la Humanidad
+      por la UNESCO. Aquí el café no es solo un producto — es una forma de vida que moldea la identidad,
+      la economía y la cultura de todo un territorio."
+    </p>
+    <div style="margin-top:2.5rem; border-radius:18px; overflow:hidden; max-width:850px; height:280px; position:relative;" class="reveal reveal-delay-3">
+      <img src="https://images.unsplash.com/photo-1672851613221-c56f31efce8c?w=900&h=300&fit=crop&q=80" alt="Cerezas de café recién cosechadas en Salento" style="width:100%; height:100%; object-fit:cover;">
+      <div style="position:absolute; inset:0; background:linear-gradient(to right, rgba(58,53,48,0.6), transparent 60%);"></div>
+      <div style="position:absolute; bottom:1.5rem; left:2rem; color:var(--cream);">
+        <div style="font-size:0.6rem; letter-spacing:2px; text-transform:uppercase; opacity:0.7;">Patrimonio vivo</div>
+        <div style="font-family:'Cormorant Garamond',serif; font-size:1.4rem; font-weight:500;">Café de origen del Quindío</div>
+      </div>
+    </div>
+
+    <div class="tradicion-grid">
+      <div class="tradicion-item reveal reveal-delay-1">
+        <div class="tradicion-item-icon">🏡</div>
+        <h4>Fincas Cafeteras</h4>
+        <p>Recorridos por fincas productoras con proceso completo de semilla a taza. Turismo cafetero que conecta al visitante con el origen.</p>
+      </div>
+      <div class="tradicion-item reveal reveal-delay-2">
+        <div class="tradicion-item-icon">☕</div>
+        <h4>Café de Origen</h4>
+        <p>Variedades como Castillo, Caturra y Colombia con trazabilidad completa. Café de altura cultivado entre 1.800 y 2.000 m.s.n.m.</p>
+      </div>
+      <div class="tradicion-item reveal reveal-delay-3">
+        <div class="tradicion-item-icon">👃</div>
+        <h4>Catación y Barismo</h4>
+        <p>Experiencias sensoriales que conectan al turista con el café. Talleres de preparación, aromas y sabores del grano quindiano.</p>
+      </div>
+      <div class="tradicion-item reveal reveal-delay-4">
+        <div class="tradicion-item-icon">🌿</div>
+        <h4>Cultura Viva</h4>
+        <p>El café como identidad cultural del Paisaje Cafetero. Tradición transmitida por generaciones que define el carácter de Salento.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CATÁLOGO DE EMPRENDIMIENTOS -->
+<section id="emprendimientos" class="catalogo">
+  <div class="catalogo-header">
+    <p class="section-label reveal">Emprendimientos locales</p>
+    <h2 class="section-title reveal reveal-delay-1">
+      Los rostros detrás del <em>talento salentino</em>
+    </h2>
+    <p class="reveal reveal-delay-2">
+      Salento alberga un ecosistema diverso de productores y artesanos que representan la riqueza
+      cultural del Quindío. Estos son los emprendimientos que REBBECA busca fortalecer.
+    </p>
+  </div>
+  <div class="catalogo-grid">
+    <div class="emprendimiento-card reveal">
+      <div class="emprendimiento-icon">☕</div>
+      <span class="emprendimiento-tipo tipo-cafe">Café</span>
+      <h3>Finca La Esperanza</h3>
+      <p>Café de origen con proceso artesanal, desde la cosecha selectiva hasta el tueste en pequeños lotes. Experiencia completa de semilla a taza para visitantes.</p>
+    </div>
+    <div class="emprendimiento-card reveal reveal-delay-1">
+      <div class="emprendimiento-icon">🎋</div>
+      <span class="emprendimiento-tipo tipo-artesania">Artesanía</span>
+      <h3>Artesanías del Cocora</h3>
+      <p>Piezas decorativas y funcionales talladas en guadua, inspiradas en la palma de cera. Diseños que llevan el paisaje del valle a cada hogar.</p>
+    </div>
+    <div class="emprendimiento-card reveal reveal-delay-2">
+      <div class="emprendimiento-icon">🍬</div>
+      <span class="emprendimiento-tipo tipo-agro">Agrotransformación</span>
+      <h3>Dulces de la Abuela</h3>
+      <p>Mermeladas, bocadillos y dulces tradicionales con frutas de la región. Recetas heredadas que conservan el sabor auténtico del campo quindiano.</p>
+    </div>
+    <div class="emprendimiento-card reveal reveal-delay-3">
+      <div class="emprendimiento-icon">🐟</div>
+      <span class="emprendimiento-tipo tipo-gastro">Gastronomía</span>
+      <h3>Truchas del Valle</h3>
+      <p>Trucha fresca cultivada en las aguas cristalinas del valle, preparada con recetas locales. Un producto emblemático de la gastronomía salentina.</p>
+    </div>
+    <div class="emprendimiento-card reveal reveal-delay-4">
+      <div class="emprendimiento-icon">🧶</div>
+      <span class="emprendimiento-tipo tipo-artesania">Artesanía</span>
+      <h3>Tejidos Ancestrales</h3>
+      <p>Mochilas, ruanas y accesorios tejidos a mano con técnicas heredadas. Cada pieza lleva consigo la historia y el color del territorio cafetero.</p>
+    </div>
+    <div class="emprendimiento-card reveal reveal-delay-5">
+      <div class="emprendimiento-icon">🍯</div>
+      <span class="emprendimiento-tipo tipo-agro">Agrotransformación</span>
+      <h3>Miel de Montaña</h3>
+      <p>Miel pura de abejas nativas, cosechada de manera sostenible en la montaña. Un producto natural que conecta biodiversidad con emprendimiento.</p>
+    </div>
+  </div>
+</section>
+
+<!-- TURISMO -->
+<section id="turismo" class="turismo">
+  <div class="turismo-inner">
+    <div class="turismo-header">
+      <p class="section-label reveal">Experiencias turísticas</p>
+      <h2 class="section-title reveal reveal-delay-1">
+        Descubre lo que hace a Salento <em>inolvidable</em>
+      </h2>
+      <p class="reveal reveal-delay-2">
+        Un pueblo que combina naturaleza imponente, cultura cafetera y tradición artesanal.
+        Salento es uno de los destinos más visitados de Colombia — y esa demanda turística es
+        la oportunidad que los emprendedores necesitan capitalizar.
+      </p>
+    </div>
+    <!-- Featured turismo images -->
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-bottom:2.5rem;">
+      <div class="img-container reveal" style="height:220px;">
+        <img src="https://images.unsplash.com/photo-1623167987983-722c1b1fe790?w=600&h=240&fit=crop&q=80" alt="Palmas de cera en el Valle de Cocora" class="img-rounded">
+        <div class="img-overlay">
+          <div class="img-overlay-label">Valle de Cocora</div>
+          <div class="img-overlay-title">Palmas de cera entre la niebla</div>
+        </div>
+      </div>
+      <div class="img-container reveal reveal-delay-1" style="height:220px;">
+        <img src="https://images.unsplash.com/photo-1666990977140-f108cc4192f0?w=600&h=240&fit=crop&q=80" alt="Palmas de cera contra cielo azul en Salento" class="img-rounded">
+        <div class="img-overlay">
+          <div class="img-overlay-label">Naturaleza</div>
+          <div class="img-overlay-title">Palmas de cera del Quindío</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="turismo-grid">
+      <div class="turismo-card reveal">
+        <div class="turismo-card-icon">🌴</div>
+        <div class="turismo-card-content">
+          <h3>Valle de Cocora</h3>
+          <p>Hogar de las palmas de cera más altas del mundo, que superan los 60 metros. Senderismo entre paisajes únicos que solo existen en Colombia.</p>
+        </div>
+      </div>
+      <div class="turismo-card reveal reveal-delay-1">
+        <div class="turismo-card-icon">🏘️</div>
+        <div class="turismo-card-content">
+          <h3>Calle Real</h3>
+          <p>El corazón de Salento: tiendas artesanales, cafés de origen y arquitectura colonial colorida. El punto de encuentro de locales y visitantes.</p>
+        </div>
+      </div>
+      <div class="turismo-card reveal reveal-delay-2">
+        <div class="turismo-card-icon">🗻</div>
+        <div class="turismo-card-content">
+          <h3>Mirador de Salento</h3>
+          <p>Vista panorámica de todo el valle, los Andes y las montañas del Quindío. Accesible por una escalera de 253 peldaños desde el pueblo.</p>
+        </div>
+      </div>
+      <div class="turismo-card reveal reveal-delay-3">
+        <div class="turismo-card-icon">☕</div>
+        <div class="turismo-card-content">
+          <h3>Fincas Cafeteras</h3>
+          <p>Tours por fincas tradicionales para conocer el proceso del café de la semilla a la taza. Experiencia inmersiva en la cultura cafetera.</p>
+        </div>
+      </div>
+      <div class="turismo-card reveal reveal-delay-4">
+        <div class="turismo-card-icon">🐦</div>
+        <div class="turismo-card-content">
+          <h3>Reserva Natural Acaime</h3>
+          <p>Santuario de colibríes en el bosque de niebla, accesible por sendero ecológico. Un refugio de biodiversidad en las montañas del Quindío.</p>
+        </div>
+      </div>
+      <div class="turismo-card reveal reveal-delay-5">
+        <div class="turismo-card-icon">🌊</div>
+        <div class="turismo-card-content">
+          <h3>Puente Colgante</h3>
+          <p>Cruce sobre el río Quindío, punto de partida para aventuras en la naturaleza. Conexión directa con las rutas de senderismo del valle.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONEXIÓN CON REBBECA -->
+<section>
+  <div class="conexion">
+    <div class="conexion-text">
+      <p class="section-label reveal">REBBECA en Salento</p>
+      <h2 class="section-title reveal reveal-delay-1">
+        Conectando el <em>talento salentino</em> con una gestión sostenible
+      </h2>
+      <p class="reveal reveal-delay-2">
+        Salento tiene el turismo, la tradición cafetera y los productos con identidad. Lo que falta
+        es un modelo de gestión que convierta ese potencial en estabilidad económica para sus
+        emprendedores. REBBECA llega para ser ese puente.
+      </p>
+      <div class="conexion-pilares reveal reveal-delay-3">
+        <div class="pilar-item">
+          <div class="pilar-num">01</div>
+          <div>
+            <h4>Diagnosticar cada emprendimiento</h4>
+            <p>Evaluamos la situación real de cada negocio salentino: café, artesanía y gastronomía</p>
+          </div>
+        </div>
+        <div class="pilar-item">
+          <div class="pilar-num">02</div>
+          <div>
+            <h4>Estructurar costos y precios</h4>
+            <p>Herramientas financieras adaptadas al ritmo estacional del turismo y la cosecha</p>
+          </div>
+        </div>
+        <div class="pilar-item">
+          <div class="pilar-num">03</div>
+          <div>
+            <h4>Conectar con el turismo</h4>
+            <p>Conectamos productores con el flujo turístico del Valle de Cocora y la Calle Real</p>
+          </div>
+        </div>
+        <div class="pilar-item">
+          <div class="pilar-num">04</div>
+          <div>
+            <h4>Acompañar el crecimiento</h4>
+            <p>Acompañamiento continuo para que cada mejora se traduzca en estabilidad económica</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="conexion-visual">
+      <div class="img-container reveal" style="height:200px; margin-bottom:1.5rem;">
+        <img src="https://images.unsplash.com/photo-1631137697490-f43817277ebd?w=600&h=220&fit=crop&q=80" alt="Paisaje de palmas de cera cerca de Salento" class="img-rounded">
+        <div class="img-overlay">
+          <div class="img-overlay-label">Valle de Cocora</div>
+          <div class="img-overlay-title">Palmas de cera del Quindío</div>
+        </div>
+      </div>
+      <div class="conexion-card reveal">
+        <h3>El desafío en Salento</h3>
+        <p>
+          A pesar de ser uno de los destinos turísticos más visitados de Colombia, muchos emprendedores
+          de Salento operan sin control de costos, fijación técnica de precios ni planeación financiera.
+          El turismo trae oportunidades, pero sin estructura, esas oportunidades se pierden.
+        </p>
+        <div class="conexion-stat-row">
+          <div class="conexion-stat">
+            <div class="conexion-stat-num">45+</div>
+            <div class="conexion-stat-text">Productores identificados</div>
+          </div>
+          <div class="conexion-stat">
+            <div class="conexion-stat-num">60%</div>
+            <div class="conexion-stat-text">Sin estructura financiera</div>
+          </div>
+          <div class="conexion-stat">
+            <div class="conexion-stat-num">3</div>
+            <div class="conexion-stat-text">Sectores prioritarios</div>
+          </div>
+          <div class="conexion-stat">
+            <div class="conexion-stat-num">80%</div>
+            <div class="conexion-stat-text">+3 años sin estructura formal</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="contacto" class="cta-section">
+  <div class="cta-content">
+    <h2 class="section-title reveal">
+      Salento merece crecer con <em>raíces fuertes</em>
+    </h2>
+    <p class="cta-text reveal reveal-delay-1">
+      Los emprendedores de Salento tienen el talento y la tradición. REBBECA aporta la estructura
+      para que ese potencial se convierta en prosperidad sostenible.
+    </p>
+    <div class="cta-buttons reveal reveal-delay-2">
+      <a href="rebbeca-landing.html#planes" class="btn-white">Ver planes</a>
+      <a href="rebbeca-landing.html#contacto" class="btn-outline-white">Contactar</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">
+    Rebbeca
+    <span>ecosistema artesanal · Quindío, Colombia</span>
+  </div>
+  <div class="footer-links">
+    <a href="rebbeca-landing.html">Inicio</a>
+    <a href="#">Instagram</a>
+    <a href="#">WhatsApp</a>
+    <a href="#">Correo</a>
+  </div>
+  <p class="footer-copy">&copy; 2026 REBBECA — Ecosistema Artesanal. Todos los derechos reservados.</p>
+</footer>
+
+<script>
+  // Nav scroll effect with smooth transition
+  const nav = document.getElementById('mainNav');
+  let lastScroll = 0;
+  window.addEventListener('scroll', () => {
+    const currentScroll = window.scrollY;
+    nav.classList.toggle('scrolled', currentScroll > 50);
+    lastScroll = currentScroll;
+  });
+
+  // Scroll reveal for all reveal classes
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+  document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale').forEach(el => observer.observe(el));
+
+  // Smooth scroll for anchor links
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  // Parallax effect on hero organic shapes
+  const hero = document.querySelector('.hero-salento');
+  const organic1 = document.querySelector('.hero-organic-1');
+  const organic2 = document.querySelector('.hero-organic-2');
+  const organic3 = document.querySelector('.hero-organic-3');
+
+  window.addEventListener('scroll', () => {
+    if (!hero) return;
+    const scrolled = window.scrollY;
+    const heroHeight = hero.offsetHeight;
+    if (scrolled < heroHeight) {
+      const factor = scrolled / heroHeight;
+      if (organic1) organic1.style.transform = `translate(${-30 * factor}px, ${20 + 40 * factor}px) scale(${1 + 0.05 * factor})`;
+      if (organic2) organic2.style.transform = `translate(${20 * factor}px, ${-30 - 30 * factor}px) scale(${1 + 0.08 * factor})`;
+      if (organic3) organic3.style.transform = `translate(${15 * factor}px, ${15 + 20 * factor}px)`;
+    }
+  });
+
+  // Animated counter for stat numbers
+  const animateCounter = (el, target, suffix = '') => {
+    const duration = 1500;
+    const start = performance.now();
+
+    const update = (now) => {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3); // ease out cubic
+      const current = Math.round(eased * target);
+
+      if (suffix === '%') {
+        el.textContent = current + '%';
+      } else if (suffix === 'm') {
+        el.textContent = (eased * target).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, '.') + 'm';
+      } else {
+        el.textContent = current + suffix;
+      }
+
+      if (progress < 1) requestAnimationFrame(update);
+    };
+    requestAnimationFrame(update);
+  };
+
+  // Observe stat numbers for counter animation
+  const statObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && !entry.target.dataset.animated) {
+        entry.target.dataset.animated = 'true';
+        const text = entry.target.textContent.trim();
+        const match = text.match(/^([~]?)(\d+[.]?\d*)(.*)/);
+        if (match) {
+          const prefix = match[1];
+          const num = parseFloat(match[2].replace('.', ''));
+          const suffix = match[3];
+          animateCounter(entry.target, num, suffix);
+        }
+      }
+    });
+  }, { threshold: 0.5 });
+
+  document.querySelectorAll('.dato-valor, .conexion-stat-num').forEach(el => {
+    statObserver.observe(el);
+  });
+
+  // Staggered card entrance for catalogo
+  const catalogoObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const cards = entry.target.querySelectorAll('.emprendimiento-card');
+        cards.forEach((card, i) => {
+          setTimeout(() => {
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+          }, i * 120);
+        });
+        catalogoObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+
+  const catalogoGrid = document.querySelector('.catalogo-grid');
+  if (catalogoGrid) {
+    catalogoGrid.querySelectorAll('.emprendimiento-card').forEach(card => {
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(30px)';
+      card.style.transition = 'all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+    });
+    catalogoObserver.observe(catalogoGrid);
+  }
+
+  // Footer links hover wave effect
+  document.querySelectorAll('.footer-links a').forEach((link, i) => {
+    link.style.transition = `color 0.3s ease ${i * 0.05}s, transform 0.3s ease`;
+    link.addEventListener('mouseenter', () => { link.style.transform = 'translateY(-2px)'; });
+    link.addEventListener('mouseleave', () => { link.style.transform = 'translateY(0)'; });
+  });
+</script>
+
+</body>
+</html>

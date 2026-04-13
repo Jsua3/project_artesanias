@@ -15,6 +15,8 @@ public class UserAccount implements Persistable<UUID> {
     private String username;
     private String passwordHash;
     private UserRole role;
+    private String displayName;
+    private String avatarUrl;
     private LocalDateTime createdAt;
 
     @Transient
@@ -38,6 +40,22 @@ public class UserAccount implements Persistable<UUID> {
         this.passwordHash = passwordHash;
         this.role = role;
         this.createdAt = createdAt;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
     }
 
     public UUID getId() {

@@ -10,6 +10,7 @@ public record ArtesanoResponse(
     String email,
     String especialidad,
     String ubicacion,
+    String imageUrl,
     Boolean active,
     LocalDateTime createdAt
 ) {}

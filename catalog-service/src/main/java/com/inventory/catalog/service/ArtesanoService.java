@@ -34,6 +34,7 @@ public class ArtesanoService {
                 true,
                 LocalDateTime.now()
         );
+        artesano.setImageUrl(request.imageUrl());
         return artesanoRepository.save(artesano.withIsNew(true))
                 .map(this::toResponse);
     }
@@ -64,6 +65,7 @@ public class ArtesanoService {
                             existing.active(),
                             existing.createdAt()
                     );
+                    updated.setImageUrl(request.imageUrl());
                     return artesanoRepository.save(updated);
                 })
                 .map(this::toResponse);
@@ -96,6 +98,7 @@ public class ArtesanoService {
                 artesano.email(),
                 artesano.especialidad(),
                 artesano.ubicacion(),
+                artesano.imageUrl(),
                 artesano.active(),
                 artesano.createdAt()
         );
