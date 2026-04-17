@@ -91,7 +91,7 @@ services:
       - "8080:8080"
     depends_on:
       discovery-server:
-        condition: service_healthy
+        condition: service_started
     environment:
       - AUTH_SERVICE_URL=http://auth-service:8081
       - CATALOG_SERVICE_URL=http://catalog-service:8082
@@ -121,9 +121,9 @@ services:
     restart: unless-stopped
     depends_on:
       postgres:
-        condition: service_healthy
+        condition: service_started
       discovery-server:
-        condition: service_healthy
+        condition: service_started
     environment:
       - DB_HOST=postgres
       - DB_USER=${DB_USER:-postgres}
@@ -147,9 +147,9 @@ services:
     restart: unless-stopped
     depends_on:
       postgres:
-        condition: service_healthy
+        condition: service_started
       discovery-server:
-        condition: service_healthy
+        condition: service_started
     environment:
       - DB_HOST=postgres
       - DB_USER=${DB_USER:-postgres}
@@ -172,11 +172,11 @@ services:
     restart: unless-stopped
     depends_on:
       postgres:
-        condition: service_healthy
+        condition: service_started
       kafka:
-        condition: service_healthy
+        condition: service_started
       discovery-server:
-        condition: service_healthy
+        condition: service_started
     environment:
       - DB_HOST=postgres
       - DB_USER=${DB_USER:-postgres}
@@ -200,11 +200,11 @@ services:
     restart: unless-stopped
     depends_on:
       postgres:
-        condition: service_healthy
+        condition: service_started
       kafka:
-        condition: service_healthy
+        condition: service_started
       discovery-server:
-        condition: service_healthy
+        condition: service_started
     environment:
       - DB_HOST=postgres
       - DB_USER=${DB_USER:-postgres}
@@ -232,7 +232,7 @@ services:
       - "80:80"
     depends_on:
       api-gateway:
-        condition: service_healthy
+        condition: service_started
     networks:
       - inventory-network
     deploy:
