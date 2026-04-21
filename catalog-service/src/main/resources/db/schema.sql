@@ -33,13 +33,5 @@ CREATE TABLE IF NOT EXISTS products (
 );
 
 -- Migration: widen image_url and add artesano image support for existing DBs
-DO $$ BEGIN
-    -- Change image_url from VARCHAR(500) to TEXT if needed
-    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='products' AND column_name='image_url' AND data_type='character varying') THEN
-        ALTER TABLE products ALTER COLUMN image_url TYPE TEXT;
-    END IF;
-    -- Add image_url to artesanos if not exists
-    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='artesanos' AND column_name='image_url') THEN
-        ALTER TABLE artesanos ADD COLUMN image_url TEXT;
-    END IF;
-END $$;
+ALTER TABLE products ALTER COLUMN image_url TYPE TEXT;
+ALTER TABLE artesanos ADD COLUMN IF NOT EXISTS image_url TEXT;

@@ -1,6 +1,7 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { Observable, of, tap } from 'rxjs';
+import { catchError, timeout } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { StockResponse, EntryRequest, ExitRequest } from '../models/stock.model';
 
@@ -32,7 +33,10 @@ export class StockService {
 
   loadAll(): void {
     this._loading.set(true);
-    this.http.get<StockResponse[]>(`${this.BASE}/api/stock`).subscribe({
+    this.http.get<StockResponse[]>(`${this.BASE}/api/stock`).pipe(
+      timeout(3000),
+      catchError(() => of([]))
+    ).subscribe({
       next: data => {
         this._stock.set(data);
         this._loading.set(false);

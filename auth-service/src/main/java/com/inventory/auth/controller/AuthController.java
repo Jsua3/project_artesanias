@@ -23,8 +23,16 @@ public class AuthController {
     @PostMapping("/register")
     public Mono<UserProfileResponse> register(@RequestBody RegisterRequest request) {
         return authService.register(request)
-                .map(user -> new UserProfileResponse(user.getId(), user.getUsername(), user.getRole().name(),
-                        user.getDisplayName(), user.getAvatarUrl()));
+                .map(user -> new UserProfileResponse(
+                        user.getId(),
+                        user.getUsername(),
+                        user.getRole().name(),
+                        user.getApprovalStatus().name(),
+                        user.getDisplayName(),
+                        user.getAvatarUrl(),
+                        user.getCreatedAt(),
+                        user.getApprovedAt()
+                ));
     }
 
     @PostMapping("/login")
@@ -53,5 +61,20 @@ public class AuthController {
     @PreAuthorize("hasRole('ADMIN')")
     public Flux<UserProfileResponse> findAllUsers() {
         return authService.findAllUsers();
+    }
+
+    @GetMapping("/artisan-requests")
+    @PreAuthorize("hasRole('ADMIN')")
+    public Flux<UserProfileResponse> findPendingArtisanRequests() {
+        return authService.findPendingArtisanRequests();
+    }
+
+    @PatchMapping("/artisan-requests/{userId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public Mono<UserProfileResponse> reviewArtisanRequest(
+            @PathVariable UUID userId,
+            @AuthenticationPrincipal UUID adminUserId,
+            @RequestBody ArtisanApprovalRequest request) {
+        return authService.reviewArtisanRequest(userId, adminUserId, request);
     }
 }

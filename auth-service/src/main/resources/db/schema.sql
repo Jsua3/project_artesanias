@@ -3,9 +3,12 @@ CREATE TABLE IF NOT EXISTS user_accounts (
     username VARCHAR(255) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
     role VARCHAR(50) NOT NULL,
+    approval_status VARCHAR(30) NOT NULL DEFAULT 'APPROVED',
     display_name VARCHAR(100),
     avatar_url TEXT,
-    created_at TIMESTAMP NOT NULL
+    created_at TIMESTAMP NOT NULL,
+    approved_at TIMESTAMP,
+    approved_by UUID
 );
 
 CREATE TABLE IF NOT EXISTS refresh_tokens (
@@ -17,11 +20,12 @@ CREATE TABLE IF NOT EXISTS refresh_tokens (
 );
 
 -- Migration: add columns if they don't exist (safe for existing DBs)
-DO $$ BEGIN
-    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='user_accounts' AND column_name='display_name') THEN
-        ALTER TABLE user_accounts ADD COLUMN display_name VARCHAR(100);
-    END IF;
-    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='user_accounts' AND column_name='avatar_url') THEN
-        ALTER TABLE user_accounts ADD COLUMN avatar_url TEXT;
-    END IF;
-END $$;
+ALTER TABLE user_accounts ADD COLUMN IF NOT EXISTS approval_status VARCHAR(30) NOT NULL DEFAULT 'APPROVED';
+ALTER TABLE user_accounts ADD COLUMN IF NOT EXISTS display_name VARCHAR(100);
+ALTER TABLE user_accounts ADD COLUMN IF NOT EXISTS avatar_url TEXT;
+ALTER TABLE user_accounts ADD COLUMN IF NOT EXISTS approved_at TIMESTAMP;
+ALTER TABLE user_accounts ADD COLUMN IF NOT EXISTS approved_by UUID;
+
+UPDATE user_accounts
+SET approval_status = 'APPROVED'
+WHERE approval_status IS NULL;

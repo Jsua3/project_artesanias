@@ -5,7 +5,12 @@ WORKDIR /workspace
 RUN apt-get update && apt-get install -y --no-install-recommends maven && rm -rf /var/lib/apt/lists/*
 
 COPY pom.xml /workspace/pom.xml
+COPY discovery-server/pom.xml /workspace/discovery-server/pom.xml
+COPY api-gateway/pom.xml /workspace/api-gateway/pom.xml
 COPY auth-service/pom.xml /workspace/auth-service/pom.xml
+COPY catalog-service/pom.xml /workspace/catalog-service/pom.xml
+COPY inventory-service/pom.xml /workspace/inventory-service/pom.xml
+COPY report-service/pom.xml /workspace/report-service/pom.xml
 
 RUN mvn -f /workspace/pom.xml -pl auth-service -am dependency:go-offline -DskipTests 2>/dev/null || true
 

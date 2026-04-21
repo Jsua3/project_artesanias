@@ -65,7 +65,7 @@
 
 <mat-dialog-actions align="end">
   <button mat-button mat-dialog-close>Cancelar</button>
-  <button mat-raised-button color="primary" (click)="submit()" [disabled]="loading()">
+  <button mat-raised-button color="primary" (click)="submit()" [disabled]="form.invalid || loading()">
     @if (loading()) { <mat-spinner diameter="18" /> } @else { Guardar }
   </button>
 </mat-dialog-actions>

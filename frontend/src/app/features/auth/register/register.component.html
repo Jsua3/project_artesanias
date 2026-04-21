@@ -23,6 +23,12 @@
           <span>{{ error }}</span>
         </div>
       }
+      @if (successMessage) {
+        <div class="success-msg">
+          <mat-icon>check_circle</mat-icon>
+          <span>{{ successMessage }}</span>
+        </div>
+      }
       <form [formGroup]="form" (ngSubmit)="submit()">
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Usuario</mat-label>
@@ -46,6 +52,19 @@
             <mat-error>Mínimo 6 caracteres</mat-error>
           }
         </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Tipo de cuenta</mat-label>
+          <mat-select formControlName="role">
+            @for (option of roleOptions; track option.value) {
+              <mat-option [value]="option.value">{{ option.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <p class="role-hint">
+          {{ roleOptions.find(option => option.value === form.get('role')?.value)?.description }}
+        </p>
 
         <button mat-raised-button color="primary" type="submit"
                 class="full-width submit-btn" [disabled]="loading">
