@@ -6,6 +6,25 @@ spring:
     name: api-gateway
   cloud:
     gateway:
+      globalcors:
+        add-to-simple-url-handler-mapping: true
+        cors-configurations:
+          '[/**]':
+            allowedOrigins:
+              - "http://127.0.0.1:4200"
+              - "http://localhost:4200"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - PATCH
+              - DELETE
+              - OPTIONS
+            allowedHeaders:
+              - "*"
+            exposedHeaders:
+              - Authorization
+            allowCredentials: true
       routes:
         # Rutas públicas Auth
         - id: auth-service-public
@@ -17,7 +36,7 @@ spring:
         - id: auth-service-private
           uri: ${AUTH_SERVICE_URL:http://localhost:8081}
           predicates:
-            - Path=/api/auth/me, /api/auth/users, /api/auth/profile
+            - Path=/api/auth/me, /api/auth/users, /api/auth/profile, /api/auth/artisan-requests, /api/auth/artisan-requests/**
           filters:
             - JwtAuth
 

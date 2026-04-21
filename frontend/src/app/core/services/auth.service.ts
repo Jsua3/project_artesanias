@@ -4,7 +4,16 @@ import { Router } from '@angular/router';
 import { tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { AuthResponse, LoginRequest, RegisterRequest, UserProfile, ProfileUpdateRequest } from '../models/auth.model';
+import {
+  ApprovalStatus,
+  ArtisanReviewRequest,
+  AuthResponse,
+  LoginRequest,
+  ProfileUpdateRequest,
+  RegisterRequest,
+  UserProfile,
+  UserRole
+} from '../models/auth.model';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -16,7 +25,22 @@ export class AuthService {
 
   private loadStoredUser(): UserProfile | null {
     const stored = localStorage.getItem('user');
-    return stored ? JSON.parse(stored) : null;
+    if (!stored) {
+      return null;
+    }
+
+    return this.normalizeProfile(JSON.parse(stored) as UserProfile);
+  }
+
+  private normalizeRole(role: UserRole): UserRole {
+    return role === 'OPERATOR' ? 'ARTESANO' : role;
+  }
+
+  private normalizeProfile(profile: UserProfile): UserProfile {
+    return {
+      ...profile,
+      role: this.normalizeRole(profile.role)
+    };
   }
 
   login(req: LoginRequest): Observable<AuthResponse> {
@@ -24,10 +48,14 @@ export class AuthService {
       tap(res => {
         localStorage.setItem('accessToken', res.accessToken);
         localStorage.setItem('refreshToken', res.refreshToken);
-        const user: UserProfile = { id: '', username: res.username, role: res.role };
+        const user = this.normalizeProfile({
+          id: '',
+          username: res.username,
+          role: res.role,
+          approvalStatus: 'APPROVED'
+        });
         localStorage.setItem('user', JSON.stringify(user));
         this.currentUser.set(user);
-        // Fetch full profile (with avatar, displayName)
         this.loadProfile();
       })
     );
@@ -51,38 +79,89 @@ export class AuthService {
     return !!this.getToken();
   }
 
+  hasRole(role: UserRole): boolean {
+    return this.currentUser()?.role === this.normalizeRole(role);
+  }
+
+  hasAnyRole(...roles: UserRole[]): boolean {
+    const role = this.currentUser()?.role;
+    return !!role && roles.map(item => this.normalizeRole(item)).includes(role);
+  }
+
   isAdmin(): boolean {
-    return this.currentUser()?.role === 'ADMIN';
+    return this.hasRole('ADMIN');
+  }
+
+  isArtesano(): boolean {
+    return this.hasRole('ARTESANO');
+  }
+
+  isCliente(): boolean {
+    return this.hasRole('CLIENTE');
+  }
+
+  canManageProducts(): boolean {
+    return this.hasAnyRole('ADMIN', 'ARTESANO');
+  }
+
+  canManageCatalog(): boolean {
+    return this.hasRole('ADMIN');
+  }
+
+  canAccessOperations(): boolean {
+    return this.hasAnyRole('ADMIN', 'ARTESANO');
+  }
+
+  canAccessReports(): boolean {
+    return this.hasAnyRole('ADMIN', 'ARTESANO');
+  }
+
+  canApproveArtisans(): boolean {
+    return this.hasRole('ADMIN');
   }
 
   getUsers(): Observable<UserProfile[]> {
     return this.http.get<UserProfile[]>(`${this.API}/users`);
   }
 
+  getPendingArtisanRequests(): Observable<UserProfile[]> {
+    return this.http.get<UserProfile[]>(`${this.API}/artisan-requests`);
+  }
+
+  reviewArtisanRequest(userId: string, decision: ApprovalStatus): Observable<UserProfile> {
+    const payload: ArtisanReviewRequest = {
+      decision: decision as 'APPROVED' | 'REJECTED'
+    };
+    return this.http.patch<UserProfile>(`${this.API}/artisan-requests/${userId}`, payload);
+  }
+
   getMe(): Observable<UserProfile> {
     return this.http.get<UserProfile>(`${this.API}/me`);
   }
 
-  /** Load full profile from /me and update local state */
   loadProfile(): void {
     this.getMe().subscribe({
       next: (profile) => {
-        const current = this.currentUser();
-        const merged: UserProfile = {
-          ...current,
+        const merged = this.normalizeProfile({
+          ...this.currentUser(),
           ...profile
-        };
+        } as UserProfile);
         localStorage.setItem('user', JSON.stringify(merged));
         this.currentUser.set(merged);
+      },
+      error: () => {
+        const current = this.currentUser();
+        if (current) {
+          localStorage.setItem('user', JSON.stringify(current));
+        }
       }
     });
   }
 
-  /** Update profile (display name, avatar) */
   updateProfile(req: ProfileUpdateRequest): Observable<UserProfile> {
     return this.http.put<UserProfile>(`${this.API}/profile`, req).pipe(
       tap(profile => {
-        const merged: UserProfile = { ...this.currentUser(), ...profile };
+        const merged = this.normalizeProfile({ ...this.currentUser(), ...profile } as UserProfile);
         localStorage.setItem('user', JSON.stringify(merged));
         this.currentUser.set(merged);
       })

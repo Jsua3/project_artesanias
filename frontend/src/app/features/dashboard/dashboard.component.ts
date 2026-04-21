@@ -1,7 +1,9 @@
 import { Component, OnInit, inject, computed } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatButtonModule } from '@angular/material/button';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartData, ChartOptions } from 'chart.js';
 import { ProductService } from '../../core/services/product.service';
@@ -13,7 +15,7 @@ import { AuthService } from '../../core/services/auth.service';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [MatCardModule, MatIconModule, MatProgressSpinnerModule, BaseChartDirective],
+  imports: [MatCardModule, MatIconModule, MatProgressSpinnerModule, MatButtonModule, RouterLink, BaseChartDirective],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })
@@ -24,22 +26,38 @@ export class DashboardComponent implements OnInit {
   private reportService = inject(ReportService);
   auth = inject(AuthService);
 
-  // Loading derivado de los servicios
   loading = computed(() =>
     this.productService.loading() ||
     this.categoryService.loading() ||
     this.stockService.loading()
   );
 
-  // Stats derivados reactivamente con computed()
-  stats = computed(() => ({
-    products: this.productService.productCount(),
-    categories: this.categoryService.categoryCount(),
-    stockItems: this.stockService.stockCount(),
-    lowStock: this.reportService.alerts().length
-  }));
+  isArtesano = computed(() => this.auth.isArtesano());
 
-  // Datos del gráfico derivados con computed()
+  stats = computed(() => {
+    if (this.isArtesano()) {
+      return [
+        { value: this.productService.productCount(), label: 'Artesanías', icon: 'palette', tone: 'terracotta' },
+        { value: this.stockService.stockCount(), label: 'En stock', icon: 'warehouse', tone: 'sage' },
+        { value: this.reportService.alerts().length, label: 'Alertas', icon: 'warning_amber', tone: 'danger' }
+      ];
+    }
+
+    return [
+      { value: this.productService.productCount(), label: 'Artesanías', icon: 'palette', tone: 'terracotta' },
+      { value: this.categoryService.categoryCount(), label: 'Categorías', icon: 'category', tone: 'mauve' },
+      { value: this.stockService.stockCount(), label: 'En stock', icon: 'warehouse', tone: 'sage' },
+      { value: this.reportService.alerts().length, label: 'Stock bajo', icon: 'warning_amber', tone: 'danger' }
+    ];
+  });
+
+  quickLinks = [
+    { label: 'Gestionar artesanías', route: '/products', icon: 'palette' },
+    { label: 'Ventas', route: '/ventas', icon: 'point_of_sale' },
+    { label: 'Inventario', route: '/stock', icon: 'inventory_2' },
+    { label: 'Reportes', route: '/reports', icon: 'assessment' }
+  ];
+
   barChartData = computed<ChartData<'bar'>>(() => {
     const top10 = this.stockService.top10ByQuantity();
     const productMap = this.productService.productMap();
@@ -85,7 +103,7 @@ export class DashboardComponent implements OnInit {
     this.productService.loadAll();
     this.categoryService.loadAll();
     this.stockService.loadAll();
-    if (this.auth.isAdmin()) {
+    if (this.auth.canAccessReports()) {
       this.reportService.loadAll();
     }
   }

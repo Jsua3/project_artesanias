@@ -1,21 +1,28 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject } from '@angular/core';
-import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { UserRole } from '../../../core/models/auth.model';
 import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
   imports: [
-    ReactiveFormsModule, RouterLink,
-    MatFormFieldModule, MatInputModule,
-    MatButtonModule, MatIconModule, MatProgressSpinnerModule
+    ReactiveFormsModule,
+    RouterLink,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    MatMenuModule,
+    MatProgressSpinnerModule
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'
@@ -33,15 +40,27 @@ export class LoginComponent {
   loading = false;
   error = '';
   hidePassword = true;
+  readonly registerOptions: { role: UserRole; label: string; description: string }[] = [
+    { role: 'CLIENTE', label: 'Cliente', description: 'Registro directo para clientes del sistema.' },
+    { role: 'ARTESANO', label: 'Artesano', description: 'Requiere aprobacion del administrador antes de iniciar sesion.' }
+  ];
 
   submit(): void {
     if (this.form.invalid) return;
     this.loading = true;
     this.error = '';
     this.auth.login(this.form.value as any).subscribe({
-      next: () => this.router.navigate(['/dashboard']),
-      error: () => {
-        this.error = 'Usuario o contraseña incorrectos';
+      next: async () => {
+        try {
+          await this.router.navigate(['/dashboard']);
+        } catch {
+          this.error = 'Inicio de sesion correcto, pero no se pudo abrir el dashboard.';
+        } finally {
+          this.loading = false;
+        }
+      },
+      error: (error: HttpErrorResponse) => {
+        this.error = error.error?.message || 'Usuario o contrasena incorrectos';
         this.loading = false;
       }
     });
