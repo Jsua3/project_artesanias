@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body{margin:0;padding:22px 26px;background:var(--cream);box-sizing:border-box;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .stat{background:var(--warm-white);border:1px solid var(--border-soft);border-radius:12px;padding:16px;display:flex;gap:12px;align-items:center;box-shadow:0 2px 8px -2px rgba(62,39,35,.08)}
+  .ico{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .ico.clay{background:rgba(110,97,82,.14);color:var(--greige-deep)}
+  .ico.mauve{background:rgba(142,116,130,.18);color:var(--terra-purple-deep)}
+  .ico.sage{background:rgba(78,90,66,.14);color:var(--terra-green-deep)}
+  .val{font-family:'Fraunces',serif;font-size:26px;font-weight:600;color:var(--coffee);line-height:1}
+  .lbl{font-family:'Outfit',sans-serif;font-size:10px;color:var(--fg-2);text-transform:uppercase;letter-spacing:.2em;margin-top:4px}
+</style></head>
+<body>
+  <div class="stat"><div class="ico clay"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3c-4 0-7 3-7 7v6h14v-6c0-4-3-7-7-7z"/><path d="M5 19h14"/></svg></div><div><div class="val">248</div><div class="lbl">Piezas</div></div></div>
+  <div class="stat"><div class="ico mauve"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M5 20c0-4 3-7 7-7s7 3 7 7"/></svg></div><div><div class="val">42</div><div class="lbl">Maestros</div></div></div>
+  <div class="stat"><div class="ico sage"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="7" width="16" height="13" rx="1"/><path d="M8 7V4h8v3"/></svg></div><div><div class="val">1.820</div><div class="lbl">En stock</div></div></div>
+</body></html>

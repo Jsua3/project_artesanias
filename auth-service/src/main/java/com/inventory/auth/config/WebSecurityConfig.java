@@ -32,7 +32,8 @@ public class WebSecurityConfig {
         return http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(exchanges -> exchanges
-                        .pathMatchers("/api/auth/register", "/api/auth/login", "/api/auth/refresh").permitAll()
+                        .pathMatchers("/api/auth/register", "/api/auth/register-cliente",
+                                "/api/auth/login", "/api/auth/refresh").permitAll()
                         .anyExchange().authenticated()
                 )
                 .addFilterAt(gatewayAuthFilter(), SecurityWebFiltersOrder.AUTHENTICATION)

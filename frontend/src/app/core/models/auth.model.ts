@@ -6,6 +6,13 @@ export interface LoginRequest {
 export interface RegisterRequest {
   username: string;
   password: string;
+  role?: string;
+}
+
+export interface RegisterClienteRequest {
+  username: string;
+  password: string;
+  displayName?: string;
 }
 
 export interface AuthResponse {

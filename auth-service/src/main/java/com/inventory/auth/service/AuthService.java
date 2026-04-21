@@ -38,7 +38,7 @@ public class AuthService {
         user.setId(UUID.randomUUID());
         user.setUsername(request.username());
         user.setPasswordHash(passwordEncoder.encode(request.password()));
-        
+
         UserRole role = UserRole.OPERATOR;
         if (request.role() != null) {
             try {
@@ -48,7 +48,28 @@ public class AuthService {
             }
         }
         user.setRole(role);
-        
+
+        user.setCreatedAt(LocalDateTime.now());
+        return userRepository.save(user)
+                .map(u -> {
+                    u.setNew(false);
+                    return u;
+                });
+    }
+
+    /**
+     * Registro público de clientes finales. Siempre asigna rol CLIENTE,
+     * sin importar qué venga en el request.
+     */
+    public Mono<UserAccount> registerCliente(RegisterClienteRequest request) {
+        UserAccount user = new UserAccount();
+        user.setId(UUID.randomUUID());
+        user.setUsername(request.username());
+        user.setPasswordHash(passwordEncoder.encode(request.password()));
+        user.setRole(UserRole.CLIENTE);
+        if (request.displayName() != null && !request.displayName().isBlank()) {
+            user.setDisplayName(request.displayName());
+        }
         user.setCreatedAt(LocalDateTime.now());
         return userRepository.save(user)
                 .map(u -> {

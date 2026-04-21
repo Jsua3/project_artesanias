@@ -27,6 +27,14 @@ public class AuthController {
                         user.getDisplayName(), user.getAvatarUrl()));
     }
 
+    /** Registro público de clientes finales — siempre asigna rol CLIENTE. */
+    @PostMapping("/register-cliente")
+    public Mono<UserProfileResponse> registerCliente(@RequestBody RegisterClienteRequest request) {
+        return authService.registerCliente(request)
+                .map(user -> new UserProfileResponse(user.getId(), user.getUsername(), user.getRole().name(),
+                        user.getDisplayName(), user.getAvatarUrl()));
+    }
+
     @PostMapping("/login")
     public Mono<AuthResponse> login(@RequestBody LoginRequest request) {
         return authService.login(request);

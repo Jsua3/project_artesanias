@@ -1,0 +1,7 @@
+@use '../login/login.component' as login;
+
+.auth-footer__sub {
+  margin-top: 4px;
+  font-size: 13px;
+  opacity: 0.85;
+}

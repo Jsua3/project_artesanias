@@ -1,0 +1,1566 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Filandia — Municipio destacado del Paisaje Cultural Cafetero, hogar de la cestería en bejuco. REBBECA ecosistema artesanal.">
+    <meta name="theme-color" content="#FAF7F2">
+    <title>Filandia — Municipio Destacado | REBBECA</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz@0,72;0,100;1,72&family=Inter+Tight:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* ============================================
+           DESIGN SYSTEM
+           ============================================ */
+        :root {
+            /* Colors */
+            --ivory: #FAF7F2;
+            --bone: #F0EBE3;
+            --espresso: #2C2622;
+            --ink: #1A1614;
+            --terracotta: #B5724C;
+            --terracotta-deep: #8D5A3A;
+            --sage: #7A8F6D;
+            --sage-muted: #A3B496;
+            --rose: #C4929E;
+            --stone: #9A928A;
+
+            /* Typography */
+            --font-serif: 'Fraunces', serif;
+            --font-sans: 'Inter Tight', sans-serif;
+
+            /* Spacing */
+            --space-xs: 0.5rem;
+            --space-sm: 1rem;
+            --space-md: 2rem;
+            --space-lg: 3rem;
+            --space-xl: 4rem;
+            --space-2xl: 6rem;
+
+            /* Transitions */
+            --transition-smooth: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-bounce: 600ms cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            :root {
+                --transition-smooth: 0ms;
+                --transition-bounce: 0ms;
+            }
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* ============================================
+           RESET & BASE STYLES
+           ============================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--ivory);
+            color: var(--espresso);
+            line-height: 1.75;
+            font-weight: 300;
+            font-size: 1rem;
+            overflow-x: hidden;
+        }
+
+        a {
+            color: var(--terracotta);
+            text-decoration: none;
+            transition: color var(--transition-smooth);
+        }
+
+        a:hover {
+            color: var(--terracotta-deep);
+        }
+
+        a:focus-visible {
+            outline: 2px solid var(--terracotta);
+            outline-offset: 4px;
+            border-radius: 4px;
+        }
+
+        button {
+            font-family: var(--font-sans);
+            cursor: pointer;
+            border: none;
+            transition: all var(--transition-smooth);
+        }
+
+        button:focus-visible {
+            outline: 2px solid var(--terracotta);
+            outline-offset: 4px;
+        }
+
+        /* ============================================
+           UTILITY CLASSES
+           ============================================ */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 var(--space-md);
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                padding: 0 var(--space-lg);
+            }
+        }
+
+        .section {
+            padding: var(--space-2xl) 0;
+        }
+
+        @media (max-width: 768px) {
+            .section {
+                padding: var(--space-xl) 0;
+            }
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+
+        /* ============================================
+           SCROLL PROGRESS BAR
+           ============================================ */
+        .scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--sage), var(--rose));
+            width: 0%;
+            z-index: 1000;
+            transition: width var(--transition-smooth);
+        }
+
+        /* ============================================
+           NAVIGATION
+           ============================================ */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 999;
+            padding: var(--space-md) 0;
+            background-color: transparent;
+            backdrop-filter: blur(0px);
+            transition: backdrop-filter var(--transition-smooth), background-color var(--transition-smooth);
+        }
+
+        nav.scrolled {
+            backdrop-filter: blur(12px);
+            background-color: rgba(250, 247, 242, 0.85);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .nav-brand h1 {
+            font-family: var(--font-serif);
+            font-size: clamp(1.1rem, 3vw, 1.4rem);
+            font-weight: 600;
+            letter-spacing: 3px;
+            color: var(--ink);
+        }
+
+        .nav-brand p {
+            font-family: var(--font-sans);
+            font-size: 0.65rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--stone);
+            font-weight: 500;
+        }
+
+        .nav-links {
+            display: none;
+            list-style: none;
+            gap: var(--space-lg);
+            align-items: center;
+        }
+
+        @media (min-width: 1024px) {
+            .nav-links {
+                display: flex;
+            }
+        }
+
+        .nav-links a {
+            font-size: 0.9rem;
+            font-weight: 400;
+            color: var(--espresso);
+            position: relative;
+            padding-bottom: 4px;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--terracotta);
+            transition: width var(--transition-smooth);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-mobile-toggle {
+            display: block;
+            width: 24px;
+            height: 24px;
+            flex-direction: column;
+            justify-content: space-between;
+            background: none;
+            padding: 0;
+        }
+
+        @media (min-width: 1024px) {
+            .nav-mobile-toggle {
+                display: none;
+            }
+        }
+
+        .nav-mobile-toggle span {
+            display: block;
+            width: 100%;
+            height: 2px;
+            background-color: var(--ink);
+            transition: all var(--transition-smooth);
+        }
+
+        /* ============================================
+           HERO SECTION
+           ============================================ */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 120px var(--space-md) var(--space-xl);
+            overflow: hidden;
+            background-color: var(--ivory);
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(122, 143, 109, 0.08) 0%, transparent 70%);
+            border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+            animation: float 15s ease-in-out infinite;
+            z-index: 0;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: -20%;
+            left: -5%;
+            width: 350px;
+            height: 350px;
+            background: radial-gradient(circle, rgba(181, 114, 76, 0.06) 0%, transparent 70%);
+            border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+            animation: float 18s ease-in-out infinite reverse;
+            z-index: 0;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) translateX(0px); }
+            50% { transform: translateY(-30px) translateX(15px); }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-back {
+            position: absolute;
+            top: 120px;
+            left: var(--space-md);
+            font-size: 0.95rem;
+            color: var(--stone);
+            transition: color var(--transition-smooth);
+            z-index: 2;
+        }
+
+        .hero-back:hover {
+            color: var(--terracotta);
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background-color: var(--sage-muted);
+            color: var(--ivory);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: var(--space-md);
+        }
+
+        .hero h1 {
+            font-family: var(--font-serif);
+            font-size: clamp(3.5rem, 8vw, 7rem);
+            font-weight: 300;
+            letter-spacing: 8px;
+            color: var(--ink);
+            margin-bottom: var(--space-xs);
+            line-height: 1.1;
+            font-optical-sizing: auto;
+        }
+
+        .hero h2 {
+            font-family: var(--font-serif);
+            font-size: clamp(1.2rem, 2.5vw, 2rem);
+            font-weight: 300;
+            color: var(--stone);
+            letter-spacing: 4px;
+            margin-bottom: var(--space-lg);
+            text-transform: uppercase;
+        }
+
+        .hero p {
+            font-size: clamp(1rem, 1.2vw, 1.1rem);
+            color: var(--espresso);
+            margin-bottom: var(--space-xl);
+            line-height: 1.85;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-sm);
+            justify-content: center;
+            margin-bottom: var(--space-2xl);
+        }
+
+        .tag {
+            background-color: var(--bone);
+            color: var(--espresso);
+            padding: 8px 16px;
+            border-radius: 24px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border: 1px solid rgba(181, 114, 76, 0.2);
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: var(--space-lg);
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(10px); }
+        }
+
+        .scroll-indicator svg {
+            width: 24px;
+            height: 24px;
+            stroke: var(--terracotta);
+            stroke-width: 2;
+            fill: none;
+        }
+
+        /* ============================================
+           MARQUEE TICKER
+           ============================================ */
+        .marquee {
+            overflow: hidden;
+            background-color: var(--bone);
+            padding: var(--space-md) 0;
+            margin-bottom: var(--space-xl);
+        }
+
+        .marquee-content {
+            display: flex;
+            gap: var(--space-lg);
+            white-space: nowrap;
+            animation: marquee 25s linear infinite;
+            font-size: 0.95rem;
+            font-weight: 500;
+            letter-spacing: 2px;
+            color: var(--espresso);
+        }
+
+        .marquee-content span {
+            flex-shrink: 0;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .marquee-content {
+                animation: none;
+                transform: translateX(0);
+            }
+        }
+
+        /* ============================================
+           PROFILE SECTION
+           ============================================ */
+        .profile {
+            background-color: var(--ivory);
+        }
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-2xl);
+            align-items: start;
+        }
+
+        @media (min-width: 1024px) {
+            .profile-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .profile-content h2 {
+            font-family: var(--font-serif);
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            font-weight: 400;
+            color: var(--ink);
+            margin-bottom: var(--space-lg);
+            line-height: 1.2;
+        }
+
+        .profile-content p {
+            font-size: 1.05rem;
+            color: var(--espresso);
+            margin-bottom: var(--space-lg);
+            line-height: 1.85;
+        }
+
+        .data-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: var(--space-md);
+            margin-top: var(--space-2xl);
+        }
+
+        .data-card {
+            background-color: var(--bone);
+            padding: var(--space-lg);
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid rgba(181, 114, 76, 0.1);
+            transition: all var(--transition-smooth);
+        }
+
+        .data-card:hover {
+            border-color: var(--sage);
+            transform: translateY(-4px);
+        }
+
+        .data-card-icon {
+            width: 40px;
+            height: 40px;
+            margin: 0 auto var(--space-sm);
+        }
+
+        .data-card-icon svg {
+            width: 100%;
+            height: 100%;
+            stroke: var(--sage);
+            stroke-width: 1.5;
+            fill: none;
+        }
+
+        .data-card-number {
+            font-family: var(--font-serif);
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--sage);
+            line-height: 1;
+            margin-bottom: var(--space-xs);
+        }
+
+        .data-card-label {
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--stone);
+        }
+
+        /* ============================================
+           TRADITION SECTION (DARK)
+           ============================================ */
+        .tradition {
+            background: linear-gradient(135deg, var(--ink) 0%, #3A3531 100%);
+            color: var(--ivory);
+        }
+
+        .tradition h2 {
+            font-family: var(--font-serif);
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            font-weight: 400;
+            margin-bottom: var(--space-lg);
+            line-height: 1.2;
+            text-align: center;
+        }
+
+        .tradition-quote {
+            font-family: var(--font-serif);
+            font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+            font-weight: 300;
+            margin-bottom: var(--space-2xl);
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.7;
+            color: var(--rose);
+            text-align: center;
+        }
+
+        .tradition-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--space-lg);
+            margin-top: var(--space-2xl);
+        }
+
+        .tradition-card {
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: var(--space-lg);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all var(--transition-smooth);
+        }
+
+        .tradition-card:hover {
+            background-color: rgba(181, 114, 76, 0.1);
+            border-color: var(--terracotta);
+            transform: translateY(-4px);
+        }
+
+        .tradition-card h3 {
+            font-family: var(--font-serif);
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: var(--ivory);
+            margin-bottom: var(--space-md);
+        }
+
+        .tradition-card p {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        /* ============================================
+           VENTURES SECTION (GRID)
+           ============================================ */
+        .ventures {
+            background-color: var(--ivory);
+        }
+
+        .ventures h2 {
+            font-family: var(--font-serif);
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            font-weight: 400;
+            color: var(--ink);
+            text-align: center;
+            margin-bottom: var(--space-md);
+            line-height: 1.2;
+        }
+
+        .ventures-intro {
+            text-align: center;
+            font-size: 1.05rem;
+            color: var(--espresso);
+            margin-bottom: var(--space-2xl);
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .ventures-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--space-lg);
+        }
+
+        .venture-card {
+            background-color: var(--bone);
+            padding: var(--space-lg);
+            border-radius: 8px;
+            border: 1px solid rgba(181, 114, 76, 0.1);
+            display: flex;
+            flex-direction: column;
+            transition: all var(--transition-smooth);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .venture-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--sage), transparent);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform var(--transition-smooth);
+        }
+
+        .venture-card:hover {
+            background-color: var(--ivory);
+            border-color: var(--sage);
+            transform: translateY(-8px);
+            box-shadow: 0 12px 32px rgba(122, 143, 109, 0.12);
+        }
+
+        .venture-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .venture-number {
+            font-family: var(--font-serif);
+            font-size: 3rem;
+            font-weight: 600;
+            color: var(--sage);
+            opacity: 0.3;
+            line-height: 1;
+            margin-bottom: var(--space-md);
+        }
+
+        .venture-card h3 {
+            font-family: var(--font-serif);
+            font-size: 1.3rem;
+            font-weight: 500;
+            color: var(--ink);
+            margin-bottom: var(--space-md);
+            line-height: 1.4;
+        }
+
+        .venture-card .category {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--sage);
+            margin-bottom: var(--space-sm);
+        }
+
+        .venture-card p {
+            font-size: 0.95rem;
+            color: var(--stone);
+            line-height: 1.7;
+            flex-grow: 1;
+        }
+
+        /* ============================================
+           TOURISM SECTION
+           ============================================ */
+        .tourism {
+            background-color: var(--ivory);
+        }
+
+        .tourism h2 {
+            font-family: var(--font-serif);
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            font-weight: 400;
+            color: var(--ink);
+            text-align: center;
+            margin-bottom: var(--space-2xl);
+            line-height: 1.2;
+        }
+
+        .tourism-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--space-lg);
+        }
+
+        .tourism-card {
+            background: linear-gradient(135deg, var(--bone) 0%, var(--ivory) 100%);
+            padding: var(--space-lg);
+            border-radius: 8px;
+            border: 1px solid rgba(181, 114, 76, 0.1);
+            display: flex;
+            flex-direction: column;
+            transition: all var(--transition-smooth);
+        }
+
+        .tourism-card:hover {
+            border-color: var(--terracotta);
+            transform: translateY(-8px);
+            box-shadow: 0 12px 32px rgba(181, 114, 76, 0.12);
+        }
+
+        .tourism-card h3 {
+            font-family: var(--font-serif);
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: var(--ink);
+            margin-bottom: var(--space-md);
+            line-height: 1.4;
+        }
+
+        .tourism-card p {
+            font-size: 0.95rem;
+            color: var(--stone);
+            line-height: 1.7;
+            flex-grow: 1;
+        }
+
+        /* ============================================
+           REBBECA CONNECTION SECTION
+           ============================================ */
+        .rebbeca-connection {
+            background: linear-gradient(135deg, var(--bone) 0%, var(--ivory) 100%);
+        }
+
+        .rebbeca-connection h2 {
+            font-family: var(--font-serif);
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            font-weight: 400;
+            color: var(--ink);
+            text-align: center;
+            margin-bottom: var(--space-2xl);
+            line-height: 1.2;
+        }
+
+        .pillars-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-lg);
+            margin-bottom: var(--space-2xl);
+        }
+
+        .pillar {
+            background-color: var(--ivory);
+            padding: var(--space-lg);
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid rgba(181, 114, 76, 0.1);
+            transition: all var(--transition-smooth);
+        }
+
+        .pillar:hover {
+            border-color: var(--terracotta);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(181, 114, 76, 0.08);
+        }
+
+        .pillar h3 {
+            font-family: var(--font-serif);
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--ink);
+        }
+
+        .challenge-card {
+            background: linear-gradient(135deg, var(--ink) 0%, #3A3531 100%);
+            color: var(--ivory);
+            padding: var(--space-2xl);
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .challenge-card h3 {
+            font-family: var(--font-serif);
+            font-size: 1.5rem;
+            font-weight: 500;
+            margin-bottom: var(--space-lg);
+        }
+
+        .challenge-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: var(--space-lg);
+        }
+
+        .challenge-stat {
+            padding: var(--space-md);
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .challenge-stat-number {
+            font-family: var(--font-serif);
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--rose);
+            margin-bottom: var(--space-xs);
+        }
+
+        .challenge-stat-label {
+            font-size: 0.85rem;
+            font-weight: 400;
+            line-height: 1.5;
+        }
+
+        /* ============================================
+           CTA SECTION
+           ============================================ */
+        .cta {
+            background: linear-gradient(135deg, var(--sage) 0%, var(--sage-muted) 100%);
+            color: var(--ivory);
+            text-align: center;
+            padding: var(--space-2xl) var(--space-md);
+        }
+
+        .cta h2 {
+            font-family: var(--font-serif);
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            font-weight: 400;
+            margin-bottom: var(--space-md);
+            line-height: 1.2;
+        }
+
+        .cta p {
+            font-size: 1.05rem;
+            margin-bottom: var(--space-lg);
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.8;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: var(--space-md);
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 14px 32px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+            transition: all var(--transition-smooth);
+        }
+
+        .btn-primary {
+            background-color: var(--ivory);
+            color: var(--sage);
+            font-weight: 600;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left var(--transition-smooth);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--bone);
+            box-shadow: 0 8px 24px rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--ivory);
+            border: 2px solid var(--ivory);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--ivory);
+            color: var(--sage);
+            transform: translateY(-2px);
+        }
+
+        /* ============================================
+           FOOTER
+           ============================================ */
+        footer {
+            background-color: var(--ink);
+            color: var(--ivory);
+            padding: var(--space-xl) var(--space-md);
+            text-align: center;
+        }
+
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-lg);
+            align-items: center;
+        }
+
+        .footer-brand h3 {
+            font-family: var(--font-serif);
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: var(--space-xs);
+            letter-spacing: 2px;
+        }
+
+        .footer-brand p {
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--stone);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: var(--space-lg);
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--rose);
+            font-size: 0.95rem;
+            transition: color var(--transition-smooth);
+        }
+
+        .footer-links a:hover {
+            color: var(--ivory);
+        }
+
+        .footer-copyright {
+            font-size: 0.8rem;
+            color: var(--stone);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: var(--space-lg);
+        }
+
+        /* ============================================
+           SCROLL REVEAL ANIMATIONS
+           ============================================ */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 700ms var(--transition-smooth), transform 700ms var(--transition-smooth);
+        }
+
+        /* Stagger animation delays */
+        .reveal:nth-child(1) { transition-delay: 0ms; }
+        .reveal:nth-child(2) { transition-delay: 100ms; }
+        .reveal:nth-child(3) { transition-delay: 200ms; }
+        .reveal:nth-child(4) { transition-delay: 300ms; }
+        .reveal:nth-child(5) { transition-delay: 400ms; }
+        .reveal:nth-child(6) { transition-delay: 500ms; }
+
+        /* ============================================
+           RESPONSIVE
+           ============================================ */
+        @media (max-width: 768px) {
+            .hero {
+                padding-top: 100px;
+            }
+
+            .hero-back {
+                top: 100px;
+            }
+
+            .section {
+                padding: var(--space-xl) 0;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+            }
+
+            .cta-buttons .btn {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero h1 {
+                letter-spacing: 4px;
+            }
+
+            .container {
+                padding: 0 var(--space-sm);
+            }
+
+            .hero-tags {
+                gap: 8px;
+            }
+
+            .tag {
+                font-size: 0.75rem;
+                padding: 6px 12px;
+            }
+        }
+
+        /* ============================================
+           GRAIN TEXTURE OVERLAY
+           ============================================ */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4"/><feColorMatrix type="saturate" values="0.3"/></filter><rect width="100" height="100" fill="rgba(0,0,0,0.01)" filter="url(%23noise)"/></svg>');
+            z-index: -1;
+        }
+    </style>
+</head>
+<body>
+    <!-- Scroll Progress Bar -->
+    <div class="scroll-progress" role="presentation"></div>
+
+    <!-- Navigation -->
+    <nav role="navigation" aria-label="Principal">
+        <div class="container">
+            <div class="nav-content">
+                <a href="rebbeca-landing-v2.html" class="nav-brand">
+                    <h1>REBBECA</h1>
+                    <p>ecosistema artesanal</p>
+                </a>
+                <ul class="nav-links">
+                    <li><a href="#perfil">Filandia</a></li>
+                    <li><a href="#tradicion">Tradición</a></li>
+                    <li><a href="#emprendimientos">Emprendimientos</a></li>
+                    <li><a href="#turismo">Turismo</a></li>
+                    <li><a href="#contacto">Contacto</a></li>
+                </ul>
+                <button class="nav-mobile-toggle" aria-label="Menú">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+        <a href="rebbeca-landing-v2.html" class="hero-back">← Volver a REBBECA</a>
+
+        <div class="hero-content">
+            <div class="hero-badge">Municipio destacado</div>
+            <h1>FILANDIA</h1>
+            <h2>La colina iluminada</h2>
+            <p>Donde los balcones cuentan historias y las manos tejen tradición. El corazón cestero del Quindío.</p>
+
+            <div class="hero-tags">
+                <span class="tag">Paisaje Cultural Cafetero</span>
+                <span class="tag">Cestería en bejuco</span>
+                <span class="tag">Turismo artesanal</span>
+                <span class="tag">Reconocimiento ONU Turismo</span>
+            </div>
+        </div>
+
+        <div class="marquee">
+            <div class="marquee-content">
+                <span>·</span>
+                <span>Filandia</span>
+                <span>·</span>
+                <span>Balcones coloridos</span>
+                <span>·</span>
+                <span>Cestería ancestral</span>
+                <span>·</span>
+                <span>Bejuco</span>
+                <span>·</span>
+                <span>Arquitectura paisa</span>
+                <span>·</span>
+                <span>Maestros artesanos</span>
+                <span>·</span>
+                <span>Filandia</span>
+                <span>·</span>
+                <span>Balcones coloridos</span>
+                <span>·</span>
+                <span>Cestería ancestral</span>
+                <span>·</span>
+                <span>Bejuco</span>
+                <span>·</span>
+                <span>Arquitectura paisa</span>
+                <span>·</span>
+                <span>Maestros artesanos</span>
+                <span>·</span>
+            </div>
+        </div>
+
+        <div class="scroll-indicator">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M12 5v14M5 12l7 7 7-7" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </div>
+    </section>
+
+    <!-- Profile Section -->
+    <section class="profile section" id="perfil">
+        <div class="container">
+            <div class="profile-grid">
+                <div class="profile-content reveal">
+                    <h2>La colina iluminada del Paisaje Cultural Cafetero</h2>
+                    <p>Filandia es la segunda población más antigua del Quindío, fundada en 1878. Ubicada a 1,923 metros de altitud sobre coloridas colinas, este municipio cautiva con su arquitectura paisa tradicional, sus fachadas de múltiples colores y una identidad única donde los balcones lucen canastos tejidos en bejuco.</p>
+                    <p>En 2025, Filandia fue reconocida como Destino Turístico Inteligente por la Organización Mundial del Turismo, consolidándose como epicentro de la cestería ancestral y el turismo artesanal del Quindío.</p>
+                </div>
+
+                <div class="data-cards reveal">
+                    <div class="data-card">
+                        <div class="data-card-icon">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"/>
+                            </svg>
+                        </div>
+                        <div class="data-card-number">1,923m</div>
+                        <div class="data-card-label">Altitud</div>
+                    </div>
+
+                    <div class="data-card">
+                        <div class="data-card-icon">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"/>
+                            </svg>
+                        </div>
+                        <div class="data-card-number">18°C</div>
+                        <div class="data-card-label">Temperatura</div>
+                    </div>
+
+                    <div class="data-card">
+                        <div class="data-card-icon">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"/>
+                            </svg>
+                        </div>
+                        <div class="data-card-number">1878</div>
+                        <div class="data-card-label">Fundación</div>
+                    </div>
+
+                    <div class="data-card">
+                        <div class="data-card-icon">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"/>
+                            </svg>
+                        </div>
+                        <div class="data-card-number">~14K</div>
+                        <div class="data-card-label">Habitantes</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tradition Section -->
+    <section class="tradition section" id="tradicion">
+        <div class="container">
+            <h2>La cestería en bejuco: arte que se teje entre generaciones</h2>
+            <p class="tradition-quote">En el Barrio San José, familias enteras perpetúan la técnica ancestral de tejido con fibras de bejuco, transformando plantas silvestres en obras de arte que viajan por el mundo.</p>
+
+            <div class="tradition-grid">
+                <div class="tradition-card reveal">
+                    <h3>Cestería en bejuco</h3>
+                    <p>Técnica ancestral de tejido con fibras naturales. Maestros artesanos crean canastos, bolsos, lámparas y accesorios únicos, perpetuando un legado de más de 150 años.</p>
+                </div>
+
+                <div class="tradition-card reveal">
+                    <h3>Fiestas del Canasto</h3>
+                    <p>Festival de agosto que celebra la tradición cestería con desfiles de balcones decorados, ferias artesanales, y competencias de tejido que reúnen a maestros de toda la región.</p>
+                </div>
+
+                <div class="tradition-card reveal">
+                    <h3>Barrio San José</h3>
+                    <p>Epicentro de la tradición cestería donde viven y trabajan los maestros tejedores. Sus calles rezuman historia y sus talleres abiertos muestran el proceso completo de creación.</p>
+                </div>
+
+                <div class="tradition-card reveal">
+                    <h3>Ruta de Maestros Artesanos</h3>
+                    <p>Conexión turística que vincula a Filandia con Quimbaya y Salento, permitiendo a visitantes conocer los talleres, procesos de trabajo y la vida cotidiana de maestros artesanos.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ventures Section -->
+    <section class="ventures section" id="emprendimientos">
+        <div class="container">
+            <h2>Los rostros detrás del talento filandés</h2>
+            <p class="ventures-intro">Emprendimientos y iniciativas que transforman la identidad de Filandia en oportunidades económicas sostenibles.</p>
+
+            <div class="ventures-grid">
+                <div class="venture-card reveal">
+                    <div class="venture-number">01</div>
+                    <div class="category">Artesanía</div>
+                    <h3>Cestería y fibras naturales</h3>
+                    <p>Maestros tejedores de bejuco que crean canastos, bolsos, lámparas y productos únicos combinando técnicas ancestrales con diseño contemporáneo.</p>
+                </div>
+
+                <div class="venture-card reveal">
+                    <div class="venture-number">02</div>
+                    <div class="category">Café de origen</div>
+                    <h3>Café artesanal de altura</h3>
+                    <p>Productores especializados en café de origen a 1,900m que ofrecen experiencias de tour, degustación y venta directa con trazabilidad completa.</p>
+                </div>
+
+                <div class="venture-card reveal">
+                    <div class="venture-number">03</div>
+                    <div class="category">Agrotransformación</div>
+                    <h3>Derivados y conservas</h3>
+                    <p>Emprendedoras que producen mermeladas, dulces artesanales, chocolates, conservas y derivados de frutas con técnicas tradicionales y empaques sostenibles.</p>
+                </div>
+
+                <div class="venture-card reveal">
+                    <div class="venture-number">04</div>
+                    <div class="category">Artesanía</div>
+                    <h3>Arte y pintura local</h3>
+                    <p>Artistas filandeses que crean obras con paisajes del Quindío, murales comunitarios, y productos decorativos que reflejan la identidad cultural local.</p>
+                </div>
+
+                <div class="venture-card reveal">
+                    <div class="venture-number">05</div>
+                    <div class="category">Agrotransformación</div>
+                    <h3>Productos orgánicos</h3>
+                    <p>Productores de miel, hierbas aromáticas, panela, y alimentos orgánicos certificados que aprovechan la biodiversidad y riqueza agrícola del territorio.</p>
+                </div>
+
+                <div class="venture-card reveal">
+                    <div class="venture-number">06</div>
+                    <div class="category">Artesanía</div>
+                    <h3>Tejidos y textiles</h3>
+                    <p>Tejedoras que producen bolsos, ruanas, mantas y accesorios textiles combinando lana, algodón y técnicas de telar tradicionales con diseños modernos.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tourism Section -->
+    <section class="tourism section" id="turismo">
+        <div class="container">
+            <h2>Descubre lo que hace a Filandia inolvidable</h2>
+
+            <div class="tourism-grid">
+                <div class="tourism-card reveal">
+                    <h3>Mirador Colina Iluminada</h3>
+                    <p>Estructura de madera de 27 metros que ofrece vistas 360° del municipio, los cafetales circundantes y la arquitectura colonial. Símbolo de Filandia con experiencias fotográficas únicas al atardecer.</p>
+                </div>
+
+                <div class="tourism-card reveal">
+                    <h3>Calle del Tiempo Detenido</h3>
+                    <p>Centro histórico de Filandia con calles empedradas, fachadas coloniales restauradas y balcones decorados con canastos tejidos. Espacio para caminar, disfrutar gastronomía local y comprar artesanías.</p>
+                </div>
+
+                <div class="tourism-card reveal">
+                    <h3>Reserva Barbas-Bremen</h3>
+                    <p>Área de conservación de 790 hectáreas con bosque tropical primario, cascadas, senderos de avistamiento de aves y biodiversidad única. Experiencias de ecoturismo y educación ambiental.</p>
+                </div>
+
+                <div class="tourism-card reveal">
+                    <h3>Fincas cafeteras</h3>
+                    <p>Tours experienciales en fincas especializadas donde aprender sobre cultivo, cosecha, procesamiento y degustación de café de altura. Hospedaje rural y gastronomía campesina.</p>
+                </div>
+
+                <div class="tourism-card reveal">
+                    <h3>Talleres de cestería</h3>
+                    <p>Visitas a talleres del Barrio San José donde artesanos comparten la técnica de tejido ancestral. Clases prácticas, charlas sobre historia y compra de productos tejidos directamente.</p>
+                </div>
+
+                <div class="tourism-card reveal">
+                    <h3>Ruta Amor al Campo</h3>
+                    <p>Turismo comunitario que conecta fincas agrícolas, viviendas rurales y espacios de producción. Experiencias de inmersión en vida campesina, gastronomía rural y conexión con naturaleza.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- REBBECA Connection Section -->
+    <section class="rebbeca-connection section">
+        <div class="container">
+            <h2>Conectando el talento filandés con una gestión sostenible</h2>
+
+            <div class="pillars-grid">
+                <div class="pillar reveal">
+                    <h3>Diagnosticar</h3>
+                    <p style="font-size: 0.9rem; color: var(--espresso); margin-top: var(--space-sm);">Análisis profundo de cada emprendimiento</p>
+                </div>
+
+                <div class="pillar reveal">
+                    <h3>Estructurar costos</h3>
+                    <p style="font-size: 0.9rem; color: var(--espresso); margin-top: var(--space-sm);">Herramientas de control financiero</p>
+                </div>
+
+                <div class="pillar reveal">
+                    <h3>Conectar turismo</h3>
+                    <p style="font-size: 0.9rem; color: var(--espresso); margin-top: var(--space-sm);">Articulación con mercado turístico</p>
+                </div>
+
+                <div class="pillar reveal">
+                    <h3>Acompañar crecimiento</h3>
+                    <p style="font-size: 0.9rem; color: var(--espresso); margin-top: var(--space-sm);">Seguimiento continuo y sostenible</p>
+                </div>
+            </div>
+
+            <div class="challenge-card">
+                <h3>El desafío en Filandia</h3>
+                <div class="challenge-stats">
+                    <div class="challenge-stat">
+                        <div class="challenge-stat-number">90%</div>
+                        <div class="challenge-stat-label">Sin gestión financiera formal</div>
+                    </div>
+                    <div class="challenge-stat">
+                        <div class="challenge-stat-number">60%</div>
+                        <div class="challenge-stat-label">Dificultad acceso a clientes</div>
+                    </div>
+                    <div class="challenge-stat">
+                        <div class="challenge-stat-number">100%</div>
+                        <div class="challenge-stat-label">Reconocen necesidad de estructura</div>
+                    </div>
+                    <div class="challenge-stat">
+                        <div class="challenge-stat-number">80%</div>
+                        <div class="challenge-stat-label">Más de 3 años sin actualización</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta section" id="contacto">
+        <div class="container">
+            <h2>Filandia merece que su artesanía prospere</h2>
+            <p>Los artesanos filandeses tienen el talento. REBBECA proporciona la estructura para que crezcan.</p>
+            <div class="cta-buttons">
+                <a href="rebbeca-landing-v2.html#planes" class="btn btn-primary">Ver planes</a>
+                <a href="rebbeca-landing-v2.html#contacto" class="btn btn-secondary">Contactar</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>REBBECA</h3>
+                    <p>ecosistema artesanal</p>
+                </div>
+                <div class="footer-links">
+                    <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">Instagram</a>
+                    <a href="https://wa.me" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+                    <a href="mailto:hola@rebbeca.co">Correo</a>
+                </div>
+                <div class="footer-copyright">
+                    © 2026 REBBECA. Todos los derechos reservados.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // ============================================
+        // SCROLL PROGRESS BAR
+        // ============================================
+        const scrollProgress = document.querySelector('.scroll-progress');
+
+        window.addEventListener('scroll', () => {
+            const windowHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const scrollTop = window.scrollY;
+            const progress = (scrollTop / windowHeight) * 100;
+            scrollProgress.style.width = progress + '%';
+        });
+
+        // ============================================
+        // NAV BLUR ON SCROLL
+        // ============================================
+        const nav = document.querySelector('nav');
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+
+        // ============================================
+        // SCROLL REVEAL ANIMATIONS
+        // ============================================
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal').forEach(el => {
+            observer.observe(el);
+        });
+
+        // ============================================
+        // ANIMATED COUNTERS
+        // ============================================
+        function animateCounter(element, target, duration = 1500) {
+            const start = 0;
+            const increment = target / (duration / 16);
+            let current = start;
+
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    element.textContent = target + '%';
+                    clearInterval(timer);
+                } else {
+                    element.textContent = Math.floor(current) + '%';
+                }
+            }, 16);
+        }
+
+        const counterObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const numbers = entry.target.querySelectorAll('.challenge-stat-number');
+                    numbers.forEach(num => {
+                        const target = parseInt(num.textContent);
+                        animateCounter(num, target);
+                    });
+                    counterObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.3 });
+
+        document.querySelectorAll('.challenge-card').forEach(el => {
+            counterObserver.observe(el);
+        });
+
+        // ============================================
+        // SMOOTH SCROLL
+        // ============================================
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+                if (href !== '#' && document.querySelector(href)) {
+                    e.preventDefault();
+                    const target = document.querySelector(href);
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
+        // ============================================
+        // BUTTON INTERACTIONS
+        // ============================================
+        document.querySelectorAll('.btn').forEach(button => {
+            button.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-2px)';
+            });
+            button.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+
+        // ============================================
+        // ACCESSIBILITY: FOCUS MANAGEMENT
+        // ============================================
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.activeElement.blur();
+            }
+        });
+
+        // ============================================
+        // PREFETCH LINKS FOR PERFORMANCE
+        // ============================================
+        document.querySelectorAll('a[href$=".html"]').forEach(link => {
+            const prefetchLink = document.createElement('link');
+            prefetchLink.rel = 'prefetch';
+            prefetchLink.href = link.href;
+            document.head.appendChild(prefetchLink);
+        });
+    </script>
+</body>
+</html>

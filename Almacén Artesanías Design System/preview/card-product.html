@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body{margin:0;padding:28px;background:var(--cream);box-sizing:border-box;min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:var(--font-body);perspective:1400px}
+  .scene{width:280px;transform-style:preserve-3d}
+  .card{
+    position:relative;
+    background:var(--warm-white);
+    border:1px solid var(--border-soft);
+    border-radius:12px;
+    box-shadow:0 8px 20px -10px rgba(58,50,40,.25);
+    overflow:hidden;
+    transform-style:preserve-3d;
+    transition:transform .45s cubic-bezier(0.25,0.46,0.45,0.94), box-shadow .45s ease;
+    will-change:transform
+  }
+  .card:hover{box-shadow:0 28px 52px -18px rgba(58,50,40,.45), 0 0 0 1px rgba(184,154,94,.35)}
+  /* glare follows mouse */
+  .glare{
+    position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .35s ease;
+    background:radial-gradient(circle 180px at var(--mx,50%) var(--my,30%),rgba(255,252,245,0.55),transparent 55%);
+    mix-blend-mode:soft-light;z-index:3
+  }
+  .card:hover .glare{opacity:1}
+  /* each layer sits at a different Z depth */
+  .img{height:170px;background:linear-gradient(135deg,#6E6152 0%,#A69683 45%,#C4B7A5 100%);position:relative;overflow:hidden;transform:translateZ(0)}
+  .img::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 32% 38%,rgba(248,245,238,.3),transparent 62%)}
+  /* stylized vessel that lifts forward on hover */
+  .vessel{
+    position:absolute;left:50%;top:52%;transform:translate(-50%,-50%) translateZ(40px);
+    width:82px;height:108px;
+    transition:transform .5s cubic-bezier(0.22,1,0.36,1);
+    filter:drop-shadow(0 18px 14px rgba(58,50,40,.35))
+  }
+  .card:hover .vessel{transform:translate(-50%,-54%) translateZ(70px) rotate(-2deg)}
+  .vessel svg{width:100%;height:100%;display:block}
+  .badge{
+    position:absolute;top:12px;left:12px;
+    background:rgba(239,234,225,.78);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+    padding:5px 11px;border-radius:999px;
+    font-size:9px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--coffee);border:1px solid rgba(184,154,94,.45);
+    transform:translateZ(55px);transition:transform .45s ease
+  }
+  .card:hover .badge{transform:translateZ(80px)}
+  .heart{
+    position:absolute;top:10px;right:10px;width:32px;height:32px;border-radius:999px;
+    background:rgba(239,234,225,.78);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+    border:1px solid rgba(184,154,94,.35);
+    display:grid;place-items:center;color:var(--greige-deep);
+    transform:translateZ(50px);transition:transform .45s ease, background .3s ease, color .3s ease;
+    cursor:pointer
+  }
+  .heart:hover{background:var(--terra-purple);color:var(--warm-white);border-color:var(--terra-purple)}
+  .card:hover .heart{transform:translateZ(75px)}
+  .body{padding:16px 18px 18px;display:flex;flex-direction:column;gap:4px;transform:translateZ(18px)}
+  .t{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:500;color:var(--coffee);line-height:1.2;letter-spacing:-.005em}
+  .m{font-size:11px;color:var(--fg-2);letter-spacing:.05em}
+  .m em{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--greige-deep)}
+  .dot{color:var(--gold);margin:0 4px}
+  .foot{display:flex;justify-content:space-between;align-items:baseline;margin-top:10px;padding-top:10px;border-top:1px solid var(--border-soft)}
+  .price{font-family:'JetBrains Mono',monospace;font-weight:500;color:var(--greige-deep);font-size:15px}
+  .stock{font-size:10px;color:var(--terra-green-deep);text-transform:uppercase;letter-spacing:.15em;display:flex;align-items:center;gap:5px}
+  .stockDot{width:6px;height:6px;background:var(--terra-green-deep);border-radius:50%}
+  .hint{position:absolute;bottom:-28px;left:0;right:0;text-align:center;font-size:10px;color:var(--fg-3);letter-spacing:.2em;text-transform:uppercase;font-style:italic;font-family:'Cormorant Garamond',serif}
+</style></head>
+<body>
+<div class="scene" id="scene">
+  <div class="card" id="card">
+    <div class="glare"></div>
+    <div class="img">
+      <span class="badge">Alfarería</span>
+      <button class="heart" aria-label="guardar">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.7 1-1a5.5 5.5 0 0 0 0-7.7Z"/></svg>
+      </button>
+      <div class="vessel">
+        <svg viewBox="0 0 100 120">
+          <defs>
+            <linearGradient id="v" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#E4DDD1"/>
+              <stop offset=".5" stop-color="#A69683"/>
+              <stop offset="1" stop-color="#6E6152"/>
+            </linearGradient>
+          </defs>
+          <path d="M32 22 Q50 10 68 22 Q76 30 74 42 Q88 56 84 82 Q80 108 50 112 Q20 108 16 82 Q12 56 26 42 Q24 30 32 22 Z" fill="url(#v)"/>
+          <ellipse cx="50" cy="20" rx="18" ry="3" fill="#3A3228" opacity=".35"/>
+          <path d="M20 68 Q50 74 80 68" stroke="#B89A5E" stroke-width="1" fill="none" opacity=".7"/>
+        </svg>
+      </div>
+    </div>
+    <div class="body">
+      <div class="t">Vasija de barro quemado</div>
+      <div class="m"><em>Doña Rosa Elvira</em><span class="dot">·</span>Pijao</div>
+      <div class="foot">
+        <div class="price">$ 180.000</div>
+        <div class="stock"><span class="stockDot"></span>Disponible</div>
+      </div>
+    </div>
+  </div>
+  <div class="hint">pasa el cursor · tilt 3D</div>
+</div>
+<script>
+  const scene = document.getElementById('scene');
+  const card  = document.getElementById('card');
+  const glare = card.querySelector('.glare');
+  let raf = null, tx=0, ty=0;
+  const MAX = 12; // deg
+  scene.addEventListener('mousemove', (e) => {
+    const r = card.getBoundingClientRect();
+    const px = (e.clientX - r.left) / r.width;
+    const py = (e.clientY - r.top)  / r.height;
+    tx = (py - 0.5) * -MAX;
+    ty = (px - 0.5) *  MAX;
+    glare.style.setProperty('--mx', (px*100)+'%');
+    glare.style.setProperty('--my', (py*100)+'%');
+    if (!raf) raf = requestAnimationFrame(() => {
+      card.style.transform = `rotateX(${tx}deg) rotateY(${ty}deg) translateZ(0)`;
+      raf = null;
+    });
+  });
+  scene.addEventListener('mouseleave', () => {
+    card.style.transform = 'rotateX(0) rotateY(0)';
+  });
+</script>
+</body></html>

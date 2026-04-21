@@ -27,7 +27,7 @@
     class="sidenav"
     [class.mobile]="isMobile()">
 
-    <div class="brand" routerLink="/dashboard" (click)="closeMobileSidenav()">
+    <div class="brand" routerLink="/admin/dashboard" (click)="closeMobileSidenav()">
       <div class="brand-icon">
         <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
           <circle cx="20" cy="20" r="18" stroke="currentColor" stroke-width="1.5" opacity="0.3"/>
@@ -43,7 +43,7 @@
 
     <div class="nav-scroll">
       <mat-nav-list>
-        <a mat-list-item routerLink="/dashboard" routerLinkActive="active-link"
+        <a mat-list-item routerLink="/admin/dashboard" routerLinkActive="active-link"
            (click)="closeMobileSidenav()">
           <mat-icon matListItemIcon>dashboard</mat-icon>
           <span matListItemTitle>Dashboard</span>
@@ -51,17 +51,17 @@
 
         <p class="nav-section">Catálogo</p>
 
-        <a mat-list-item routerLink="/artesanos" routerLinkActive="active-link"
+        <a mat-list-item routerLink="/admin/artesanos" routerLinkActive="active-link"
            (click)="closeMobileSidenav()">
           <mat-icon matListItemIcon>person_pin</mat-icon>
           <span matListItemTitle>Artesanos</span>
         </a>
-        <a mat-list-item routerLink="/categories" routerLinkActive="active-link"
+        <a mat-list-item routerLink="/admin/categories" routerLinkActive="active-link"
            (click)="closeMobileSidenav()">
           <mat-icon matListItemIcon>category</mat-icon>
           <span matListItemTitle>Categorías</span>
         </a>
-        <a mat-list-item routerLink="/products" routerLinkActive="active-link"
+        <a mat-list-item routerLink="/admin/products" routerLinkActive="active-link"
            (click)="closeMobileSidenav()">
           <mat-icon matListItemIcon>palette</mat-icon>
           <span matListItemTitle>Artesanías</span>
@@ -69,12 +69,12 @@
 
         <p class="nav-section">Ventas</p>
 
-        <a mat-list-item routerLink="/clientes" routerLinkActive="active-link"
+        <a mat-list-item routerLink="/admin/clientes" routerLinkActive="active-link"
            (click)="closeMobileSidenav()">
           <mat-icon matListItemIcon>people</mat-icon>
           <span matListItemTitle>Clientes</span>
         </a>
-        <a mat-list-item routerLink="/ventas" routerLinkActive="active-link"
+        <a mat-list-item routerLink="/admin/ventas" routerLinkActive="active-link"
            (click)="closeMobileSidenav()">
           <mat-icon matListItemIcon>point_of_sale</mat-icon>
           <span matListItemTitle>Ventas</span>
@@ -82,17 +82,17 @@
 
         <p class="nav-section">Inventario</p>
 
-        <a mat-list-item routerLink="/stock" routerLinkActive="active-link"
+        <a mat-list-item routerLink="/admin/stock" routerLinkActive="active-link"
            (click)="closeMobileSidenav()">
           <mat-icon matListItemIcon>warehouse</mat-icon>
           <span matListItemTitle>Stock</span>
         </a>
-        <a mat-list-item routerLink="/inventory/entries" routerLinkActive="active-link"
+        <a mat-list-item routerLink="/admin/inventory/entries" routerLinkActive="active-link"
            (click)="closeMobileSidenav()">
           <mat-icon matListItemIcon>add_circle_outline</mat-icon>
           <span matListItemTitle>Entradas</span>
         </a>
-        <a mat-list-item routerLink="/inventory/exits" routerLinkActive="active-link"
+        <a mat-list-item routerLink="/admin/inventory/exits" routerLinkActive="active-link"
            (click)="closeMobileSidenav()">
           <mat-icon matListItemIcon>remove_circle_outline</mat-icon>
           <span matListItemTitle>Salidas</span>
@@ -100,12 +100,18 @@
 
         @if (auth.isAdmin()) {
           <p class="nav-section">Admin</p>
-          <a mat-list-item routerLink="/reports" routerLinkActive="active-link"
+          <a mat-list-item routerLink="/admin/reports" routerLinkActive="active-link"
              (click)="closeMobileSidenav()">
             <mat-icon matListItemIcon>assessment</mat-icon>
             <span matListItemTitle>Reportes</span>
           </a>
         }
+
+        <p class="nav-section">Sitio</p>
+        <a mat-list-item routerLink="/" (click)="closeMobileSidenav()">
+          <mat-icon matListItemIcon>storefront</mat-icon>
+          <span matListItemTitle>Ir a la tienda</span>
+        </a>
       </mat-nav-list>
     </div>
 

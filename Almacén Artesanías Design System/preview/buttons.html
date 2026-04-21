@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body{margin:0;padding:22px 26px;background:var(--cream);box-sizing:border-box;display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+  .btn{font-family:'Outfit',sans-serif;font-size:12px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;padding:14px 28px;border-radius:999px;cursor:pointer;transition:all .28s cubic-bezier(0.25,0.46,0.45,0.94);border:none}
+  .primary{background:var(--clay);color:var(--warm-white);border:1.5px solid var(--clay)}
+  .primary:hover{background:var(--clay-deep);border-color:var(--clay-deep);transform:translateY(-2px);box-shadow:0 8px 20px -10px rgba(62,39,35,.35)}
+  .ghost{background:transparent;color:var(--clay-deep);border:1.5px solid var(--clay)}
+  .ghost:hover{background:var(--clay);color:var(--warm-white)}
+  .text{background:transparent;color:var(--clay-deep);padding:14px 8px;border-bottom:1px solid transparent;border-radius:0}
+  .text:hover{border-bottom-color:var(--gold)}
+  .icon{width:44px;height:44px;padding:0;border-radius:999px;background:var(--bone);color:var(--coffee);border:1px solid var(--border-soft);display:inline-flex;align-items:center;justify-content:center}
+  .icon:hover{background:var(--clay);color:var(--warm-white);border-color:var(--clay)}
+</style></head>
+<body>
+  <button class="btn primary">Pasa al taller</button>
+  <button class="btn ghost">Contáctanos</button>
+  <button class="btn text">Ver maestros →</button>
+  <button class="btn icon" aria-label="search">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+  </button>
+</body></html>

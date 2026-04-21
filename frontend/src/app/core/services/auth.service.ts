@@ -4,7 +4,14 @@ import { Router } from '@angular/router';
 import { tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { AuthResponse, LoginRequest, RegisterRequest, UserProfile, ProfileUpdateRequest } from '../models/auth.model';
+import {
+  AuthResponse,
+  LoginRequest,
+  RegisterRequest,
+  RegisterClienteRequest,
+  UserProfile,
+  ProfileUpdateRequest
+} from '../models/auth.model';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -35,6 +42,15 @@ export class AuthService {
 
   register(req: RegisterRequest): Observable<UserProfile> {
     return this.http.post<UserProfile>(`${this.API}/register`, req);
+  }
+
+  /** Registro público de clientes finales (rol CLIENTE siempre). */
+  registerCliente(req: RegisterClienteRequest): Observable<UserProfile> {
+    return this.http.post<UserProfile>(`${this.API}/register-cliente`, req);
+  }
+
+  isCliente(): boolean {
+    return this.currentUser()?.role === 'CLIENTE';
   }
 
   logout(): void {
