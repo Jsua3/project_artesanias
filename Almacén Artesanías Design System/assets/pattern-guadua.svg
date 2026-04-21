@@ -1,0 +1,28 @@
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <rect width="400" height="400" fill="#F5F0E8"></rect>
+  <g stroke="#A67C52" stroke-width="0.5" fill="none" opacity="0.35">
+    <line x1="50" y1="0" x2="50" y2="400"></line>
+    <line x1="130" y1="0" x2="130" y2="400"></line>
+    <line x1="210" y1="0" x2="210" y2="400"></line>
+    <line x1="290" y1="0" x2="290" y2="400"></line>
+    <line x1="370" y1="0" x2="370" y2="400"></line>
+  </g>
+  <g stroke="#704A2E" stroke-width="0.8" fill="none" opacity="0.4">
+    <path d="M40 80 Q50 82 60 80"></path>
+    <path d="M40 180 Q50 182 60 180"></path>
+    <path d="M40 280 Q50 282 60 280"></path>
+    <path d="M120 40 Q130 42 140 40"></path>
+    <path d="M120 140 Q130 142 140 140"></path>
+    <path d="M120 240 Q130 242 140 240"></path>
+    <path d="M120 340 Q130 342 140 340"></path>
+    <path d="M200 90 Q210 92 220 90"></path>
+    <path d="M200 220 Q210 222 220 220"></path>
+    <path d="M200 320 Q210 322 220 320"></path>
+    <path d="M280 60 Q290 62 300 60"></path>
+    <path d="M280 170 Q290 172 300 170"></path>
+    <path d="M280 280 Q290 282 300 280"></path>
+    <path d="M360 110 Q370 112 380 110"></path>
+    <path d="M360 240 Q370 242 380 240"></path>
+  </g>
+</svg>

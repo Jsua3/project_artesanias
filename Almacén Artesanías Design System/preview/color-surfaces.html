@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body{margin:0;padding:24px;background:var(--cream);min-height:100vh;box-sizing:border-box}
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;height:100%}
+  .swatch{display:flex;flex-direction:column;gap:8px;justify-content:flex-end}
+  .chip{aspect-ratio:1.3;border-radius:var(--radius-md);position:relative;overflow:hidden}
+  .chip::after{content:'';position:absolute;inset:0;box-shadow:inset 0 0 0 1px rgba(58,50,40,0.10);border-radius:inherit}
+  .name{font-family:var(--font-serif);font-weight:500;font-size:13px;color:var(--coffee);line-height:1.1}
+  .hex{font-family:var(--font-mono);font-size:10px;color:var(--fg-2);letter-spacing:0.5px;text-transform:uppercase}
+  .note{font-family:var(--font-body);font-size:10px;color:var(--fg-3);font-style:italic;margin-top:2px}
+</style></head>
+<body>
+<div class="grid">
+  <div class="swatch"><div class="chip" style="background:#EFEAE1"></div><div class="name">Cream greige</div><div class="hex">#EFEAE1</div><div class="note">65% superficie</div></div>
+  <div class="swatch"><div class="chip" style="background:#E4DDD1"></div><div class="name">Bone</div><div class="hex">#E4DDD1</div><div class="note">cards neutras</div></div>
+  <div class="swatch"><div class="chip" style="background:#F8F5EE"></div><div class="name">Warm white</div><div class="hex">#F8F5EE</div><div class="note">cards sobre cream</div></div>
+  <div class="swatch"><div class="chip" style="background:#3A3228"></div><div class="name">Coffee</div><div class="hex">#3A3228</div><div class="note">texto AAA</div></div>
+</div>
+</body></html>

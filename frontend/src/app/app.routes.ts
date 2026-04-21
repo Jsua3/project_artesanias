@@ -1,15 +1,33 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
 import { adminGuard } from './core/guards/admin.guard';
+import { notClienteGuard } from './core/guards/not-cliente.guard';
 import { ShellComponent } from './shared/layout/shell/shell.component';
 
 export const routes: Routes = [
+  // Tienda pública (sin login)
+  {
+    path: '',
+    loadComponent: () =>
+      import('./features/public/public-landing/public-landing.component')
+        .then(m => m.PublicLandingComponent)
+  },
+
+  // Auth
   { path: 'login', loadComponent: () => import('./features/auth/login/login.component').then(m => m.LoginComponent) },
   { path: 'register', loadComponent: () => import('./features/auth/register/register.component').then(m => m.RegisterComponent) },
   {
-    path: '',
+    path: 'registro-cliente',
+    loadComponent: () =>
+      import('./features/auth/register-cliente/register-cliente.component')
+        .then(m => m.RegisterClienteComponent)
+  },
+
+  // Backoffice (solo ADMIN/OPERATOR)
+  {
+    path: 'admin',
     component: ShellComponent,
-    canActivate: [authGuard],
+    canActivate: [authGuard, notClienteGuard],
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent) },
@@ -28,9 +46,10 @@ export const routes: Routes = [
       { path: 'inventory/entries', loadComponent: () => import('./features/inventory/entry-form/entry-form.component').then(m => m.EntryFormComponent) },
       { path: 'inventory/exits', loadComponent: () => import('./features/inventory/exit-form/exit-form.component').then(m => m.ExitFormComponent) },
 
-      // Admin
+      // Admin-only
       { path: 'reports', loadComponent: () => import('./features/reports/reports.component').then(m => m.ReportsComponent), canActivate: [adminGuard] },
     ]
   },
+
   { path: '**', redirectTo: '' }
 ];

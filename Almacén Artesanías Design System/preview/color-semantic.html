@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body{margin:0;padding:24px 26px;background:var(--cream);box-sizing:border-box;display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+  .chip{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:var(--radius-md);font-family:var(--font-body);font-size:13px;font-weight:500}
+  .dot{width:8px;height:8px;border-radius:50%}
+  .ok{background:rgba(78,90,66,0.14);color:#4E5A42}
+  .ok .dot{background:#4E5A42}
+  .warn{background:rgba(176,112,80,0.14);color:#8A5438}
+  .warn .dot{background:#B07050}
+  .danger{background:rgba(168,72,62,0.12);color:#A8483E}
+  .danger .dot{background:#A8483E}
+  .info{background:rgba(142,116,130,0.18);color:#6E586A}
+  .info .dot{background:#8E7482}
+  .label{font-family:var(--font-body);text-transform:uppercase;letter-spacing:.25em;font-size:10px;color:var(--fg-2);font-weight:500;width:100%;margin-bottom:2px}
+</style></head>
+<body>
+  <div class="label">Estados semánticos</div>
+  <div class="chip ok"><span class="dot"></span>Disponible</div>
+  <div class="chip warn"><span class="dot"></span>Stock bajo</div>
+  <div class="chip danger"><span class="dot"></span>Sin stock</div>
+  <div class="chip info"><span class="dot"></span>En revisión</div>
+</body></html>

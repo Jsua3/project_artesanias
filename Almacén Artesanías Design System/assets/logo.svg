@@ -1,0 +1,16 @@
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 60" fill="none">
+  
+  <g stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" fill="none">
+    <path d="M30 8C30 8 20 18 20 30C20 42 30 52 30 52C30 52 40 42 40 30C40 18 30 8 30 8Z"></path>
+    <ellipse cx="30" cy="30" rx="5.5" ry="5.5"></ellipse>
+    <path d="M16 30h-3M47 30h-3" stroke-width="1"></path>
+  </g>
+  
+  <g fill="currentColor" font-family="&#39;Cormorant Garamond&#39;, &#39;Cormorant&#39;, serif" font-weight="600" letter-spacing="3">
+    <text x="62" y="28" font-size="18">ALMACÉN</text>
+    <text x="62" y="48" font-size="18">ARTESANÍAS</text>
+  </g>
+  
+  <line x1="62" y1="34" x2="100" y2="34" stroke="#C9A253" stroke-width="1"></line>
+</svg>

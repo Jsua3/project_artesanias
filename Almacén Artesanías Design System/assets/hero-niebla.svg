@@ -1,0 +1,23 @@
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600" width="1200" height="600" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#EDE4D3"></stop>
+      <stop offset="0.6" stop-color="#F5F0E8"></stop>
+      <stop offset="1" stop-color="#F5F0E8"></stop>
+    </linearGradient>
+    <radialGradient id="sun" cx="0.78" cy="0.3" r="0.35">
+      <stop offset="0" stop-color="#C9A253" stop-opacity="0.35"></stop>
+      <stop offset="1" stop-color="#C9A253" stop-opacity="0"></stop>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="600" fill="url(#sky)"></rect>
+  <rect width="1200" height="600" fill="url(#sun)"></rect>
+  
+  <path d="M0 420 L150 380 L300 410 L450 360 L600 400 L750 355 L900 395 L1050 365 L1200 400 L1200 600 L0 600 Z" fill="#A67C52" opacity="0.18"></path>
+  <path d="M0 470 L180 440 L340 460 L500 420 L660 450 L820 415 L980 445 L1200 425 L1200 600 L0 600 Z" fill="#704A2E" opacity="0.22"></path>
+  <path d="M0 520 L200 500 L400 510 L600 480 L800 500 L1000 485 L1200 500 L1200 600 L0 600 Z" fill="#3E2723" opacity="0.18"></path>
+  
+  <rect y="420" width="1200" height="80" fill="#F5F0E8" opacity="0.35"></rect>
+  <rect y="440" width="1200" height="40" fill="#F5F0E8" opacity="0.25"></rect>
+</svg>

@@ -1,0 +1,333 @@
+/* ================================================================
+   Almacén Artesanías — Design Tokens
+   Paleta ancestral cafetera · Fraunces / Cormorant / Outfit / JetBrains Mono
+   ================================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,800;1,9..144,400;1,9..144,600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  /* ============ PALETA ANCESTRAL — GREIGE / VERDE TERRA / MORADO TIERRA ============ */
+  /* Greige — tierra dominante (reemplaza clay/coffee como protagonista) */
+  --greige:        #A69683;   /* greige medio, reemplaza al clay */
+  --greige-deep:   #6E6152;   /* greige profundo, reemplaza al clay-deep */
+  --greige-light:  #C4B7A5;   /* greige claro, hover & decoración */
+
+  /* Aliases de compatibilidad — mantienen los nombres clay/coffee apuntando a la nueva paleta */
+  --clay:          var(--greige);
+  --clay-deep:     var(--greige-deep);
+  --clay-light:    var(--greige-light);
+
+  /* Fondos (65% de superficie) — greige levísimo, no crema dorada */
+  --cream:         #EFEAE1;   /* greige muy claro, el nuevo "cream" */
+  --bone:          #E4DDD1;   /* greige claro, superficie secundaria */
+  --warm-white:    #F8F5EE;   /* para cards sobre cream */
+
+  /* Textos / oscuros — tono greige muy profundo (no café chocolate) */
+  --coffee:        #3A3228;   /* greige casi negro, texto AAA */
+  --coffee-soft:   #544A3E;
+  --text:          var(--coffee);
+  --text-muted:    #7A7164;
+  --text-subtle:   #A39B8E;
+
+  /* Verde terra — vegetación mineral cálida (reemplaza sage con más cuerpo) */
+  --terra-green:      #7A8968;   /* verde terra medio, dominante vegetal */
+  --terra-green-deep: #4E5A42;   /* verde terra profundo */
+  --terra-green-mist: rgba(122, 137, 104, 0.14);
+  --sage:             var(--terra-green);        /* alias compat */
+  --moss:             var(--terra-green-deep);   /* alias compat */
+  --sage-mist:        var(--terra-green-mist);   /* alias compat */
+
+  /* Acento filamento — dorado apagado (más terroso, menos amarillo) */
+  --gold:          #B89A5E;
+  --gold-35:       rgba(184, 154, 94, 0.35);
+  --gold-12:       rgba(184, 154, 94, 0.12);
+
+  /* Morado tierra — mauve terroso (acento secundario principal) */
+  --terra-purple:      #8E7482;   /* morado tierra medio */
+  --terra-purple-deep: #6E586A;   /* morado tierra profundo */
+  --terra-purple-mist: rgba(142, 116, 130, 0.14);
+  --mauve:             var(--terra-purple);        /* alias compat */
+  --mauve-deep:        var(--terra-purple-deep);   /* alias compat */
+
+  /* Ember — terracota apagada (raro, NUNCA junto al morado tierra) */
+  --ember:         #B07050;
+  --ember-deep:    #8A5438;
+
+  /* Estados */
+  --success:       var(--moss);
+  --success-bg:    rgba(90, 107, 74, 0.14);
+  --warning:       var(--ember);
+  --warning-bg:    rgba(200, 106, 58, 0.12);
+  --danger:        #B84A3A;
+  --danger-bg:     rgba(184, 74, 58, 0.10);
+  --info:          var(--mauve);
+
+  /* Semánticos */
+  --fg-1:          var(--coffee);     /* primario */
+  --fg-2:          var(--text-muted); /* secundario */
+  --fg-3:          var(--text-subtle);/* terciario */
+  --fg-accent:     var(--clay-deep);
+  --bg-1:          var(--cream);      /* surface principal */
+  --bg-2:          var(--bone);       /* surface secundario */
+  --bg-3:          var(--warm-white); /* cards sobre cream */
+  --bg-inverse:    var(--coffee);
+  --border-soft:   rgba(110, 97, 82, 0.10);
+  --border:        rgba(110, 97, 82, 0.20);
+  --border-strong: rgba(110, 97, 82, 0.34);
+  --border-gold:   var(--gold-35);
+
+  /* ============ TIPOGRAFÍA ============ */
+  --font-display:  'Fraunces', 'Cormorant Garamond', Georgia, serif;
+  --font-serif:    'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --font-body:     'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono:     'JetBrains Mono', 'SF Mono', Menlo, monospace;
+
+  /* Escala (base 16px) */
+  --fs-display-xl: clamp(3.5rem, 7vw, 6rem);    /* 56–96 */
+  --fs-display:    clamp(2.5rem, 5vw, 4rem);    /* 40–64 */
+  --fs-h1:         clamp(2rem, 4vw, 3.25rem);   /* 32–52 */
+  --fs-h2:         clamp(1.625rem, 3vw, 2.5rem);/* 26–40 */
+  --fs-h3:         1.5rem;      /* 24 */
+  --fs-h4:         1.25rem;     /* 20 */
+  --fs-body-lg:    1.0625rem;   /* 17 */
+  --fs-body:       1rem;        /* 16 */
+  --fs-body-sm:    0.9375rem;   /* 15 */
+  --fs-caption:    0.8125rem;   /* 13 */
+  --fs-eyebrow:    0.6875rem;   /* 11 */
+
+  --lh-tight:      1.05;
+  --lh-snug:       1.2;
+  --lh-normal:     1.5;
+  --lh-body:       1.65;
+  --lh-loose:      1.85;
+
+  --tracking-eyebrow: 0.3em;     /* UPPERCASE labels */
+  --tracking-button:  0.18em;    /* CTAs */
+  --tracking-brand:   0.5em;     /* Hero brand */
+  --tracking-wide:    0.04em;
+  --tracking-normal:  0;
+  --tracking-tight:   -0.01em;
+
+  /* ============ ESPACIADO ============ */
+  --s-1:  4px;
+  --s-2:  8px;
+  --s-3:  12px;
+  --s-4:  16px;
+  --s-5:  24px;
+  --s-6:  32px;
+  --s-7:  48px;
+  --s-8:  64px;
+  --s-9:  96px;
+  --s-10: 120px;  /* vertical entre secciones */
+  --s-11: 160px;
+
+  /* ============ RADIOS (pequeños, nada de 24px everywhere) ============ */
+  --radius-xs:   4px;
+  --radius-sm:   6px;
+  --radius-md:   8px;
+  --radius-lg:   12px;  /* cards de pieza */
+  --radius-xl:   16px;  /* glass, cards grandes */
+  --radius-2xl:  20px;  /* modales, hero cards */
+  --radius-pill: 999px; /* CTAs, tags */
+
+  /* ============ SOMBRAS CÁLIDAS (nunca grises) ============ */
+  --shadow-xs:    0 1px 2px -1px rgba(58, 50, 40, 0.10);
+  --shadow-sm:    0 2px 8px -2px rgba(58, 50, 40, 0.12);
+  --shadow-md:    0 8px 20px -10px rgba(58, 50, 40, 0.22);
+  --shadow-lg:    0 20px 40px -18px rgba(58, 50, 40, 0.30); /* firma */
+  --shadow-xl:    0 30px 60px -20px rgba(58, 50, 40, 0.36);
+  --shadow-glass: 0 8px 32px 0 rgba(110, 97, 82, 0.18);
+  --shadow-inset: inset 0 1px 0 rgba(255, 252, 245, 0.5);
+
+  /* ============ GLASS ============ */
+  --glass-bg:        rgba(239, 234, 225, 0.72);
+  --glass-bg-dark:   rgba(58, 50, 40, 0.55);
+  --glass-blur:      blur(18px) saturate(140%);
+  --glass-border:    1px solid var(--gold-35);
+
+  /* ============ EASING + DURACIÓN ============ */
+  --ease-out:      cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease-in-out:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-enter:    cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-elastic:  cubic-bezier(0.68, -0.55, 0.27, 1.55);
+  --dur-quick:     160ms;
+  --dur-base:      280ms;
+  --dur-slow:      600ms;
+  --dur-reveal:    800ms;
+  --dur-ambient:   14s;
+
+  /* ============ GRID / LAYOUT ============ */
+  --container:      1280px;
+  --container-prose: 720px;
+  --gutter:         32px;
+  --gutter-mobile:  16px;
+
+  /* ============ Z-INDEX ============ */
+  --z-base:    1;
+  --z-sticky:  100;
+  --z-header:  200;
+  --z-overlay: 300;
+  --z-modal:   400;
+  --z-toast:   500;
+  --z-texture: 9999; /* noise overlay */
+}
+
+/* ================================================================
+   RESET BASE + ELEMENTOS SEMÁNTICOS
+   ================================================================ */
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--fg-1);
+  background: var(--cream);
+  text-wrap: pretty;
+}
+
+/* Noise texture overlay (opcional, aplicar a body::before cuando quieras) */
+.noise-overlay::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  opacity: 0.03;
+  pointer-events: none;
+  z-index: var(--z-texture);
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ---- Headings (semánticos, todos Cormorant por defecto) ---- */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-serif);
+  color: var(--fg-1);
+  font-weight: 400;
+  line-height: var(--lh-snug);
+  letter-spacing: var(--tracking-tight);
+  margin: 0;
+}
+
+h1 { font-size: var(--fs-h1); line-height: var(--lh-tight); }
+h2 { font-size: var(--fs-h2); }
+h3 { font-size: var(--fs-h3); font-weight: 500; }
+h4 { font-size: var(--fs-h4); font-weight: 500; }
+
+/* .display — Fraunces, para héroes y números grandes */
+.display {
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-tight);
+  font-variation-settings: 'opsz' 144, 'SOFT' 50;
+}
+.display-xl { font-family: var(--font-display); font-size: var(--fs-display-xl); font-weight: 600; line-height: var(--lh-tight); }
+.display-lg { font-family: var(--font-display); font-size: var(--fs-display); font-weight: 600; line-height: var(--lh-tight); }
+
+/* Itálica editorial (Cormorant ital) para taglines y citas */
+em, .italic, .tagline {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--clay-deep);
+}
+
+/* ---- Párrafo ---- */
+p {
+  margin: 0 0 1rem;
+  line-height: var(--lh-body);
+  color: var(--fg-1);
+}
+.lead { font-size: var(--fs-body-lg); line-height: var(--lh-loose); color: var(--fg-2); font-weight: 300; }
+.small { font-size: var(--fs-body-sm); }
+.caption { font-size: var(--fs-caption); color: var(--fg-2); }
+
+/* ---- Eyebrow / overline label (UPPERCASE tracking amplio) ---- */
+.eyebrow {
+  font-family: var(--font-body);
+  font-size: var(--fs-eyebrow);
+  font-weight: 500;
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--moss);
+}
+
+/* ---- Brand / marca ---- */
+.brand-wordmark {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  letter-spacing: var(--tracking-brand);
+  text-transform: uppercase;
+  color: var(--clay-deep);
+}
+
+/* ---- Mono (precios, SKUs, tabular nums) ---- */
+code, .mono, .price, .ticket {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+.price-cop {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--clay-deep);
+}
+
+/* ---- Enlaces ---- */
+a {
+  color: var(--clay-deep);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: color var(--dur-base) var(--ease-out), border-color var(--dur-base) var(--ease-out);
+}
+a:hover { color: var(--clay); border-bottom-color: var(--gold); }
+
+/* ---- Filamento gold (decorativo, ej. tras títulos) ---- */
+.gold-rule {
+  display: inline-block;
+  width: 48px;
+  height: 1px;
+  background: var(--gold);
+  vertical-align: middle;
+}
+
+/* ---- Blockquote editorial ---- */
+blockquote {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 300;
+  font-size: var(--fs-h4);
+  line-height: var(--lh-loose);
+  color: var(--coffee-soft);
+  border-left: 1px solid var(--gold);
+  padding-left: var(--s-5);
+  margin: var(--s-6) 0;
+}
+
+/* ---- Scrollbar ancestral ---- */
+::-webkit-scrollbar       { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bone); }
+::-webkit-scrollbar-thumb { background: var(--clay-light); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--clay); }
+
+/* ---- Selección ---- */
+::selection { background: var(--gold-35); color: var(--coffee); }
+
+/* ---- Reduce motion ---- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

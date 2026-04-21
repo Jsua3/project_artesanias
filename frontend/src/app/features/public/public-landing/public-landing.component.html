@@ -1,0 +1,314 @@
+<!-- ========= HEADER ========= -->
+<header class="cliente-header" [class.is-glass]="scrolled()">
+  <div class="cliente-header__inner">
+    <a href="#" class="cliente-header__brand">
+      <svg width="32" height="32" viewBox="0 0 50 50" fill="none">
+        <path d="M25 7C25 7 17 15 17 25C17 35 25 43 25 43C25 43 33 35 33 25C33 15 25 7 25 7Z"
+              stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" fill="none"/>
+        <circle cx="25" cy="25" r="4.5" stroke="currentColor" stroke-width="1.5" fill="none"/>
+      </svg>
+      <span>ALMACÉN<br/>ARTESANÍAS</span>
+    </a>
+    <nav class="cliente-header__nav">
+      @for (l of navLinks; track l.label) {
+        <a [href]="l.anchor">{{ l.label }}</a>
+      }
+    </nav>
+    <div class="cliente-header__actions">
+      @if (!auth.isLoggedIn()) {
+        <button class="btn-mini btn-mini--ghost" (click)="goToLogin()">Iniciar sesión</button>
+        <button class="btn-mini btn-mini--solid" (click)="goToRegister()">Registrarse</button>
+      } @else {
+        <div class="user-chip">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="12" cy="8" r="4"/><path d="M5 20c0-4 3-7 7-7s7 3 7 7"/>
+          </svg>
+          <span>{{ currentUsername() }}</span>
+        </div>
+        @if (auth.isAdmin()) {
+          <button class="btn-mini btn-mini--ghost" (click)="goToAdmin()">Panel</button>
+        }
+        <button class="btn-mini btn-mini--ghost" (click)="logout()">Salir</button>
+      }
+      <button class="icon-btn icon-btn--cart" aria-label="bolsa">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+          <path d="M3 6h18M16 10a4 4 0 0 1-8 0"/>
+        </svg>
+        @if (cartCount() > 0) {
+          <span class="icon-btn__badge">{{ cartCount() }}</span>
+        }
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- ========= HERO ========= -->
+  <section class="hero" #heroRef (mousemove)="onHeroMouseMove($event, heroRef)">
+    <div class="hero__photos" aria-hidden="true">
+      @for (src of photos; track src; let i = $index) {
+        <div class="hero__photo"
+             [class.is-active]="i === heroSlide()"
+             [style.background-image]="'url(' + src + ')'"></div>
+      }
+      <div class="hero__tint"></div>
+      <div class="hero__grain"></div>
+    </div>
+
+    <div class="hero__grid">
+      <div class="hero__copy">
+        <div class="eyebrow hero__eyebrow">Eje Cafetero · Colombia</div>
+        <h1 class="display-lg hero__title">
+          Piezas con nombre,<br/>
+          con vereda,<br/>
+          <em>con neblina.</em>
+        </h1>
+        <div class="gold-rule hero__rule"></div>
+        <p class="lead hero__lead">
+          Compra directo del taller. Cada maestra, cada maestro, cuenta su historia —
+          y llevas a casa algo con territorio.
+        </p>
+        <div class="hero__ctas">
+          <a href="#coleccion" class="btn btn--primary">Pasa al taller</a>
+          <a href="#maestros" class="btn btn--text btn--text-light">Conoce a los maestros →</a>
+        </div>
+      </div>
+
+      <div class="hero__side">
+        <div class="hero__caption">
+          <div class="eyebrow hero__captionEyebrow">En el objetivo</div>
+          <div class="hero__captionTitle">{{ currentCaption().place }}</div>
+          <div class="hero__captionSub"><em>{{ currentCaption().sub }}</em></div>
+          <div class="hero__dots">
+            @for (_ of photos; track $index) {
+              <button class="hero__dot"
+                      [class.is-on]="$index === heroSlide()"
+                      (click)="setSlide($index)"
+                      [attr.aria-label]="'foto ' + ($index + 1)"></button>
+            }
+          </div>
+        </div>
+
+        <div class="hero__meta">
+          <div>
+            <div class="hero__metaNum">48</div>
+            <div class="eyebrow hero__metaLabel">maestros</div>
+          </div>
+          <div class="hero__metaDiv"></div>
+          <div>
+            <div class="hero__metaNum">7</div>
+            <div class="eyebrow hero__metaLabel">municipios</div>
+          </div>
+          <div class="hero__metaDiv"></div>
+          <div>
+            <div class="hero__metaNum">1.820</div>
+            <div class="eyebrow hero__metaLabel">piezas</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========= COLLECTION ========= -->
+  <section id="coleccion" class="section">
+    <div class="section__head">
+      <div>
+        <div class="eyebrow">La colección · abril 2026</div>
+        <h2 class="section__title">Del <em>taller</em> a tu casa.</h2>
+      </div>
+      <div class="section__filters">
+        @for (c of categories; track c) {
+          <button class="tag" [class.is-active]="c === selectedCategory()" (click)="setCategory(c)">
+            {{ c }}
+          </button>
+        }
+      </div>
+    </div>
+    <div class="pieces">
+      @for (p of filteredPiezas(); track p.id) {
+        <article class="piece" #card
+                 (click)="onOpenPiece(p)"
+                 (mousemove)="onPieceMouseMove($event, card)"
+                 (mouseleave)="onPieceMouseLeave(card)">
+          <div class="piece__imgWrap">
+            <img [src]="p.img" [alt]="p.name"/>
+            <span class="piece__cat chip-cat" [ngClass]="categoryClass[p.category] || ''">{{ p.category }}</span>
+            @if (p.status === 'sold') {
+              <span class="piece__sold">Adoptada</span>
+            }
+          </div>
+          <div class="piece__body">
+            <h3 class="piece__title">{{ p.name }}</h3>
+            <div class="piece__meta">
+              <em>{{ p.maestro }}</em> <span class="piece__dot">·</span> {{ p.town }}
+            </div>
+            <div class="piece__foot">
+              <div class="price-cop">{{ formatPrice(p.price) }}</div>
+              @if (p.status === 'available') {
+                <div class="piece__stock"><span class="dot"></span>Disponible</div>
+              }
+              @if (p.status === 'lowstock') {
+                <div class="piece__stock piece__stock--warn"><span class="dot"></span>Última</div>
+              }
+            </div>
+          </div>
+        </article>
+      }
+    </div>
+  </section>
+
+  <!-- ========= MAESTROS ========= -->
+  <section id="maestros" class="section section--bone">
+    <div class="section__head section__head--centered">
+      <div class="eyebrow">Los maestros</div>
+      <h2 class="section__title">Detrás de cada pieza, <em>un oficio.</em></h2>
+      <p class="lead maestros__intro">
+        Conoce a quienes sostienen la tradición cafetera. Pasa a su taller — virtual por ahora, algún día en persona.
+      </p>
+    </div>
+    <div class="maestros__grid">
+      @for (m of maestros; track m.name) {
+        <article class="maestro">
+          <div class="maestro__portrait">
+            <img src="/assets/placeholder-maestro.svg" [alt]="m.name"/>
+            <div class="maestro__overlay"></div>
+            <div class="maestro__years">
+              <div class="display maestro__yearsNum">{{ m.years }}</div>
+              <div class="eyebrow maestro__yearsLabel">años de oficio</div>
+            </div>
+          </div>
+          <div class="maestro__body">
+            <div class="eyebrow maestro__location">{{ m.town }} · vereda {{ m.vereda }}</div>
+            <h3 class="maestro__name">{{ m.name }}</h3>
+            <div class="maestro__craft">{{ m.craft }}</div>
+            <blockquote class="maestro__quote">{{ m.quote }}</blockquote>
+            <a href="#" class="btn btn--text">Visita el taller →</a>
+          </div>
+        </article>
+      }
+    </div>
+  </section>
+
+  <!-- ========= TERRITORIO ========= -->
+  <section id="territorio" class="section section--dark">
+    <div class="territorio">
+      <div class="territorio__copy">
+        <div class="eyebrow territorio__eyebrow">El territorio</div>
+        <h2 class="territorio__title">
+          Quindío <em>amanece en neblina.</em>
+        </h2>
+        <p class="territorio__lead">
+          Filandia, Salento, Pijao, Circasia. Pueblos de bahareque sobre montañas cafeteras.
+          Palma de cera, guadua, el murmullo del Cocora al amanecer. Este es el lugar
+          donde nacen las piezas que llegan a tu casa.
+        </p>
+        <div class="territorio__places">
+          @for (t of territorioPlaces; track t) {
+            <span class="territorio__place">{{ t }}</span>
+          }
+        </div>
+      </div>
+      <div class="territorio__map" aria-hidden="true">
+        <svg viewBox="0 0 300 300" width="100%" class="territorio__svg">
+          <circle cx="150" cy="150" r="120" fill="none" stroke="rgba(201,162,83,0.25)" stroke-width="0.5"/>
+          <circle cx="150" cy="150" r="90"  fill="none" stroke="rgba(201,162,83,0.2)"  stroke-width="0.5"/>
+          <circle cx="150" cy="150" r="60"  fill="none" stroke="rgba(201,162,83,0.15)" stroke-width="0.5"/>
+          @for (pt of territorioMapPoints; track pt.name) {
+            <g>
+              <circle [attr.cx]="pt.x" [attr.cy]="pt.y" r="3" fill="#C9A253"/>
+              <circle [attr.cx]="pt.x" [attr.cy]="pt.y" r="10" fill="none" stroke="#C9A253" stroke-width="0.5" opacity="0.4"/>
+              <text [attr.x]="pt.x + 10" [attr.y]="pt.y + 4" fill="#F5F0E8" font-size="10" font-family="Outfit" opacity="0.8">{{ pt.name }}</text>
+            </g>
+          }
+        </svg>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ========= FOOTER ========= -->
+<footer class="footer">
+  <div class="footer__inner">
+    <div class="footer__brand">
+      <div class="brand-wordmark footer__wordmark">Almacén<br/>Artesanías</div>
+      <div class="gold-rule footer__rule"></div>
+      <div class="caption footer__tagline">
+        Donde la tradición encuentra su camino.
+      </div>
+    </div>
+    <div class="footer__cols">
+      <div>
+        <div class="eyebrow">Explorar</div>
+        <a href="#coleccion">Colecciones</a>
+        <a href="#maestros">Maestros</a>
+        <a href="#territorio">Territorio</a>
+        <a href="#oficio">Oficios</a>
+      </div>
+      <div>
+        <div class="eyebrow">Almacén</div>
+        <a href="#">Historia</a>
+        <a href="#">Talleres REBECCA</a>
+        <a href="#">Prensa</a>
+      </div>
+      <div>
+        <div class="eyebrow">Ayuda</div>
+        <a href="#">Envíos</a>
+        <a href="#">Devoluciones</a>
+        <a href="#">Contacto</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer__base">
+    <div class="caption">Armenia, Quindío · Colombia</div>
+    <div class="caption">© 2026 Almacén Artesanías</div>
+  </div>
+</footer>
+
+<!-- ========= PIECE MODAL ========= -->
+@if (openPiece(); as piece) {
+  <div class="modal-backdrop" (click)="onClosePiece()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <button class="modal__close" (click)="onClosePiece()" aria-label="cerrar">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M18 6 6 18M6 6l12 12"/>
+        </svg>
+      </button>
+      <div class="modal__grid">
+        <div class="modal__img">
+          <img [src]="piece.img" [alt]="piece.name"/>
+        </div>
+        <div class="modal__body">
+          <div class="eyebrow modal__eyebrow">{{ piece.category }} · {{ piece.town }}</div>
+          <h2 class="modal__title">{{ piece.name }}</h2>
+          <div class="modal__maestro">{{ piece.maestro }}</div>
+          <div class="gold-rule modal__rule"></div>
+          <p class="modal__desc">
+            Torneada a mano con arcilla de la vereda. Quemada a leña dos noches.
+            Cada pieza guarda las huellas del taller — las pequeñas variaciones son parte
+            de su carácter, no defectos.
+          </p>
+          <div class="modal__specs">
+            <div><div class="eyebrow">Medidas</div><div>32 × 24 cm</div></div>
+            <div><div class="eyebrow">Técnica</div><div>Torno a pedal</div></div>
+            <div><div class="eyebrow">Entrega</div><div>5–7 días</div></div>
+          </div>
+          <div class="modal__foot">
+            <div>
+              <div class="eyebrow">Llevar a casa</div>
+              <div class="price-cop modal__price">{{ formatPrice(piece.price) }}</div>
+            </div>
+            <button class="btn btn--primary" (click)="onAddToCart(piece)">Agregar a la bolsa</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ========= TOAST ========= -->
+@if (toast(); as msg) {
+  <div class="toast">
+    <span class="toast__dot"></span>{{ msg }}
+  </div>
+}

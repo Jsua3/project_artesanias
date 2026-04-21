@@ -1,0 +1,1623 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Salento — Municipio del Quindío. Puerta al Valle de Cocora y corazón de la cultura cafetera colombiana.">
+    <meta name="theme-color" content="#FAF7F2">
+    <title>Salento — Municipio del Quindío | REBBECA</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz@0,72;0,100;1,72&family=Inter+Tight:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* ============================================
+           DESIGN SYSTEM
+           ============================================ */
+        :root {
+            /* Colors */
+            --ivory: #FAF7F2;
+            --bone: #F0EBE3;
+            --espresso: #2C2622;
+            --ink: #1A1614;
+            --terracotta: #B5724C;
+            --terracotta-deep: #8D5A3A;
+            --sage: #7A8F6D;
+            --sage-muted: #A3B496;
+            --rose: #C4929E;
+            --stone: #9A928A;
+
+            /* Typography */
+            --font-serif: 'Fraunces', serif;
+            --font-sans: 'Inter Tight', sans-serif;
+
+            /* Spacing */
+            --space-xs: 0.5rem;
+            --space-sm: 1rem;
+            --space-md: 2rem;
+            --space-lg: 3rem;
+            --space-xl: 4rem;
+            --space-2xl: 6rem;
+
+            /* Transitions */
+            --transition-smooth: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-bounce: 600ms cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            :root {
+                --transition-smooth: 0ms;
+                --transition-bounce: 0ms;
+            }
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* ============================================
+           RESET & BASE STYLES
+           ============================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--ivory);
+            color: var(--espresso);
+            line-height: 1.75;
+            font-weight: 300;
+            font-size: 1rem;
+            overflow-x: hidden;
+        }
+
+        a {
+            color: var(--terracotta);
+            text-decoration: none;
+            transition: color var(--transition-smooth);
+        }
+
+        a:hover {
+            color: var(--terracotta-deep);
+        }
+
+        a:focus-visible {
+            outline: 2px solid var(--terracotta);
+            outline-offset: 4px;
+            border-radius: 4px;
+        }
+
+        button {
+            font-family: var(--font-sans);
+            cursor: pointer;
+            border: none;
+            transition: all var(--transition-smooth);
+        }
+
+        button:focus-visible {
+            outline: 2px solid var(--terracotta);
+            outline-offset: 4px;
+        }
+
+        /* ============================================
+           UTILITY CLASSES
+           ============================================ */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 var(--space-md);
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                padding: 0 var(--space-lg);
+            }
+        }
+
+        .section {
+            padding: var(--space-2xl) 0;
+        }
+
+        @media (max-width: 768px) {
+            .section {
+                padding: var(--space-xl) 0;
+            }
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+
+        /* ============================================
+           SCROLL PROGRESS BAR
+           ============================================ */
+        .scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--sage), var(--rose));
+            width: 0%;
+            z-index: 1000;
+            transition: width var(--transition-smooth);
+        }
+
+        /* ============================================
+           NAVIGATION
+           ============================================ */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 999;
+            padding: var(--space-md) 0;
+            background-color: transparent;
+            backdrop-filter: blur(0px);
+            transition: backdrop-filter var(--transition-smooth), background-color var(--transition-smooth);
+        }
+
+        nav.scrolled {
+            backdrop-filter: blur(12px);
+            background-color: rgba(250, 247, 242, 0.85);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .nav-brand h1 {
+            font-family: var(--font-serif);
+            font-size: clamp(1.1rem, 3vw, 1.4rem);
+            font-weight: 600;
+            letter-spacing: 3px;
+            color: var(--ink);
+        }
+
+        .nav-brand a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .nav-brand p {
+            font-family: var(--font-sans);
+            font-size: 0.65rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--stone);
+            font-weight: 500;
+        }
+
+        .nav-links {
+            display: none;
+            list-style: none;
+            gap: var(--space-lg);
+            align-items: center;
+        }
+
+        @media (min-width: 1024px) {
+            .nav-links {
+                display: flex;
+            }
+        }
+
+        .nav-links a {
+            font-size: 0.9rem;
+            font-weight: 400;
+            color: var(--espresso);
+            position: relative;
+            padding-bottom: 4px;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--terracotta);
+            transition: width var(--transition-smooth);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-mobile-toggle {
+            display: block;
+            width: 24px;
+            height: 24px;
+            flex-direction: column;
+            justify-content: space-between;
+            background: none;
+            padding: 0;
+        }
+
+        @media (min-width: 1024px) {
+            .nav-mobile-toggle {
+                display: none;
+            }
+        }
+
+        .nav-mobile-toggle span {
+            display: block;
+            width: 100%;
+            height: 2px;
+            background-color: var(--ink);
+            transition: all var(--transition-smooth);
+        }
+
+        /* ============================================
+           HERO SECTION
+           ============================================ */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 120px var(--space-md) var(--space-xl);
+            overflow: hidden;
+            background-color: var(--ivory);
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(122, 143, 109, 0.08) 0%, transparent 70%);
+            border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+            animation: float 15s ease-in-out infinite;
+            z-index: 0;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: -20%;
+            left: -5%;
+            width: 350px;
+            height: 350px;
+            background: radial-gradient(circle, rgba(196, 146, 158, 0.06) 0%, transparent 70%);
+            border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+            animation: float 18s ease-in-out infinite reverse;
+            z-index: 0;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) translateX(0px); }
+            50% { transform: translateY(-30px) translateX(15px); }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: var(--space-lg);
+            font-size: 0.95rem;
+            color: var(--stone);
+            transition: color var(--transition-smooth);
+        }
+
+        .back-link:hover {
+            color: var(--terracotta);
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background-color: var(--sage);
+            color: var(--ivory);
+            padding: 8px 16px;
+            border-radius: 24px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: var(--space-lg);
+        }
+
+        .hero h1 {
+            font-family: var(--font-serif);
+            font-size: clamp(3.5rem, 8vw, 7rem);
+            font-weight: 300;
+            letter-spacing: 8px;
+            color: var(--ink);
+            margin-bottom: var(--space-xs);
+            line-height: 1.1;
+            font-optical-sizing: auto;
+        }
+
+        .hero h2 {
+            font-family: var(--font-sans);
+            font-size: clamp(1rem, 2vw, 1.3rem);
+            font-weight: 400;
+            color: var(--stone);
+            letter-spacing: 1px;
+            margin-bottom: var(--space-lg);
+            line-height: 1.8;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-sm);
+            justify-content: center;
+            margin-bottom: var(--space-xl);
+        }
+
+        .hero-tag {
+            background-color: var(--bone);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            border: 1px solid rgba(122, 143, 109, 0.2);
+            color: var(--espresso);
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: var(--space-lg);
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(10px); }
+        }
+
+        .scroll-indicator svg {
+            width: 24px;
+            height: 24px;
+            stroke: var(--terracotta);
+            stroke-width: 2;
+            fill: none;
+        }
+
+        /* ============================================
+           MARQUEE TICKER
+           ============================================ */
+        .marquee {
+            overflow: hidden;
+            background-color: var(--bone);
+            padding: var(--space-md) 0;
+            margin-bottom: var(--space-xl);
+        }
+
+        .marquee-content {
+            display: flex;
+            gap: var(--space-lg);
+            white-space: nowrap;
+            animation: marquee 25s linear infinite;
+            font-size: 0.95rem;
+            font-weight: 500;
+            letter-spacing: 2px;
+            color: var(--espresso);
+        }
+
+        .marquee-content span {
+            flex-shrink: 0;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .marquee-content {
+                animation: none;
+                transform: translateX(0);
+            }
+        }
+
+        /* ============================================
+           PROFILE SECTION
+           ============================================ */
+        .profile {
+            background-color: var(--ivory);
+        }
+
+        .profile-header {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-2xl);
+            align-items: center;
+            margin-bottom: var(--space-2xl);
+        }
+
+        @media (min-width: 1024px) {
+            .profile-header {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .profile h2 {
+            font-family: var(--font-serif);
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            font-weight: 400;
+            color: var(--ink);
+            margin-bottom: var(--space-lg);
+            line-height: 1.2;
+        }
+
+        .profile-content p {
+            font-size: 1.05rem;
+            color: var(--espresso);
+            margin-bottom: var(--space-lg);
+            line-height: 1.85;
+        }
+
+        .profile-badge {
+            background-color: var(--sage);
+            color: var(--ivory);
+            padding: var(--space-md);
+            border-radius: 8px;
+            margin-top: var(--space-lg);
+            font-size: 0.95rem;
+            font-weight: 500;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: var(--space-md);
+        }
+
+        .stat-card {
+            background-color: var(--bone);
+            padding: var(--space-lg);
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid rgba(122, 143, 109, 0.1);
+            transition: all var(--transition-smooth);
+        }
+
+        .stat-card:hover {
+            border-color: var(--sage);
+            transform: translateY(-4px);
+        }
+
+        .stat-card svg {
+            width: 32px;
+            height: 32px;
+            margin: 0 auto var(--space-sm);
+            stroke: var(--sage);
+            fill: none;
+            stroke-width: 1.5;
+        }
+
+        .stat-value {
+            font-family: var(--font-serif);
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--sage);
+            margin-bottom: var(--space-xs);
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--stone);
+        }
+
+        /* ============================================
+           TRADITION SECTION
+           ============================================ */
+        .tradition {
+            background: linear-gradient(135deg, var(--ink) 0%, #3A3531 100%);
+            color: var(--ivory);
+            text-align: center;
+        }
+
+        .tradition h2 {
+            font-family: var(--font-serif);
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            font-weight: 400;
+            margin-bottom: var(--space-lg);
+            line-height: 1.2;
+        }
+
+        .tradition-quote {
+            font-family: var(--font-serif);
+            font-size: clamp(1.3rem, 2.5vw, 1.8rem);
+            font-weight: 300;
+            margin-bottom: var(--space-2xl);
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+            color: var(--rose);
+            font-style: italic;
+        }
+
+        .tradition-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: var(--space-lg);
+        }
+
+        .tradition-card {
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: var(--space-lg);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all var(--transition-smooth);
+            text-align: left;
+        }
+
+        .tradition-card:hover {
+            background-color: rgba(122, 143, 109, 0.1);
+            border-color: var(--sage);
+            transform: translateY(-4px);
+        }
+
+        .tradition-card h3 {
+            font-family: var(--font-serif);
+            font-size: 1.3rem;
+            font-weight: 500;
+            margin-bottom: var(--space-md);
+            color: var(--sage);
+        }
+
+        .tradition-card p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* ============================================
+           EMPRENDIMIENTOS SECTION
+           ============================================ */
+        .emprendimientos {
+            background-color: var(--ivory);
+        }
+
+        .emprendimientos h2 {
+            font-family: var(--font-serif);
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            font-weight: 400;
+            color: var(--ink);
+            text-align: center;
+            margin-bottom: var(--space-2xl);
+            line-height: 1.2;
+        }
+
+        .emprendimientos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--space-lg);
+        }
+
+        .emprendimiento-card {
+            background-color: var(--bone);
+            padding: var(--space-lg);
+            border-radius: 8px;
+            border: 1px solid rgba(181, 114, 76, 0.1);
+            display: flex;
+            flex-direction: column;
+            transition: all var(--transition-smooth);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .emprendimiento-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--terracotta), transparent);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform var(--transition-smooth);
+        }
+
+        .emprendimiento-card:hover {
+            background-color: var(--ivory);
+            border-color: var(--terracotta);
+            transform: translateY(-8px);
+            box-shadow: 0 12px 32px rgba(181, 114, 76, 0.12);
+        }
+
+        .emprendimiento-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .emprendimiento-icon {
+            width: 48px;
+            height: 48px;
+            margin-bottom: var(--space-md);
+            opacity: 0.9;
+        }
+
+        .emprendimiento-icon svg {
+            width: 100%;
+            height: 100%;
+            stroke: var(--terracotta);
+            stroke-width: 1.5;
+            fill: none;
+        }
+
+        .emprendimiento-card h3 {
+            font-family: var(--font-serif);
+            font-size: 1.3rem;
+            font-weight: 500;
+            color: var(--ink);
+            margin-bottom: var(--space-xs);
+        }
+
+        .emprendimiento-category {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--terracotta);
+            margin-bottom: var(--space-md);
+        }
+
+        .emprendimiento-card p {
+            font-size: 0.95rem;
+            color: var(--stone);
+            line-height: 1.7;
+            flex-grow: 1;
+        }
+
+        /* ============================================
+           TOURISM SECTION
+           ============================================ */
+        .turismo {
+            background-color: var(--bone);
+        }
+
+        .turismo h2 {
+            font-family: var(--font-serif);
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            font-weight: 400;
+            color: var(--ink);
+            text-align: center;
+            margin-bottom: var(--space-2xl);
+            line-height: 1.2;
+        }
+
+        .turismo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--space-lg);
+        }
+
+        .turismo-card {
+            background-color: var(--ivory);
+            padding: var(--space-lg);
+            border-radius: 8px;
+            border: 1px solid rgba(181, 114, 76, 0.15);
+            display: flex;
+            flex-direction: column;
+            transition: all var(--transition-smooth);
+        }
+
+        .turismo-card:hover {
+            border-color: var(--sage);
+            transform: translateY(-6px);
+            box-shadow: 0 12px 32px rgba(122, 143, 109, 0.12);
+        }
+
+        .turismo-icon {
+            width: 40px;
+            height: 40px;
+            margin-bottom: var(--space-md);
+        }
+
+        .turismo-icon svg {
+            width: 100%;
+            height: 100%;
+            stroke: var(--sage);
+            stroke-width: 1.5;
+            fill: none;
+        }
+
+        .turismo-card h3 {
+            font-family: var(--font-serif);
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: var(--ink);
+            margin-bottom: var(--space-md);
+        }
+
+        .turismo-card p {
+            font-size: 0.95rem;
+            color: var(--stone);
+            line-height: 1.7;
+            flex-grow: 1;
+        }
+
+        /* ============================================
+           REBBECA CONNECTION SECTION
+           ============================================ */
+        .connection {
+            background-color: var(--ivory);
+        }
+
+        .connection h2 {
+            font-family: var(--font-serif);
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            font-weight: 400;
+            color: var(--ink);
+            text-align: center;
+            margin-bottom: var(--space-2xl);
+            line-height: 1.2;
+        }
+
+        .pillars-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: var(--space-lg);
+            margin-bottom: var(--space-2xl);
+        }
+
+        .pillar {
+            background-color: var(--bone);
+            padding: var(--space-lg);
+            border-radius: 8px;
+            border-top: 3px solid var(--terracotta);
+            text-align: center;
+            transition: all var(--transition-smooth);
+        }
+
+        .pillar:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(181, 114, 76, 0.1);
+        }
+
+        .pillar h3 {
+            font-family: var(--font-serif);
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--ink);
+            margin-bottom: var(--space-md);
+        }
+
+        .pillar p {
+            font-size: 0.9rem;
+            color: var(--stone);
+            line-height: 1.7;
+        }
+
+        .challenge-card {
+            background: linear-gradient(135deg, var(--ink) 0%, #3A3531 100%);
+            color: var(--ivory);
+            padding: var(--space-lg);
+            border-radius: 8px;
+            border-left: 4px solid var(--terracotta);
+        }
+
+        .challenge-card h3 {
+            font-family: var(--font-serif);
+            font-size: 1.3rem;
+            font-weight: 500;
+            margin-bottom: var(--space-lg);
+        }
+
+        .challenge-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: var(--space-md);
+        }
+
+        .challenge-stat {
+            text-align: center;
+        }
+
+        .challenge-stat-number {
+            font-family: var(--font-serif);
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--terracotta);
+            margin-bottom: var(--space-xs);
+        }
+
+        .challenge-stat-label {
+            font-size: 0.8rem;
+            font-weight: 400;
+            line-height: 1.5;
+        }
+
+        /* ============================================
+           CTA SECTION
+           ============================================ */
+        .cta {
+            background: linear-gradient(135deg, var(--sage) 0%, var(--sage-muted) 100%);
+            color: var(--ivory);
+            text-align: center;
+            padding: var(--space-2xl) var(--space-md);
+        }
+
+        .cta h2 {
+            font-family: var(--font-serif);
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            font-weight: 400;
+            margin-bottom: var(--space-md);
+            line-height: 1.2;
+        }
+
+        .cta p {
+            font-size: 1.05rem;
+            margin-bottom: var(--space-lg);
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.8;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: var(--space-md);
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 14px 32px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+            transition: all var(--transition-smooth);
+        }
+
+        .btn-primary {
+            background-color: var(--ivory);
+            color: var(--sage);
+            font-weight: 600;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.1), transparent);
+            transition: left var(--transition-smooth);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--bone);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--ivory);
+            border: 2px solid var(--ivory);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--ivory);
+            color: var(--sage);
+            transform: translateY(-2px);
+        }
+
+        /* ============================================
+           FOOTER
+           ============================================ */
+        footer {
+            background-color: var(--ink);
+            color: var(--ivory);
+            padding: var(--space-xl) var(--space-md);
+            text-align: center;
+        }
+
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-lg);
+            align-items: center;
+        }
+
+        .footer-brand h3 {
+            font-family: var(--font-serif);
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: var(--space-xs);
+            letter-spacing: 2px;
+        }
+
+        .footer-brand p {
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--stone);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: var(--space-lg);
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--rose);
+            font-size: 0.95rem;
+            transition: color var(--transition-smooth);
+        }
+
+        .footer-links a:hover {
+            color: var(--ivory);
+        }
+
+        .footer-copyright {
+            font-size: 0.8rem;
+            color: var(--stone);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: var(--space-lg);
+        }
+
+        /* ============================================
+           SCROLL REVEAL ANIMATIONS
+           ============================================ */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 700ms var(--transition-smooth), transform 700ms var(--transition-smooth);
+        }
+
+        /* Stagger animation delays */
+        .reveal:nth-child(1) { transition-delay: 0ms; }
+        .reveal:nth-child(2) { transition-delay: 100ms; }
+        .reveal:nth-child(3) { transition-delay: 200ms; }
+        .reveal:nth-child(4) { transition-delay: 300ms; }
+        .reveal:nth-child(5) { transition-delay: 400ms; }
+        .reveal:nth-child(6) { transition-delay: 500ms; }
+
+        /* ============================================
+           RESPONSIVE
+           ============================================ */
+        @media (max-width: 768px) {
+            .hero {
+                padding-top: 100px;
+            }
+
+            .section {
+                padding: var(--space-xl) 0;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+            }
+
+            .cta-buttons .btn {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero h1 {
+                letter-spacing: 4px;
+            }
+
+            .container {
+                padding: 0 var(--space-sm);
+            }
+
+            .hero-tags {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .hero-tag {
+                display: block;
+                width: 100%;
+                text-align: center;
+            }
+        }
+
+        /* ============================================
+           GRAIN TEXTURE OVERLAY
+           ============================================ */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4"/><feColorMatrix type="saturate" values="0.3"/></filter><rect width="100" height="100" fill="rgba(0,0,0,0.01)" filter="url(%23noise)"/></svg>');
+            z-index: -1;
+        }
+    </style>
+</head>
+<body>
+    <!-- Scroll Progress Bar -->
+    <div class="scroll-progress" role="presentation"></div>
+
+    <!-- Navigation -->
+    <nav role="navigation" aria-label="Principal">
+        <div class="container">
+            <div class="nav-content">
+                <div class="nav-brand">
+                    <h1><a href="rebbeca-landing-v2.html">REBBECA</a></h1>
+                    <p>ecosistema artesanal</p>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="#perfil">Salento</a></li>
+                    <li><a href="#tradicion">Tradición</a></li>
+                    <li><a href="#emprendimientos">Emprendimientos</a></li>
+                    <li><a href="#turismo">Turismo</a></li>
+                    <li><a href="#contacto">Contacto</a></li>
+                </ul>
+                <button class="nav-mobile-toggle" aria-label="Menú">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+        <div class="hero-content">
+            <a href="rebbeca-landing-v2.html" class="back-link">← Volver a REBBECA</a>
+
+            <div class="hero-badge">Municipio del Quindío</div>
+
+            <h1>SALENTO</h1>
+
+            <h2>Donde las palmas de cera tocan el cielo y la tradición cafetera cobra vida. La puerta al Valle de Cocora.</h2>
+
+            <div class="hero-tags">
+                <span class="hero-tag">Valle de Cocora</span>
+                <span class="hero-tag">Cultura Cafetera</span>
+                <span class="hero-tag">Turismo</span>
+                <span class="hero-tag">Artesanía</span>
+            </div>
+        </div>
+
+        <div class="marquee">
+            <div class="marquee-content">
+                <span>·</span>
+                <span>Salento</span>
+                <span>·</span>
+                <span>Valle de Cocora</span>
+                <span>·</span>
+                <span>Palmas de Cera</span>
+                <span>·</span>
+                <span>Café de Origen</span>
+                <span>·</span>
+                <span>Paisaje UNESCO</span>
+                <span>·</span>
+                <span>Artesanía</span>
+                <span>·</span>
+                <span>Salento</span>
+                <span>·</span>
+                <span>Valle de Cocora</span>
+                <span>·</span>
+                <span>Palmas de Cera</span>
+                <span>·</span>
+                <span>Café de Origen</span>
+                <span>·</span>
+                <span>Paisaje UNESCO</span>
+                <span>·</span>
+                <span>Artesanía</span>
+                <span>·</span>
+            </div>
+        </div>
+
+        <div class="scroll-indicator">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M12 5v14M5 12l7 7 7-7" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </div>
+    </section>
+
+    <!-- Profile Section -->
+    <section class="profile section" id="perfil">
+        <div class="container">
+            <div class="profile-header">
+                <div class="profile-content reveal">
+                    <h2>La puerta al Valle de Cocora y al corazón cafetero</h2>
+                    <p>Salento es el municipio más antiguo del Quindío, fundado en 1842. Sus calles empedradas en forma de damero, sus coloridas fachadas coloniales y el aroma del café que flota en el aire configuran un lugar donde la tradición es viva y palpable. Hogar de la palma de cera del Quindío, árbol nacional de Colombia, Salento es epicentro de la cultura cafetera y puerta de acceso al Valle de Cocora.</p>
+                    <p>La economía local descansa en el turismo, la producción de café de origen y la artesanía. Sin embargo, muchos artesanos operan sin estructura financiera formal —ese es exactamente el desafío que REBBECA viene a resolver, transformando talento en sostenibilidad económica.</p>
+                    <div class="profile-badge">
+                        Hogar de la palma de cera del Quindío, árbol nacional de Colombia
+                    </div>
+                </div>
+
+                <div class="stats-grid reveal">
+                    <div class="stat-card">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"/>
+                        </svg>
+                        <div class="stat-value">1.895m</div>
+                        <div class="stat-label">Altitud</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M14 6l-3.5 5 2.5 3.5-5.5.5 3.5 2.5-2.5 5 5-3.5 1 5 2-3.5 5 1-4-2.5 2-5.5z"/>
+                        </svg>
+                        <div class="stat-value">18°C</div>
+                        <div class="stat-label">Temperatura</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/>
+                        </svg>
+                        <div class="stat-value">1842</div>
+                        <div class="stat-label">Fundación</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm8 0c1.66 0 2.99-1.34 2.99-3S25.66 5 24 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm-8 0c-.29 0-.62.02-.97.05 1.16.64 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+                        </svg>
+                        <div class="stat-value">~7.800</div>
+                        <div class="stat-label">Habitantes</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tradition Section -->
+    <section class="tradition section" id="tradicion">
+        <div class="container">
+            <h2>La cultura del café: alma de Salento</h2>
+            <p class="tradition-quote">"Salento yace en el corazón del Paisaje Cultural Cafetero de Colombia, reconocido como Patrimonio de la Humanidad por la UNESCO. Aquí, el café no es solo cultivo; es identidad, comunidad y sustento."</p>
+
+            <div class="tradition-grid">
+                <div class="tradition-card reveal">
+                    <h3>Fincas Cafeteras</h3>
+                    <p>Tours experienciales desde la semilla hasta la taza. Aprende de productores que llevan generaciones perfeccionando el arte de la caficultura en las laderas del Quindío.</p>
+                </div>
+
+                <div class="tradition-card reveal">
+                    <h3>Café de Origen</h3>
+                    <p>Variedades de altura: Castillo, Caturra y otras cultivadas entre 1.800 y 2.000 metros. Cada grano cuenta la historia del terroir salentino.</p>
+                </div>
+
+                <div class="tradition-card reveal">
+                    <h3>Catación y Barismo</h3>
+                    <p>Talleres sensoriales donde aprenderás a degustar, clasificar y preparar café como experto. La cultura del café hecha accesible.</p>
+                </div>
+
+                <div class="tradition-card reveal">
+                    <h3>Cultura Viva</h3>
+                    <p>El café no es solo un producto; es la médula de la identidad salentina. Desde festivales hasta conversas en la plaza, el café vive en cada rincón.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Emprendimientos Section -->
+    <section class="emprendimientos section" id="emprendimientos">
+        <div class="container">
+            <h2>Los rostros detrás del talento salentino</h2>
+
+            <div class="emprendimientos-grid">
+                <div class="emprendimiento-card reveal">
+                    <svg class="emprendimiento-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
+                    </svg>
+                    <h3>Finca La Esperanza</h3>
+                    <div class="emprendimiento-category">Café</div>
+                    <p>Café artesanal de origen, desde la semilla hasta la taza. Tours de finca y catas especializadas que conectan turismo con calidad.</p>
+                </div>
+
+                <div class="emprendimiento-card reveal">
+                    <svg class="emprendimiento-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4c-1.48 0-2.85.43-4.01 1.17l1.46 1.46C10.21 5.23 11.08 5 12 5c3.04 0 5.71 2.16 6.32 5h2.26c.27-2.51 1.3-4.41 2.97-5.74L19.35 10.04zM3 5.27l2.75 2.74C2.56 8.15 0 10.77 0 14c0 3.31 2.69 6 6 6h11.73l2 2 .01-.01L21 21 3 5.27zM6 13h6v3H6z"/>
+                    </svg>
+                    <h3>Artesanías del Cocora</h3>
+                    <div class="emprendimiento-category">Artesanía</div>
+                    <p>Piezas en guadua (bambú) inspiradas en la majestuosidad de las palmas de cera. Cada creación es un homenaje a la naturaleza salentina.</p>
+                </div>
+
+                <div class="emprendimiento-card reveal">
+                    <svg class="emprendimiento-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M11 9H9V7h2m8 10v-5h-2v5h2m-6-11H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-9h-2V8h-2v6h-2V2h-3v6zm6 6v2h2v-2h-2z"/>
+                    </svg>
+                    <h3>Dulces de la Abuela</h3>
+                    <div class="emprendimiento-category">Agrotransformación</div>
+                    <p>Confituras y dulces tradicionales hechos con recetas heredadas. Bocamandos que capturan los sabores de la montaña salentina.</p>
+                </div>
+
+                <div class="emprendimiento-card reveal">
+                    <svg class="emprendimiento-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M8.1 13.34l2.83-2.83L3.91 3.5a4.008 4.008 0 00-1.41 4.242l.64 1.905M19.79 4.21L8.86 15.14m4.6 2.7l2.83-2.83 7.07 7.07c.63-.92.98-2.04.98-3.24a4 4 0 00-6.88-2.96z"/>
+                    </svg>
+                    <h3>Truchas del Valle</h3>
+                    <div class="emprendimiento-category">Gastronomía</div>
+                    <p>Truchas frescas de aguas cristalinas, preparadas con técnicas que honran la tradición y el sabor. Gastronomía de agua limpia.</p>
+                </div>
+
+                <div class="emprendimiento-card reveal">
+                    <svg class="emprendimiento-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M19 13H5v-2h14v2z M17 6h-5V3H8v3H3v2h4v8h10V8h4V6z"/>
+                    </svg>
+                    <h3>Tejidos Ancestrales</h3>
+                    <div class="emprendimiento-category">Artesanía</div>
+                    <p>Mochilas y ruanas tejidas a mano, con patrones ancestrales que conectan con culturas precolombinas y la identidad cafetera.</p>
+                </div>
+
+                <div class="emprendimiento-card reveal">
+                    <svg class="emprendimiento-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6z"/>
+                    </svg>
+                    <h3>Miel de Montaña</h3>
+                    <div class="emprendimiento-category">Agrotransformación</div>
+                    <p>Miel de abejas nativas, producida en las alturas del Valle de Cocora. Dulce, pura, con toda la esencia floral de Salento.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tourism Section -->
+    <section class="turismo section" id="turismo">
+        <div class="container">
+            <h2>Descubre lo que hace a Salento inolvidable</h2>
+
+            <div class="turismo-grid">
+                <div class="turismo-card reveal">
+                    <svg class="turismo-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-5.04-6.71l-2.75 3.54-2.96-3.83c-.3-.39-.92-.39-1.22 0L6.5 17h11l-3.54-4.71c-.3-.39-.92-.39-1.22 0z"/>
+                    </svg>
+                    <h3>Valle de Cocora</h3>
+                    <p>Palmas de cera de hasta 60 metros. Caminatas inmersivas en un paisaje que parece sacado de otro mundo, donde la naturaleza alcanza su máxima expresión.</p>
+                </div>
+
+                <div class="turismo-card reveal">
+                    <svg class="turismo-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                    <h3>Calle Real</h3>
+                    <p>Corazón turístico donde convergen tiendas de artesanía, cafés especializados y arquitectura colonial. Compra directo de productores.</p>
+                </div>
+
+                <div class="turismo-card reveal">
+                    <svg class="turismo-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2C9.24 2 7 4.24 7 7c0 2.85 2.92 7.21 5 9.88 2.11-2.69 5-7.05 5-9.88 0-2.76-2.24-5-5-5m0 7.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5"/>
+                    </svg>
+                    <h3>Mirador de Salento</h3>
+                    <p>Escalinata de 253 peldaños hacia un punto panorámico que regala vistas de 360 grados sobre el Valle de Cocora y las montañas circundantes.</p>
+                </div>
+
+                <div class="turismo-card reveal">
+                    <svg class="turismo-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
+                    </svg>
+                    <h3>Fincas Cafeteras</h3>
+                    <p>Tours experienciales en fincas de café certificado. Desde siembra hasta taza: descubre el trabajo que hay detrás de cada sorbo.</p>
+                </div>
+
+                <div class="turismo-card reveal">
+                    <svg class="turismo-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-4-4h-4v-2h4v2z"/>
+                    </svg>
+                    <h3>Reserva Natural Acaime</h3>
+                    <p>Santuario de colibríes y flora endémica. Senderos de trekking en bosque nuboso donde la biodiversidad es pura magia.</p>
+                </div>
+
+                <div class="turismo-card reveal">
+                    <svg class="turismo-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2C9.24 2 7 4.24 7 7c0 2.85 2.92 7.21 5 9.88 2.11-2.69 5-7.05 5-9.88 0-2.76-2.24-5-5-5m0 7.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5"/>
+                    </svg>
+                    <h3>Puente Colgante</h3>
+                    <p>Puente sobre el Río Quindío que ofrece adrenalina y vistas espectaculares. Una parada obligada para los aventureros.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- REBBECA Connection Section -->
+    <section class="connection section" id="conexion">
+        <div class="container">
+            <h2>Conectando el talento salentino con una gestión sostenible</h2>
+
+            <div class="pillars-grid">
+                <div class="pillar reveal">
+                    <h3>Diagnosticar</h3>
+                    <p>Evaluamos el estado real de emprendimientos salentinos: costos, ingresos, flujo de caja, potencial turístico y estructura.</p>
+                </div>
+
+                <div class="pillar reveal">
+                    <h3>Estructurar Costos</h3>
+                    <p>Herramientas financieras prácticas para que artesanos y productores salentinos controlen precios, márgenes y decisiones de negocio.</p>
+                </div>
+
+                <div class="pillar reveal">
+                    <h3>Conectar con Turismo</h3>
+                    <p>Articulación directa con cadena turística. Posicionamiento de marca para que el mundo conozca y compre lo que Salento crea.</p>
+                </div>
+
+                <div class="pillar reveal">
+                    <h3>Acompañar Crecimiento</h3>
+                    <p>Seguimiento continuo, ajuste de estrategias y mentoría personalizada para que cada emprendimiento salentino florezca.</p>
+                </div>
+            </div>
+
+            <div class="challenge-card">
+                <h3>El desafío en Salento</h3>
+                <div class="challenge-stats">
+                    <div class="challenge-stat">
+                        <div class="challenge-stat-number">45+</div>
+                        <div class="challenge-stat-label">Productores identificados</div>
+                    </div>
+                    <div class="challenge-stat">
+                        <div class="challenge-stat-number">60%</div>
+                        <div class="challenge-stat-label">Sin estructura financiera</div>
+                    </div>
+                    <div class="challenge-stat">
+                        <div class="challenge-stat-number">3</div>
+                        <div class="challenge-stat-label">Sectores prioritarios</div>
+                    </div>
+                    <div class="challenge-stat">
+                        <div class="challenge-stat-number">80%</div>
+                        <div class="challenge-stat-label">+3 años sin estructura formal</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta section" id="contacto">
+        <div class="container">
+            <h2>Salento merece crecer con raíces fuertes</h2>
+            <p>El talento está aquí. La infraestructura está aquí. Lo que falta es el ecosistema de acompañamiento que REBBECA construye.</p>
+            <div class="cta-buttons">
+                <a href="rebbeca-landing-v2.html#planes" class="btn btn-primary">Ver planes</a>
+                <a href="rebbeca-landing-v2.html#contacto" class="btn btn-secondary">Contactar</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>REBBECA</h3>
+                    <p>ecosistema artesanal</p>
+                </div>
+                <div class="footer-links">
+                    <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">Instagram</a>
+                    <a href="https://wa.me" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+                    <a href="mailto:hola@rebbeca.co">Correo</a>
+                </div>
+                <div class="footer-copyright">
+                    © 2026 REBBECA. Todos los derechos reservados.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // ============================================
+        // SCROLL PROGRESS BAR
+        // ============================================
+        const scrollProgress = document.querySelector('.scroll-progress');
+
+        window.addEventListener('scroll', () => {
+            const windowHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const scrollTop = window.scrollY;
+            const progress = (scrollTop / windowHeight) * 100;
+            scrollProgress.style.width = progress + '%';
+        });
+
+        // ============================================
+        // NAV BLUR ON SCROLL
+        // ============================================
+        const nav = document.querySelector('nav');
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+
+        // ============================================
+        // SCROLL REVEAL ANIMATIONS
+        // ============================================
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal').forEach(el => {
+            observer.observe(el);
+        });
+
+        // ============================================
+        // ANIMATED COUNTERS FOR STATS
+        // ============================================
+        function animateCounter(element, target, duration = 1500) {
+            const start = 0;
+            const isPercentage = element.textContent.includes('%');
+            const isPure = !isPercentage && !element.textContent.includes('m') && !element.textContent.includes('°') && !element.textContent.includes('+');
+            const increment = target / (duration / 16);
+            let current = start;
+
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    if (isPercentage) {
+                        element.textContent = target + '%';
+                    } else if (isPure) {
+                        element.textContent = Math.floor(target) + '+';
+                    } else {
+                        element.textContent = target;
+                    }
+                    clearInterval(timer);
+                } else {
+                    if (isPercentage) {
+                        element.textContent = Math.floor(current) + '%';
+                    } else {
+                        element.textContent = Math.floor(current);
+                    }
+                }
+            }, 16);
+        }
+
+        const counterObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const statNumbers = entry.target.querySelectorAll('.challenge-stat-number');
+                    statNumbers.forEach(num => {
+                        const text = num.textContent.trim();
+                        let target = 0;
+                        if (text.includes('+')) {
+                            target = parseInt(text);
+                        } else if (text.includes('%')) {
+                            target = parseInt(text);
+                        } else {
+                            target = parseInt(text);
+                        }
+                        if (!isNaN(target)) {
+                            animateCounter(num, target);
+                        }
+                    });
+                    counterObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.3 });
+
+        document.querySelectorAll('.challenge-card').forEach(el => {
+            counterObserver.observe(el);
+        });
+
+        // ============================================
+        // SMOOTH SCROLL
+        // ============================================
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+                if (href !== '#' && document.querySelector(href)) {
+                    e.preventDefault();
+                    const target = document.querySelector(href);
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
+        // ============================================
+        // BUTTON INTERACTIONS
+        // ============================================
+        document.querySelectorAll('.btn').forEach(button => {
+            button.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-2px)';
+            });
+            button.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+
+        // ============================================
+        // ACCESSIBILITY: FOCUS MANAGEMENT
+        // ============================================
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.activeElement.blur();
+            }
+        });
+
+        // ============================================
+        // PREFETCH LINKS FOR PERFORMANCE
+        // ============================================
+        document.querySelectorAll('a[href$=".html"]').forEach(link => {
+            const prefetchLink = document.createElement('link');
+            prefetchLink.rel = 'prefetch';
+            prefetchLink.href = link.href;
+            document.head.appendChild(prefetchLink);
+        });
+    </script>
+</body>
+</html>

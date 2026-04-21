@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body{margin:0;padding:22px 26px;background:var(--cream);box-sizing:border-box;display:flex;flex-direction:column;gap:14px}
+  .field{display:flex;flex-direction:column;gap:6px}
+  .label{font-family:'Outfit',sans-serif;font-size:10px;font-weight:500;letter-spacing:.25em;text-transform:uppercase;color:var(--fg-2)}
+  .input{background:var(--warm-white);border:1px solid var(--border);border-radius:8px;padding:12px 14px;font-family:'Outfit',sans-serif;font-size:14px;color:var(--coffee);transition:border-color .2s ease}
+  .input:focus{outline:none;border-color:var(--clay);box-shadow:0 0 0 3px var(--gold-12)}
+  .input.focused{border-color:var(--clay);box-shadow:0 0 0 3px var(--gold-12)}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .help{font-family:'Outfit',sans-serif;font-size:11px;color:var(--fg-3);font-style:italic}
+</style></head>
+<body>
+  <div class="field"><div class="label">Nombre del maestro</div><input class="input focused" value="Doña Rosa Elvira Gómez"></div>
+  <div class="row">
+    <div class="field"><div class="label">Vereda</div><input class="input" value="El Crucero"></div>
+    <div class="field"><div class="label">Municipio</div><input class="input" value="Pijao"></div>
+  </div>
+  <div class="field"><div class="label">Oficio</div><input class="input" placeholder="Alfarería, tejido, guadua…"><div class="help">se muestra en la ficha pública</div></div>
+</body></html>

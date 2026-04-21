@@ -11,7 +11,7 @@ spring:
         - id: auth-service-public
           uri: ${AUTH_SERVICE_URL:http://localhost:8081}
           predicates:
-            - Path=/api/auth/login, /api/auth/register, /api/auth/refresh
+            - Path=/api/auth/login, /api/auth/register, /api/auth/register-cliente, /api/auth/refresh
 
         # Rutas privadas Auth
         - id: auth-service-private

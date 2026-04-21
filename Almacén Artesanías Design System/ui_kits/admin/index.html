@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1440">
+<title>Artesanías — Panel de administración</title>
+<link rel="stylesheet" href="../../colors_and_type.css">
+<!-- Material Symbols (may be blocked in some sandboxes, we fall back to inline SVG) -->
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body class="noise-overlay">
+<div id="app"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="data.jsx"></script>
+<script type="text/babel" src="Icon.jsx"></script>
+<script type="text/babel" src="Sidenav.jsx"></script>
+<script type="text/babel" src="Dashboard.jsx"></script>
+<script type="text/babel" src="Productos.jsx"></script>
+<script type="text/babel" src="Artesanos.jsx"></script>
+<script type="text/babel" src="Ventas.jsx"></script>
+<script type="text/babel" src="Stock.jsx"></script>
+<script type="text/babel" src="ProductForm.jsx"></script>
+
+<script type="text/babel">
+const PLACEHOLDER_TITLES = {
+  categorias: 'Categorías',
+  clientes: 'Clientes',
+  entradas: 'Entradas de inventario',
+  salidas: 'Salidas de inventario',
+  reportes: 'Reportes',
+};
+
+const Placeholder = ({ id }) => (
+  <div className="page-container animate-in">
+    <div className="page-header">
+      <div className="page-title__wrap">
+        <span className="eyebrow">Módulo · {id}</span>
+        <h1 className="page-title">{PLACEHOLDER_TITLES[id] || id}</h1>
+        <p className="page-subtitle">Vista pendiente de diseño detallado en este UI kit.</p>
+      </div>
+    </div>
+    <div style={{
+      background: 'var(--warm-white)',
+      border: '1px dashed var(--border)',
+      borderRadius: 12,
+      padding: '80px 40px',
+      textAlign: 'center',
+      color: 'var(--text-muted)',
+      fontFamily: 'var(--font-serif)',
+      fontStyle: 'italic',
+      fontSize: 18,
+    }}>
+      Los patrones de tabla, ficha y formulario ya definidos en
+      <strong style={{color: 'var(--coffee)', fontStyle: 'normal', fontFamily: 'var(--font-body)', fontWeight: 500}}> Stock</strong>,
+      <strong style={{color: 'var(--coffee)', fontStyle: 'normal', fontFamily: 'var(--font-body)', fontWeight: 500}}> Ventas</strong> y
+      <strong style={{color: 'var(--coffee)', fontStyle: 'normal', fontFamily: 'var(--font-body)', fontWeight: 500}}> Artesanías</strong>
+      <br/>se reutilizan para este módulo.
+    </div>
+  </div>
+);
+
+const App = () => {
+  const [screen, setScreen] = React.useState('dashboard');
+  const [formPiece, setFormPiece] = React.useState(undefined);
+  const [toast, setToast] = React.useState(null);
+
+  const user = { name: 'Lucía Henao', initial: 'L', role: 'ADMIN' };
+
+  const openForm = (p) => setFormPiece(p || null);
+  const closeForm = () => setFormPiece(undefined);
+  const saveForm = (form) => {
+    closeForm();
+    setToast(form.name ? `Guardado: ${form.name}` : 'Pieza registrada');
+    setTimeout(() => setToast(null), 2800);
+  };
+
+  return (
+    <div className="app-shell">
+      <AdminSidenav current={screen} onNavigate={setScreen} user={user} />
+      <main className="main">
+        {screen === 'dashboard' && <AdminDashboard />}
+        {screen === 'productos' && <AdminProductos onOpenForm={openForm} />}
+        {screen === 'artesanos' && <AdminArtesanos />}
+        {screen === 'ventas' && <AdminVentas />}
+        {screen === 'stock' && <AdminStock />}
+        {!['dashboard','productos','artesanos','ventas','stock'].includes(screen) && <Placeholder id={screen} />}
+      </main>
+      {formPiece !== undefined && <AdminProductForm piece={formPiece} onClose={closeForm} onSave={saveForm} />}
+      {toast && <div className="toast"><span className="toast__dot"></span>{toast}</div>}
+    </div>
+  );
+};
+
+ReactDOM.createRoot(document.getElementById('app')).render(<App />);
+</script>
+</body>
+</html>
