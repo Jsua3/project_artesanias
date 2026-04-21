@@ -1,0 +1,68 @@
+<div class="pedidos-shell">
+  <header class="pedidos-top">
+    <a routerLink="/mis-pedidos" class="back-link">
+      <mat-icon>arrow_back</mat-icon>
+      <span>Volver a mis pedidos</span>
+    </a>
+    <h1>Detalle del pedido</h1>
+  </header>
+
+  @if (loading()) {
+    <div class="pedidos-state">
+      <mat-progress-spinner diameter="32" mode="indeterminate"></mat-progress-spinner>
+      <p>Cargando pedido…</p>
+    </div>
+  } @else if (error()) {
+    <div class="pedidos-state">
+      <mat-icon>error_outline</mat-icon>
+      <p>{{ error() }}</p>
+      <a mat-stroked-button routerLink="/mis-pedidos">Ver mis pedidos</a>
+    </div>
+  } @else if (pedido(); as p) {
+    <section class="pedido-detail">
+      <div class="pedido-detail__head">
+        <div>
+          <p class="pedido-detail__id">#{{ p.id.slice(0, 8) }}</p>
+          <p class="pedido-detail__date">
+            {{ p.createdAt | date:'d MMMM y, HH:mm' }}
+          </p>
+        </div>
+        <span [class]="badgeClass(p.estado)">{{ badgeLabel(p.estado) }}</span>
+      </div>
+
+      @if (isPendiente()) {
+        <div class="pedido-detail__note pedido-detail__note--pending">
+          <mat-icon>schedule</mat-icon>
+          <div>
+            <p class="note-title">Pago próximamente</p>
+            <p class="note-body">
+              Estamos habilitando el pago con tarjeta. Por ahora, un maestro
+              te contactará para coordinarte el pago y el envío.
+            </p>
+          </div>
+        </div>
+      }
+
+      <div class="pedido-detail__card">
+        <h2>Piezas</h2>
+        <ul class="lines">
+          @for (d of p.detalles; track d.id) {
+            <li class="line">
+              <div class="line__body">
+                <p class="line__name">Producto <code>{{ d.productId.slice(0, 8) }}</code></p>
+                <p class="line__meta">
+                  {{ formatPrice(d.precioUnitario) }} × {{ d.cantidad }}
+                </p>
+              </div>
+              <p class="line__sub">{{ formatPrice(d.subtotal) }}</p>
+            </li>
+          }
+        </ul>
+        <div class="pedido-total">
+          <span>Total</span>
+          <span>{{ formatPrice(p.total) }}</span>
+        </div>
+      </div>
+    </section>
+  }
+</div>

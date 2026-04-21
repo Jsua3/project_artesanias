@@ -1,0 +1,75 @@
+<div class="cart-shell">
+  <header class="cart-top">
+    <a routerLink="/" class="back-link">
+      <mat-icon>arrow_back</mat-icon>
+      <span>Volver a la tienda</span>
+    </a>
+    <h1>Tu bolsa</h1>
+  </header>
+
+  @if (isEmpty()) {
+    <div class="cart-empty">
+      <mat-icon>shopping_bag</mat-icon>
+      <p>Tu bolsa está vacía.</p>
+      <a mat-stroked-button routerLink="/">Explorar piezas</a>
+    </div>
+  } @else {
+    <div class="cart-grid">
+      <section class="cart-items">
+        @for (l of lines(); track l.productId) {
+          <article class="cart-item">
+            <div class="cart-item__img">
+              @if (l.imageUrl) {
+                <img [src]="l.imageUrl" [alt]="l.name" />
+              } @else {
+                <div class="cart-item__img-placeholder"></div>
+              }
+            </div>
+            <div class="cart-item__body">
+              <p class="cart-item__name">{{ l.name }}</p>
+              <p class="cart-item__price">{{ formatPrice(l.price) }}</p>
+              <div class="cart-item__qty">
+                <button mat-icon-button (click)="dec(l.productId, l.qty)" aria-label="disminuir">
+                  <mat-icon>remove</mat-icon>
+                </button>
+                <span>{{ l.qty }}</span>
+                <button mat-icon-button (click)="inc(l.productId, l.qty)" aria-label="aumentar">
+                  <mat-icon>add</mat-icon>
+                </button>
+              </div>
+            </div>
+            <div class="cart-item__right">
+              <p class="cart-item__subtotal">{{ formatPrice(l.price * l.qty) }}</p>
+              <button mat-icon-button (click)="remove(l.productId)" aria-label="quitar">
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+          </article>
+        }
+      </section>
+
+      <aside class="cart-summary">
+        <h2>Resumen</h2>
+        <div class="summary-row">
+          <span>Items</span>
+          <span>{{ linesCount() }}</span>
+        </div>
+        <div class="summary-row summary-total">
+          <span>Total</span>
+          <span>{{ formatPrice(total()) }}</span>
+        </div>
+        <p class="summary-note">
+          El pago con tarjeta llega en la siguiente actualización. Por ahora
+          tu pedido queda en estado <strong>pendiente</strong> y un maestro
+          te contactará.
+        </p>
+        <button mat-raised-button color="primary" class="full-w" (click)="goToCheckout()">
+          Continuar al checkout
+        </button>
+        <button mat-button class="full-w" (click)="clear()">
+          Vaciar bolsa
+        </button>
+      </aside>
+    </div>
+  }
+</div>

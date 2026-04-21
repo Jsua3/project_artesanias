@@ -10,10 +10,15 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { AuthService } from '../../../core/services/auth.service';
+import { CatalogService } from '../../../core/services/catalog.service';
+import { CartService } from '../../../core/services/cart.service';
+import { Artesano, Category, Product } from '../../../core/models/catalog.model';
 
 export interface Pieza {
-  id: number;
+  id: string;                 // productId UUID cuando viene de backend; string numérico para mocks
   name: string;
   maestro: string;
   town: string;
@@ -48,14 +53,18 @@ interface HeroCaption {
 })
 export class PublicLandingComponent implements OnInit, OnDestroy {
   auth = inject(AuthService);
+  cart = inject(CartService);
   private router = inject(Router);
+  private catalog = inject(CatalogService);
 
   readonly scrolled = signal(false);
   readonly heroSlide = signal(0);
   readonly selectedCategory = signal<string>('Todas');
   readonly openPiece = signal<Pieza | null>(null);
-  readonly cart = signal<Pieza[]>([]);
   readonly toast = signal<string | null>(null);
+
+  /** Producto crudo del API guardado para pasarlo a CartService al agregar. */
+  private readonly productsById = new Map<string, Product>();
 
   readonly photos: string[] = [
     '/assets/photo-cocora.jpg',
@@ -78,22 +87,23 @@ export class PublicLandingComponent implements OnInit, OnDestroy {
     { label: 'Oficio', anchor: '#oficio' }
   ];
 
-  readonly piezas: Pieza[] = [
-    { id: 1, name: 'Vasija de barro quemado', maestro: 'Doña Rosa Elvira', town: 'Pijao',    price: 180000, category: 'Alfarería', img: '/assets/placeholder-vasija.svg', status: 'available' },
-    { id: 2, name: 'Ruana de lana virgen',    maestro: 'Dña Carmen Tulia',  town: 'Salento',  price: 320000, category: 'Tejido',    img: '/assets/placeholder-tejido.svg', status: 'lowstock'  },
-    { id: 3, name: 'Cesto en fique y guadua', maestro: 'Don Hernán Ospina', town: 'Filandia', price: 145000, category: 'Guadua',    img: '/assets/placeholder-vasija.svg', status: 'available' },
-    { id: 4, name: 'Camino de mesa tejido',   maestro: 'Doña Ana Lucía',    town: 'Circasia', price:  95000, category: 'Textil',    img: '/assets/placeholder-tejido.svg', status: 'available' },
-    { id: 5, name: 'Cuenco torneado',         maestro: 'Don Javier Correa', town: 'Calarcá',  price:  72000, category: 'Madera',    img: '/assets/placeholder-vasija.svg', status: 'available' },
-    { id: 6, name: 'Tapete urdido a mano',    maestro: 'Doña Gloria Mejía', town: 'Armenia',  price: 420000, category: 'Textil',    img: '/assets/placeholder-tejido.svg', status: 'sold'      }
-  ];
+  /** Piezas finalmente mostradas: empiezan como mock y se sustituyen por las del API si existen. */
+  readonly piezas = signal<Pieza[]>([
+    { id: 'mock-1', name: 'Vasija de barro quemado', maestro: 'Doña Rosa Elvira', town: 'Pijao',    price: 180000, category: 'Alfarería', img: '/assets/placeholder-vasija.svg', status: 'available' },
+    { id: 'mock-2', name: 'Ruana de lana virgen',    maestro: 'Dña Carmen Tulia',  town: 'Salento',  price: 320000, category: 'Tejido',    img: '/assets/placeholder-tejido.svg', status: 'lowstock'  },
+    { id: 'mock-3', name: 'Cesto en fique y guadua', maestro: 'Don Hernán Ospina', town: 'Filandia', price: 145000, category: 'Guadua',    img: '/assets/placeholder-vasija.svg', status: 'available' },
+    { id: 'mock-4', name: 'Camino de mesa tejido',   maestro: 'Doña Ana Lucía',    town: 'Circasia', price:  95000, category: 'Textil',    img: '/assets/placeholder-tejido.svg', status: 'available' },
+    { id: 'mock-5', name: 'Cuenco torneado',         maestro: 'Don Javier Correa', town: 'Calarcá',  price:  72000, category: 'Madera',    img: '/assets/placeholder-vasija.svg', status: 'available' },
+    { id: 'mock-6', name: 'Tapete urdido a mano',    maestro: 'Doña Gloria Mejía', town: 'Armenia',  price: 420000, category: 'Textil',    img: '/assets/placeholder-tejido.svg', status: 'sold'      }
+  ]);
 
-  readonly maestros: Maestro[] = [
+  readonly maestros = signal<Maestro[]>([
     { name: 'Doña Rosa Elvira Gómez', town: 'Pijao',    vereda: 'El Crucero',     craft: 'Alfarería · torno a pedal', years: 42, quote: 'El barro se deja enseñar si uno lo escucha despacio.' },
     { name: 'Don Hernán Ospina',      town: 'Filandia', vereda: 'La Cristalina', craft: 'Guadua y fique',             years: 35, quote: 'La guadua nace recta porque busca la luz. Nosotros le ayudamos.' },
     { name: 'Doña Carmen Tulia',      town: 'Salento',  vereda: 'Boquía',        craft: 'Tejido en lana virgen',      years: 28, quote: 'Mi telar lo heredé de mi mamá, el mismo que me quiere ver en el hilo.' }
-  ];
+  ]);
 
-  readonly categories = ['Todas', 'Alfarería', 'Tejido', 'Guadua', 'Textil', 'Madera'];
+  readonly categories = signal<string[]>(['Todas', 'Alfarería', 'Tejido', 'Guadua', 'Textil', 'Madera']);
 
   readonly territorioPlaces = ['Filandia', 'Salento', 'Pijao', 'Circasia', 'Calarcá', 'Armenia'];
 
@@ -116,10 +126,11 @@ export class PublicLandingComponent implements OnInit, OnDestroy {
 
   readonly filteredPiezas = computed(() => {
     const cat = this.selectedCategory();
-    return cat === 'Todas' ? this.piezas : this.piezas.filter(p => p.category === cat);
+    const list = this.piezas();
+    return cat === 'Todas' ? list : list.filter(p => p.category === cat);
   });
 
-  readonly cartCount = computed(() => this.cart().length);
+  readonly cartCount = computed(() => this.cart.count());
 
   readonly currentUsername = computed(() => this.auth.currentUser()?.username ?? null);
 
@@ -135,6 +146,8 @@ export class PublicLandingComponent implements OnInit, OnDestroy {
         this.heroSlide.update(s => (s + 1) % this.photos.length);
       }, 6000);
     }
+
+    this.loadCatalog();
   }
 
   ngOnDestroy(): void {
@@ -142,6 +155,69 @@ export class PublicLandingComponent implements OnInit, OnDestroy {
       clearInterval(this.slideInterval);
       this.slideInterval = null;
     }
+  }
+
+  /**
+   * Carga productos, categorías y artesanos desde el API público. Si el API
+   * responde vacío o falla (p.ej. dev local sin backend), mantiene los mocks
+   * para no perder la experiencia de Fase 1.
+   */
+  private loadCatalog(): void {
+    forkJoin({
+      products: this.catalog.getProducts().pipe(catchError(() => of([] as Product[]))),
+      categories: this.catalog.getCategories().pipe(catchError(() => of([] as Category[]))),
+      artesanos: this.catalog.getArtesanos().pipe(catchError(() => of([] as Artesano[])))
+    }).subscribe(({ products, categories, artesanos }) => {
+      if (!products.length) {
+        // Sin datos reales: conservamos mocks. Nothing to do.
+        return;
+      }
+
+      const catName = new Map(categories.map(c => [c.id, c.name]));
+      const artName = new Map(artesanos.map(a => [a.id, a.nombre]));
+      const artTown = new Map(artesanos.map(a => [a.id, a.municipio ?? '']));
+
+      const mapped: Pieza[] = products
+        .filter(p => p.active)
+        .map(p => {
+          const category = (p.categoryId && catName.get(p.categoryId)) || 'Otras';
+          const maestro  = (p.artesanoId && artName.get(p.artesanoId)) || '—';
+          const town     = (p.artesanoId && artTown.get(p.artesanoId)) || '';
+          return {
+            id: p.id,
+            name: p.name,
+            maestro,
+            town,
+            price: p.price ?? 0,
+            category,
+            img: p.imageUrl || '/assets/placeholder-vasija.svg',
+            status: 'available' as const
+          };
+        });
+
+      if (mapped.length) {
+        this.piezas.set(mapped);
+        this.productsById.clear();
+        products.forEach(p => this.productsById.set(p.id, p));
+
+        // Categorías a partir de los valores reales (más 'Todas')
+        const cats = ['Todas', ...Array.from(new Set(mapped.map(m => m.category)))];
+        this.categories.set(cats);
+      }
+
+      if (artesanos.length) {
+        this.maestros.set(
+          artesanos.slice(0, 3).map(a => ({
+            name: a.nombre,
+            town: a.municipio ?? '',
+            vereda: a.vereda ?? '',
+            craft: a.oficio ?? '',
+            years: a.anosExperiencia ?? 0,
+            quote: a.bio ?? ''
+          }))
+        );
+      }
+    });
   }
 
   @HostListener('window:scroll')
@@ -174,23 +250,33 @@ export class PublicLandingComponent implements OnInit, OnDestroy {
   }
 
   onAddToCart(p: Pieza): void {
-    // Fase 1: el flujo real de compra/carrito viene en fase 2 (Stripe).
-    // Si el usuario no está autenticado como CLIENTE, lo mandamos a registro.
-    const user = this.auth.currentUser();
-    if (!user) {
+    // Permitimos agregar al carrito incluso sin login — el login se pide en /checkout.
+    if (p.status === 'sold') {
+      this.showToast('Esta pieza ya fue vendida.');
+      return;
+    }
+    // Mocks no son agregables al carrito real
+    if (p.id.startsWith('mock-')) {
       this.onClosePiece();
-      this.router.navigate(['/registro-cliente'], {
-        queryParams: { next: '/', reason: 'compra' }
-      });
+      this.showToast('Demo: esta pieza aún no está disponible para compra.');
       return;
     }
-    if (user.role !== 'CLIENTE') {
-      this.showToast('Solo las cuentas cliente pueden comprar.');
+    const product = this.productsById.get(p.id);
+    if (!product) {
+      this.showToast('No se encontró el producto.');
       return;
     }
-    this.cart.update(c => [...c, p]);
+    this.cart.add(product, 1);
     this.onClosePiece();
     this.showToast(`Agregado: ${p.name}`);
+  }
+
+  goToCart(): void {
+    this.router.navigate(['/carrito']);
+  }
+
+  goToMisPedidos(): void {
+    this.router.navigate(['/mis-pedidos']);
   }
 
   goToLogin(): void {
