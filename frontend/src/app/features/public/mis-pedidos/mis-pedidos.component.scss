@@ -1,0 +1,357 @@
+/* Mis pedidos — lista y detalle. Comparten estética con cart/checkout. */
+
+:host {
+  display: block;
+  min-height: 100vh;
+  background: #faf7f2;
+  color: #2d2a26;
+}
+
+.pedidos-shell {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+}
+
+.pedidos-top {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 32px;
+
+  h1 {
+    margin: 0;
+    font-family: 'Fraunces', 'Playfair Display', serif;
+    font-size: 34px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+
+  .subtitle {
+    margin: 0;
+    max-width: 640px;
+    color: #6b6259;
+    font-size: 15px;
+    line-height: 1.55;
+  }
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #6b6259;
+  text-decoration: none;
+  font-size: 14px;
+  width: fit-content;
+  padding: 4px 0;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s, color 0.2s;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover {
+    color: #2d2a26;
+    border-bottom-color: #b8a38c;
+  }
+}
+
+/* Estados (loading / empty / error) */
+.pedidos-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 72px 20px;
+  text-align: center;
+  background: #fff;
+  border: 1px solid #ece5db;
+  border-radius: 8px;
+
+  mat-icon {
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+    color: #b8a38c;
+  }
+
+  p {
+    margin: 0;
+    color: #6b6259;
+    font-size: 16px;
+  }
+}
+
+/* Lista */
+.pedidos-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pedido-row {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr) auto auto 24px;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 18px;
+  background: #fff;
+  border: 1px solid #ece5db;
+  border-radius: 8px;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.2s, transform 0.15s;
+
+  &:hover {
+    border-color: #b8a38c;
+    transform: translateY(-1px);
+  }
+
+  @media (max-width: 680px) {
+    grid-template-columns: 1fr auto;
+
+    .pedido-row__meta { grid-column: 1 / -1; }
+    .pedido-row__total { grid-column: 1; }
+    .chev { display: none; }
+  }
+}
+
+.pedido-row__id {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 14px;
+  color: #2d2a26;
+  letter-spacing: 0.02em;
+
+  .pedido-row__hash {
+    color: #b8a38c;
+    margin-right: 2px;
+  }
+}
+
+.pedido-row__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.pedido-row__date {
+  margin: 0;
+  font-size: 14px;
+  color: #2d2a26;
+  text-transform: capitalize;
+}
+
+.pedido-row__count {
+  margin: 0;
+  font-size: 13px;
+  color: #6b6259;
+}
+
+.pedido-row__total {
+  margin: 0;
+  font-family: 'Fraunces', 'Playfair Display', serif;
+  font-size: 18px;
+  font-weight: 500;
+  color: #2d2a26;
+}
+
+.chev {
+  color: #b8a38c;
+}
+
+/* Badges de estado */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.badge--pending {
+  background: #fff5e4;
+  color: #8a6a3f;
+  border-color: #eed9b3;
+}
+
+.badge--paid {
+  background: #e8f1e5;
+  color: #3d6b3b;
+  border-color: #c4dbbd;
+}
+
+.badge--done {
+  background: #e4eef5;
+  color: #315a78;
+  border-color: #bcd2e0;
+}
+
+.badge--void {
+  background: #f1eaea;
+  color: #7a4545;
+  border-color: #d9c1c1;
+}
+
+/* Detalle */
+.pedido-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.pedido-detail__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 20px 22px;
+  background: #fff;
+  border: 1px solid #ece5db;
+  border-radius: 8px;
+}
+
+.pedido-detail__id {
+  margin: 0 0 4px;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 18px;
+  font-weight: 500;
+  color: #2d2a26;
+}
+
+.pedido-detail__date {
+  margin: 0;
+  color: #6b6259;
+  font-size: 14px;
+  text-transform: capitalize;
+}
+
+.pedido-detail__note {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 18px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+
+  mat-icon {
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .note-title {
+    margin: 0 0 4px;
+    font-weight: 600;
+    font-size: 15px;
+  }
+
+  .note-body {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  &--pending {
+    background: #fff5e4;
+    border-color: #eed9b3;
+    color: #8a6a3f;
+
+    mat-icon { color: #8a6a3f; }
+  }
+}
+
+.pedido-detail__card {
+  background: #fff;
+  border: 1px solid #ece5db;
+  border-radius: 8px;
+  padding: 24px;
+
+  h2 {
+    margin: 0 0 14px;
+    font-family: 'Fraunces', 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 500;
+  }
+}
+
+.lines {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px dashed #ece5db;
+
+  &:last-of-type {
+    border-bottom: 0;
+    padding-bottom: 0;
+  }
+}
+
+.line__body {
+  min-width: 0;
+}
+
+.line__name {
+  margin: 0;
+  font-size: 15px;
+  color: #2d2a26;
+
+  code {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 13px;
+    color: #8a6a3f;
+    background: transparent;
+    padding: 0 4px;
+  }
+}
+
+.line__meta {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: #6b6259;
+}
+
+.line__sub {
+  margin: 0;
+  font-family: 'Fraunces', 'Playfair Display', serif;
+  font-size: 16px;
+  font-weight: 500;
+  color: #2d2a26;
+}
+
+.pedido-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid #ece5db;
+  font-size: 16px;
+  color: #6b6259;
+
+  span:last-child {
+    font-family: 'Fraunces', 'Playfair Display', serif;
+    font-size: 24px;
+    font-weight: 500;
+    color: #2d2a26;
+  }
+}

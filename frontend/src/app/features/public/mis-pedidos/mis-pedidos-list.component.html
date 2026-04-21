@@ -1,0 +1,53 @@
+<div class="pedidos-shell">
+  <header class="pedidos-top">
+    <a routerLink="/" class="back-link">
+      <mat-icon>arrow_back</mat-icon>
+      <span>Volver a la tienda</span>
+    </a>
+    <h1>Mis pedidos</h1>
+    <p class="subtitle">
+      Aquí aparecen las piezas que reservaste. El pago con tarjeta llega pronto —
+      por ahora, un maestro se pone en contacto contigo para confirmarte.
+    </p>
+  </header>
+
+  @if (loading()) {
+    <div class="pedidos-state">
+      <mat-progress-spinner diameter="32" mode="indeterminate"></mat-progress-spinner>
+      <p>Cargando tus pedidos…</p>
+    </div>
+  } @else if (error()) {
+    <div class="pedidos-state">
+      <mat-icon>error_outline</mat-icon>
+      <p>{{ error() }}</p>
+      <button mat-stroked-button (click)="load()">Reintentar</button>
+    </div>
+  } @else if (!pedidos().length) {
+    <div class="pedidos-state">
+      <mat-icon>receipt_long</mat-icon>
+      <p>Aún no tienes pedidos.</p>
+      <a mat-stroked-button routerLink="/">Explorar piezas</a>
+    </div>
+  } @else {
+    <div class="pedidos-list">
+      @for (p of pedidos(); track p.id) {
+        <a class="pedido-row" [routerLink]="['/mis-pedidos', p.id]">
+          <div class="pedido-row__id">
+            <span class="pedido-row__hash">#</span>{{ p.id.slice(0, 8) }}
+          </div>
+          <div class="pedido-row__meta">
+            <p class="pedido-row__date">
+              {{ p.createdAt | date:'d MMM y, HH:mm' }}
+            </p>
+            <p class="pedido-row__count">
+              {{ p.detalles?.length || 0 }} pieza{{ (p.detalles?.length || 0) === 1 ? '' : 's' }}
+            </p>
+          </div>
+          <span [class]="badgeClass(p.estado)">{{ badgeLabel(p.estado) }}</span>
+          <p class="pedido-row__total">{{ formatPrice(p.total) }}</p>
+          <mat-icon class="chev">chevron_right</mat-icon>
+        </a>
+      }
+    </div>
+  }
+</div>

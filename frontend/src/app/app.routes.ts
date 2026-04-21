@@ -23,6 +23,36 @@ export const routes: Routes = [
         .then(m => m.RegisterClienteComponent)
   },
 
+  // Carrito público y checkout
+  {
+    path: 'carrito',
+    loadComponent: () =>
+      import('./features/public/cart-page/cart-page.component')
+        .then(m => m.CartPageComponent)
+  },
+  {
+    path: 'checkout',
+    loadComponent: () =>
+      import('./features/public/checkout/checkout.component')
+        .then(m => m.CheckoutComponent)
+  },
+
+  // Pedidos del cliente (requiere login CLIENTE)
+  {
+    path: 'mis-pedidos',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/public/mis-pedidos/mis-pedidos-list.component')
+        .then(m => m.MisPedidosListComponent)
+  },
+  {
+    path: 'mis-pedidos/:id',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/public/mis-pedidos/mis-pedido-detail.component')
+        .then(m => m.MisPedidoDetailComponent)
+  },
+
   // Backoffice (solo ADMIN/OPERATOR)
   {
     path: 'admin',
