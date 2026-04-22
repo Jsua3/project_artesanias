@@ -7,11 +7,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends maven && rm -rf
 COPY pom.xml /workspace/pom.xml
 COPY api-gateway/pom.xml /workspace/api-gateway/pom.xml
 
-RUN mvn -f /workspace/pom.xml -pl api-gateway -am dependency:go-offline -DskipTests 2>/dev/null || true
+RUN mvn -f /workspace/api-gateway/pom.xml dependency:go-offline -DskipTests 2>/dev/null || true
 
 COPY api-gateway/src /workspace/api-gateway/src
 
-RUN mvn -f /workspace/pom.xml -pl api-gateway -am package -DskipTests
+RUN mvn -f /workspace/api-gateway/pom.xml package -DskipTests
 
 # ---- Runtime stage ----
 FROM eclipse-temurin:21-jre-alpine

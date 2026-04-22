@@ -10,13 +10,13 @@ COPY pom.xml /workspace/pom.xml
 COPY discovery-server/pom.xml /workspace/discovery-server/pom.xml
 
 # Pre-download dependencies (cached layer)
-RUN mvn -f /workspace/pom.xml -pl discovery-server -am dependency:go-offline -DskipTests 2>/dev/null || true
+RUN mvn -f /workspace/discovery-server/pom.xml dependency:go-offline -DskipTests 2>/dev/null || true
 
 # Copy source
 COPY discovery-server/src /workspace/discovery-server/src
 
 # Build
-RUN mvn -f /workspace/pom.xml -pl discovery-server -am package -DskipTests
+RUN mvn -f /workspace/discovery-server/pom.xml package -DskipTests
 
 # ---- Runtime stage ----
 FROM eclipse-temurin:21-jre-alpine
