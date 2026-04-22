@@ -7,11 +7,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends maven && rm -rf
 COPY pom.xml /workspace/pom.xml
 COPY auth-service/pom.xml /workspace/auth-service/pom.xml
 
-RUN mvn -f /workspace/pom.xml -pl auth-service -am dependency:go-offline -DskipTests 2>/dev/null || true
+RUN mvn -f /workspace/auth-service/pom.xml dependency:go-offline -DskipTests 2>/dev/null || true
 
 COPY auth-service/src /workspace/auth-service/src
 
-RUN mvn -f /workspace/pom.xml -pl auth-service -am package -DskipTests
+RUN mvn -f /workspace/auth-service/pom.xml package -DskipTests
 
 # ---- Runtime stage ----
 FROM eclipse-temurin:21-jre-alpine
