@@ -29,7 +29,7 @@ export interface VentaRequest {
   items: VentaItemRequest[];
 }
 
-/** Payload que envía el CLIENTE al checkout (no lleva clienteId ni precios). */
+/** Payload que envia el CLIENTE al checkout (no lleva clienteId ni precios). */
 export interface ClienteVentaRequest {
   items: VentaItemRequest[];
   displayName?: string;

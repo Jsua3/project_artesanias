@@ -339,3 +339,41 @@
 .full-w {
   width: 100%;
 }
+
+.canceled-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 18px;
+  margin: 0 0 24px;
+  background: #fff4e5;
+  border: 1px solid #f0d8b2;
+  border-radius: 8px;
+  color: #6b4a15;
+
+  mat-icon {
+    font-size: 22px;
+    width: 22px;
+    height: 22px;
+    color: #b8822f;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    strong {
+      font-weight: 600;
+      color: #5a3e10;
+    }
+
+    span {
+      font-size: 14px;
+      line-height: 1.5;
+      color: #6b4a15;
+    }
+  }
+}

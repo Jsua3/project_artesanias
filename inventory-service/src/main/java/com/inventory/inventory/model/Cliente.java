@@ -3,6 +3,7 @@ package com.inventory.inventory.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.domain.Persistable;
+import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDateTime;
@@ -17,6 +18,10 @@ public class Cliente implements Persistable<UUID> {
     private String telefono;
     private String email;
     private String direccion;
+
+    @Column("user_account_id")
+    private UUID userAccountId;
+
     private LocalDateTime createdAt;
 
     @Transient
@@ -27,11 +32,17 @@ public class Cliente implements Persistable<UUID> {
 
     public Cliente(UUID id, String nombre, String telefono, String email,
                    String direccion, LocalDateTime createdAt) {
+        this(id, nombre, telefono, email, direccion, null, createdAt);
+    }
+
+    public Cliente(UUID id, String nombre, String telefono, String email,
+                   String direccion, UUID userAccountId, LocalDateTime createdAt) {
         this.id = id;
         this.nombre = nombre;
         this.telefono = telefono;
         this.email = email;
         this.direccion = direccion;
+        this.userAccountId = userAccountId;
         this.createdAt = createdAt != null ? createdAt : LocalDateTime.now();
     }
 
@@ -54,6 +65,10 @@ public class Cliente implements Persistable<UUID> {
 
     public String direccion() {
         return direccion;
+    }
+
+    public UUID userAccountId() {
+        return userAccountId;
     }
 
     public LocalDateTime createdAt() {
@@ -99,6 +114,14 @@ public class Cliente implements Persistable<UUID> {
 
     public void setDireccion(String direccion) {
         this.direccion = direccion;
+    }
+
+    public UUID getUserAccountId() {
+        return userAccountId;
+    }
+
+    public void setUserAccountId(UUID userAccountId) {
+        this.userAccountId = userAccountId;
     }
 
     public LocalDateTime getCreatedAt() {

@@ -12,5 +12,6 @@ public record ArtesanoResponse(
     String ubicacion,
     String imageUrl,
     Boolean active,
+    UUID userAccountId,
     LocalDateTime createdAt
 ) {}

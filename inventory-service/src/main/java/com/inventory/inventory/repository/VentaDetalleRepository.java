@@ -8,4 +8,7 @@ import java.util.UUID;
 
 public interface VentaDetalleRepository extends ReactiveCrudRepository<VentaDetalle, UUID> {
     Flux<VentaDetalle> findByVentaId(UUID ventaId);
+
+    /** Fase 2c: todas las líneas donde el artesano fue snapshoteado. */
+    Flux<VentaDetalle> findByArtesanoId(UUID artesanoId);
 }

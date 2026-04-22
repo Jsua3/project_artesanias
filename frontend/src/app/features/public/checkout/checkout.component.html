@@ -7,6 +7,16 @@
     <h1>Confirmar pedido</h1>
   </header>
 
+  @if (canceledBanner()) {
+    <div class="canceled-banner">
+      <mat-icon>info</mat-icon>
+      <div>
+        <strong>Cancelaste el pago.</strong>
+        <span>No te cobramos nada. Puedes intentarlo de nuevo cuando quieras.</span>
+      </div>
+    </div>
+  }
+
   @if (isEmpty()) {
     <div class="checkout-empty">
       <mat-icon>shopping_bag</mat-icon>
@@ -78,8 +88,9 @@
           <span>{{ formatPrice(total()) }}</span>
         </div>
         <p class="summary-note">
-          El pago con tarjeta llega pronto. Por ahora tu pedido queda en estado
-          <strong>pendiente</strong>.
+          Al confirmar te enviamos a la página segura de Stripe para pagar con
+          tarjeta. Si cancelas, tu pedido queda como <strong>pendiente</strong>
+          y puedes reintentarlo.
         </p>
 
         @if (errorMsg()) {

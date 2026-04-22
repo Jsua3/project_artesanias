@@ -40,7 +40,7 @@
               {{ p.createdAt | date:'d MMM y, HH:mm' }}
             </p>
             <p class="pedido-row__count">
-              {{ p.detalles?.length || 0 }} pieza{{ (p.detalles?.length || 0) === 1 ? '' : 's' }}
+              {{ (p.detalles || []).length }} pieza{{ (p.detalles || []).length === 1 ? '' : 's' }}
             </p>
           </div>
           <span [class]="badgeClass(p.estado)">{{ badgeLabel(p.estado) }}</span>

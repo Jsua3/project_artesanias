@@ -8,5 +8,6 @@ public record VentaDetalleResponse(
     UUID productId,
     Integer cantidad,
     BigDecimal precioUnitario,
-    BigDecimal subtotal
+    BigDecimal subtotal,
+    UUID artesanoId
 ) {}

@@ -66,6 +66,8 @@ public class ArtesanoService {
                             existing.createdAt()
                     );
                     updated.setImageUrl(request.imageUrl());
+                    // Preservar el link con user_account (se muta por otro endpoint)
+                    updated.setUserAccountId(existing.userAccountId());
                     return artesanoRepository.save(updated);
                 })
                 .map(this::toResponse);
@@ -85,9 +87,31 @@ public class ArtesanoService {
                             false,
                             existing.createdAt()
                     );
+                    softDeleted.setImageUrl(existing.imageUrl());
+                    softDeleted.setUserAccountId(existing.userAccountId());
                     return artesanoRepository.save(softDeleted);
                 })
                 .then();
+    }
+
+    /**
+     * Fase 2c: vincula un artesano con un user_account (rol MAESTRO).
+     * Pasa null para desvincular. Solo admin debe poder invocarlo.
+     */
+    @Transactional
+    public Mono<ArtesanoResponse> linkUserAccount(UUID artesanoId, UUID userAccountId) {
+        return artesanoRepository.findById(artesanoId)
+                .flatMap(existing -> {
+                    existing.setUserAccountId(userAccountId);
+                    return artesanoRepository.save(existing);
+                })
+                .map(this::toResponse);
+    }
+
+    /** Fase 2c: lookup para /api/maestro-ventas/mias. */
+    public Mono<ArtesanoResponse> findByUserAccountId(UUID userAccountId) {
+        return artesanoRepository.findByUserAccountId(userAccountId)
+                .map(this::toResponse);
     }
 
     private ArtesanoResponse toResponse(Artesano artesano) {
@@ -100,6 +124,7 @@ public class ArtesanoService {
                 artesano.ubicacion(),
                 artesano.imageUrl(),
                 artesano.active(),
+                artesano.userAccountId(),
                 artesano.createdAt()
         );
     }

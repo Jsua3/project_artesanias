@@ -21,21 +21,44 @@ spring:
           filters:
             - JwtAuth
 
-        # Catalog Service (categorías, productos, artesanos)
-        - id: catalog-service
+        # Catálogo público (GET) — accesible sin login para la tienda pública.
+        # Excluye GET /api/artesanos/by-user/** (privacy: solo lo usa inventory
+        # via call directo, no debe salir por la ruta pública).
+        - id: catalog-service-public
+          uri: ${CATALOG_SERVICE_URL:http://localhost:8082}
+          predicates:
+            - Path=/api/categories, /api/categories/**, /api/products, /api/products/**, /api/artesanos, /api/artesanos/**
+            - Method=GET
+          filters:
+            # catalog-service tiene un InternalGatewayFilter que exige este header
+            - AddRequestHeader=X-Internal-Token, ${security.jwt.internal-token}
+
+        # Catálogo privado (POST/PUT/DELETE) — sólo ADMIN
+        - id: catalog-service-private
           uri: ${CATALOG_SERVICE_URL:http://localhost:8082}
           predicates:
             - Path=/api/categories, /api/categories/**, /api/products, /api/products/**, /api/artesanos, /api/artesanos/**
           filters:
             - JwtAuth
 
-        # Inventory Service (stock, entradas, salidas, clientes, ventas)
+        # Inventory Service (stock, entradas, salidas, clientes, ventas admin, maestro-ventas)
         - id: inventory-service
           uri: ${INVENTORY_SERVICE_URL:http://localhost:8083}
           predicates:
-            - Path=/api/stock/**, /api/entries/**, /api/exits/**, /api/clientes, /api/clientes/**, /api/ventas, /api/ventas/**
+            - Path=/api/stock/**, /api/entries/**, /api/exits/**, /api/clientes, /api/clientes/**, /api/ventas, /api/ventas/**, /api/cliente-ventas, /api/cliente-ventas/**, /api/maestro-ventas, /api/maestro-ventas/**
           filters:
             - JwtAuth
+
+        # Stripe Webhook (público — la autenticidad la da la firma HMAC del body)
+        # No lleva JwtAuth. Se inyecta X-Internal-Token para pasar el InternalGatewayFilter
+        # del inventory-service. NO modificamos el body para no romper la firma.
+        - id: inventory-service-stripe-webhook
+          uri: ${INVENTORY_SERVICE_URL:http://localhost:8083}
+          predicates:
+            - Path=/api/stripe/**
+            - Method=POST
+          filters:
+            - AddRequestHeader=X-Internal-Token, ${security.jwt.internal-token}
 
         # Report Service
         - id: report-service

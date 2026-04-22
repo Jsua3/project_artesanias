@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -66,5 +67,32 @@ public class ArtesanoController {
         }
         return artesanoService.deleteArtesano(id)
                 .then(Mono.just(ResponseEntity.<Void>noContent().build()));
+    }
+
+    /**
+     * Fase 2c: vincula un artesano con un user_account (rol MAESTRO).
+     * Body: { "userAccountId": "<UUID>" } - omite para desvincular.
+     * Solo admin. Devuelve el ArtesanoResponse con el nuevo link.
+     */
+    @PutMapping("/{id}/user-link")
+    public Mono<ResponseEntity<ArtesanoResponse>> linkUserAccount(
+            @PathVariable UUID id,
+            @RequestBody(required = false) Map<String, String> body,
+            @RequestHeader(value = "X-User-Role", defaultValue = "") String userRole) {
+        if (!"ADMIN".equals(userRole)) {
+            return Mono.just(ResponseEntity.status(HttpStatus.FORBIDDEN).build());
+        }
+        UUID userAccountId = null;
+        String raw = body == null ? null : body.get("userAccountId");
+        if (raw != null && !raw.isBlank()) {
+            try {
+                userAccountId = UUID.fromString(raw);
+            } catch (IllegalArgumentException e) {
+                return Mono.just(ResponseEntity.badRequest().build());
+            }
+        }
+        return artesanoService.linkUserAccount(id, userAccountId)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 }
