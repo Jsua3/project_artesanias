@@ -6,15 +6,19 @@ CREATE TABLE IF NOT EXISTS categories (
 );
 
 CREATE TABLE IF NOT EXISTS artesanos (
-    id           UUID PRIMARY KEY,
-    nombre       VARCHAR(100) NOT NULL,
-    telefono     VARCHAR(20),
-    email        VARCHAR(100),
-    especialidad VARCHAR(100),
-    ubicacion    VARCHAR(200),
-    image_url    TEXT,
-    active       BOOLEAN NOT NULL DEFAULT TRUE,
-    created_at   TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    id              UUID PRIMARY KEY,
+    nombre          VARCHAR(100) NOT NULL,
+    telefono        VARCHAR(20),
+    email           VARCHAR(100),
+    especialidad    VARCHAR(100),
+    ubicacion       VARCHAR(200),
+    image_url       TEXT,
+    active          BOOLEAN NOT NULL DEFAULT TRUE,
+    -- Fase 2c: vincula al user_account del maestro que publica/vende los
+    -- productos de este artesano. Nullable: artesanos no-digitales pueden
+    -- existir sin login.
+    user_account_id UUID UNIQUE,
+    created_at      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS products (
@@ -41,5 +45,15 @@ DO $$ BEGIN
     -- Add image_url to artesanos if not exists
     IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='artesanos' AND column_name='image_url') THEN
         ALTER TABLE artesanos ADD COLUMN image_url TEXT;
+    END IF;
+
+    -- Fase 2c: vincular artesano -> user_account del maestro
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='artesanos' AND column_name='user_account_id') THEN
+        ALTER TABLE artesanos ADD COLUMN user_account_id UUID;
+        BEGIN
+            ALTER TABLE artesanos ADD CONSTRAINT artesanos_user_account_id_uq UNIQUE (user_account_id);
+        EXCEPTION WHEN duplicate_object THEN
+            NULL;
+        END;
     END IF;
 END $$;

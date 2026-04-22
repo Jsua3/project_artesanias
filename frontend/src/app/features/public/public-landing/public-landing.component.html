@@ -121,7 +121,7 @@
         <h2 class="section__title">Del <em>taller</em> a tu casa.</h2>
       </div>
       <div class="section__filters">
-        @for (c of categories; track c) {
+        @for (c of categories(); track c) {
           <button class="tag" [class.is-active]="c === selectedCategory()" (click)="setCategory(c)">
             {{ c }}
           </button>
@@ -171,7 +171,7 @@
       </p>
     </div>
     <div class="maestros__grid">
-      @for (m of maestros; track m.name) {
+      @for (m of maestros(); track m.name) {
         <article class="maestro">
           <div class="maestro__portrait">
             <img src="/assets/placeholder-maestro.svg" [alt]="m.name"/>

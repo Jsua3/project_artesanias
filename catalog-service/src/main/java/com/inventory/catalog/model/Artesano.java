@@ -20,6 +20,8 @@ public class Artesano implements Persistable<UUID> {
     private String ubicacion;
     private String imageUrl;
     private Boolean active;
+    /** Fase 2c: user_account del maestro asociado (nullable). */
+    private UUID userAccountId;
     private LocalDateTime createdAt;
 
     @Transient
@@ -71,6 +73,10 @@ public class Artesano implements Persistable<UUID> {
 
     public Boolean active() {
         return active;
+    }
+
+    public UUID userAccountId() {
+        return userAccountId;
     }
 
     public LocalDateTime createdAt() {
@@ -140,6 +146,14 @@ public class Artesano implements Persistable<UUID> {
 
     public void setActive(Boolean active) {
         this.active = active;
+    }
+
+    public UUID getUserAccountId() {
+        return userAccountId;
+    }
+
+    public void setUserAccountId(UUID userAccountId) {
+        this.userAccountId = userAccountId;
     }
 
     public LocalDateTime getCreatedAt() {

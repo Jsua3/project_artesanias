@@ -18,6 +18,8 @@ public class VentaDetalle implements Persistable<UUID> {
     private Integer cantidad;
     private BigDecimal precioUnitario;
     private BigDecimal subtotal;
+    /** Fase 2c: snapshot del artesano al momento de la compra (nullable). */
+    private UUID artesanoId;
 
     @Transient
     private boolean isNew = false;
@@ -27,12 +29,18 @@ public class VentaDetalle implements Persistable<UUID> {
 
     public VentaDetalle(UUID id, UUID ventaId, UUID productId, Integer cantidad,
                         BigDecimal precioUnitario, BigDecimal subtotal) {
+        this(id, ventaId, productId, cantidad, precioUnitario, subtotal, null);
+    }
+
+    public VentaDetalle(UUID id, UUID ventaId, UUID productId, Integer cantidad,
+                        BigDecimal precioUnitario, BigDecimal subtotal, UUID artesanoId) {
         this.id = id;
         this.ventaId = ventaId;
         this.productId = productId;
         this.cantidad = cantidad;
         this.precioUnitario = precioUnitario;
         this.subtotal = subtotal;
+        this.artesanoId = artesanoId;
     }
 
     // Record-style accessors
@@ -58,6 +66,10 @@ public class VentaDetalle implements Persistable<UUID> {
 
     public BigDecimal subtotal() {
         return subtotal;
+    }
+
+    public UUID artesanoId() {
+        return artesanoId;
     }
 
     // Standard getters/setters for R2DBC mapping
@@ -107,6 +119,14 @@ public class VentaDetalle implements Persistable<UUID> {
 
     public void setSubtotal(BigDecimal subtotal) {
         this.subtotal = subtotal;
+    }
+
+    public UUID getArtesanoId() {
+        return artesanoId;
+    }
+
+    public void setArtesanoId(UUID artesanoId) {
+        this.artesanoId = artesanoId;
     }
 
     // Persistable

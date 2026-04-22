@@ -3,6 +3,7 @@ package com.inventory.inventory.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.domain.Persistable;
+import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.math.BigDecimal;
@@ -20,6 +21,10 @@ public class Venta implements Persistable<UUID> {
     private String estado;
     private LocalDateTime createdAt;
 
+    /** Stripe Checkout Session ID (cs_...). Null hasta que se genere la sesion de pago. */
+    @Column("stripe_session_id")
+    private String stripeSessionId;
+
     @Transient
     private boolean isNew = false;
 
@@ -28,12 +33,18 @@ public class Venta implements Persistable<UUID> {
 
     public Venta(UUID id, UUID clienteId, UUID vendedorId, BigDecimal total,
                  String estado, LocalDateTime createdAt) {
+        this(id, clienteId, vendedorId, total, estado, createdAt, null);
+    }
+
+    public Venta(UUID id, UUID clienteId, UUID vendedorId, BigDecimal total,
+                 String estado, LocalDateTime createdAt, String stripeSessionId) {
         this.id = id;
         this.clienteId = clienteId;
         this.vendedorId = vendedorId;
         this.total = total != null ? total : BigDecimal.ZERO;
         this.estado = estado != null ? estado : "COMPLETADA";
         this.createdAt = createdAt != null ? createdAt : LocalDateTime.now();
+        this.stripeSessionId = stripeSessionId;
     }
 
     // Record-style accessors
@@ -59,6 +70,10 @@ public class Venta implements Persistable<UUID> {
 
     public LocalDateTime createdAt() {
         return createdAt;
+    }
+
+    public String stripeSessionId() {
+        return stripeSessionId;
     }
 
     // Standard getters/setters for R2DBC mapping
@@ -108,6 +123,14 @@ public class Venta implements Persistable<UUID> {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getStripeSessionId() {
+        return stripeSessionId;
+    }
+
+    public void setStripeSessionId(String stripeSessionId) {
+        this.stripeSessionId = stripeSessionId;
     }
 
     // Persistable

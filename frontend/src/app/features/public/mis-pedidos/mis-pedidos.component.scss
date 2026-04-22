@@ -355,3 +355,161 @@
     color: #2d2a26;
   }
 }
+
+/* ==== Banners de retorno desde Stripe ==== */
+.pedido-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 20px;
+  margin: 0 0 20px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+
+  mat-icon {
+    flex-shrink: 0;
+    margin-top: 2px;
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+  }
+
+  .banner-title {
+    margin: 0 0 4px;
+    font-weight: 600;
+    font-size: 16px;
+  }
+
+  .banner-body {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  &--success {
+    background: #e8f1e5;
+    border-color: #c4dbbd;
+    color: #3d6b3b;
+
+    mat-icon { color: #3d6b3b; }
+  }
+
+  &--info {
+    background: #e4eef5;
+    border-color: #bcd2e0;
+    color: #315a78;
+
+    mat-icon {
+      color: #315a78;
+      animation: pedido-banner-spin 1.4s linear infinite;
+    }
+  }
+}
+
+@keyframes pedido-banner-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.note-error {
+  margin: 10px 0 0;
+  color: #8a2d2d;
+  font-size: 13px;
+}
+
+.note-action {
+  margin-top: 12px;
+  border-radius: 999px;
+  height: 40px;
+  background: #2d2a26 !important;
+  color: #fff !important;
+  letter-spacing: 0.02em;
+
+  mat-progress-spinner {
+    display: inline-block;
+    margin-right: 8px;
+
+    ::ng-deep circle { stroke: #fff; }
+  }
+
+  &[disabled] { opacity: 0.75; }
+}
+
+/* ==== Banners de retorno desde Stripe ==== */
+.pedido-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 20px;
+  margin: 0 0 20px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+
+  mat-icon {
+    flex-shrink: 0;
+    margin-top: 2px;
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+  }
+
+  .banner-title {
+    margin: 0 0 4px;
+    font-weight: 600;
+    font-size: 16px;
+  }
+
+  .banner-body {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  &--success {
+    background: #e8f1e5;
+    border-color: #c4dbbd;
+    color: #3d6b3b;
+
+    mat-icon { color: #3d6b3b; }
+  }
+
+  &--info {
+    background: #e4eef5;
+    border-color: #bcd2e0;
+    color: #315a78;
+
+    mat-icon {
+      color: #315a78;
+      animation: pedido-banner-spin 1.4s linear infinite;
+    }
+  }
+}
+
+@keyframes pedido-banner-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.note-error {
+  margin: 10px 0 0;
+  color: #8a2d2d;
+  font-size: 13px;
+}
+
+.note-action {
+  margin-top: 12px;
+  border-radius: 999px;
+  height: 40px;
+  background: #2d2a26 !important;
+  color: #fff !important;
+  letter-spacing: 0.02em;
+
+  mat-progress-spinner {
+    display: inline-block;
+    margin-right: 8px;
+
+    ::ng-deep circle { stroke: #fff; }
+  }
+
+  &[disabled] { opacity: 0.75; }
+}

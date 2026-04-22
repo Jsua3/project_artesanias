@@ -44,8 +44,10 @@ public class ClienteService {
     public Mono<ClienteResponse> updateCliente(UUID id, ClienteRequest request) {
         return clienteRepository.findById(id)
                 .flatMap(existing -> {
+                    // Preservar user_account_id (no se pisa desde el admin)
                     Cliente updated = new Cliente(id, request.nombre(), request.telefono(),
-                                                  request.email(), request.direccion(), existing.createdAt());
+                                                  request.email(), request.direccion(),
+                                                  existing.userAccountId(), existing.createdAt());
                     return clienteRepository.save(updated);
                 })
                 .map(this::toResponse);

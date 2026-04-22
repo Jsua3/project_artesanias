@@ -19,6 +19,32 @@
       <a mat-stroked-button routerLink="/mis-pedidos">Ver mis pedidos</a>
     </div>
   } @else if (pedido(); as p) {
+
+    @if (cameFromPaid() && isPagada()) {
+      <div class="pedido-banner pedido-banner--success">
+        <mat-icon>check_circle</mat-icon>
+        <div>
+          <p class="banner-title">¡Pago recibido!</p>
+          <p class="banner-body">
+            Recibimos tu pago y el pedido ya está registrado. Un maestro te
+            contactará para coordinar el envío.
+          </p>
+        </div>
+      </div>
+    } @else if (cameFromPaid() && isPendiente()) {
+      <div class="pedido-banner pedido-banner--info">
+        <mat-icon>autorenew</mat-icon>
+        <div>
+          <p class="banner-title">Confirmando tu pago…</p>
+          <p class="banner-body">
+            Ya recibimos la confirmación de Stripe y estamos finalizando el
+            pedido. Esto suele tardar unos segundos — actualizaremos la página
+            en cuanto quede listo.
+          </p>
+        </div>
+      </div>
+    }
+
     <section class="pedido-detail">
       <div class="pedido-detail__head">
         <div>
@@ -30,15 +56,31 @@
         <span [class]="badgeClass(p.estado)">{{ badgeLabel(p.estado) }}</span>
       </div>
 
-      @if (isPendiente()) {
+      @if (isPendiente() && !cameFromPaid()) {
         <div class="pedido-detail__note pedido-detail__note--pending">
           <mat-icon>schedule</mat-icon>
           <div>
-            <p class="note-title">Pago próximamente</p>
+            <p class="note-title">Pago pendiente</p>
             <p class="note-body">
-              Estamos habilitando el pago con tarjeta. Por ahora, un maestro
-              te contactará para coordinarte el pago y el envío.
+              Tu pedido está guardado pero aún no lo has pagado. Puedes
+              terminar el pago con tarjeta ahora.
             </p>
+            @if (retryError()) {
+              <p class="note-error">{{ retryError() }}</p>
+            }
+            <button
+              mat-raised-button
+              color="primary"
+              class="note-action"
+              [disabled]="retryingPay()"
+              (click)="retryPay()">
+              @if (retryingPay()) {
+                <mat-progress-spinner diameter="18" mode="indeterminate"></mat-progress-spinner>
+                <span>Redirigiendo…</span>
+              } @else {
+                <span>Pagar ahora</span>
+              }
+            </button>
           </div>
         </div>
       }
