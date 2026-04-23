@@ -1,3 +1,14 @@
+export interface DeliveryTracking {
+  assignedCourierId?: string | null;
+  packed: boolean;
+  pickedUp: boolean;
+  onTheWay: boolean;
+  delivered: boolean;
+  progress: number;
+  stage: 'PENDIENTE' | 'EMPACADO' | 'RECOGIDO' | 'EN_RUTA' | 'ENTREGADO';
+  updatedAt?: string | null;
+}
+
 export interface VentaDetalle {
   id: string;
   productId: string;
@@ -13,6 +24,7 @@ export interface Venta {
   total: number;
   estado: 'COMPLETADA' | 'ANULADA';
   createdAt: string;
+  delivery: DeliveryTracking;
   detalles: VentaDetalle[];
 }
 
@@ -24,4 +36,11 @@ export interface VentaItemRequest {
 export interface VentaRequest {
   clienteId: string;
   items: VentaItemRequest[];
+}
+
+export interface DeliveryTrackingUpdateRequest {
+  packed: boolean;
+  pickedUp: boolean;
+  onTheWay: boolean;
+  delivered: boolean;
 }

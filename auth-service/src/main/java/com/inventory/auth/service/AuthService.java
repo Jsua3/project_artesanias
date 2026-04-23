@@ -8,6 +8,7 @@ import com.inventory.auth.dto.RefreshRequest;
 import com.inventory.auth.dto.RegisterRequest;
 import com.inventory.auth.dto.UserProfileResponse;
 import com.inventory.auth.model.ApprovalStatus;
+import com.inventory.auth.model.CourierMode;
 import com.inventory.auth.model.RefreshToken;
 import com.inventory.auth.model.UserAccount;
 import com.inventory.auth.model.UserRole;
@@ -46,9 +47,14 @@ public class AuthService {
         if (username.isBlank()) {
             return Mono.error(new RuntimeException("El nombre de usuario es obligatorio"));
         }
+        if (request.password() == null || request.password().isBlank()) {
+            return Mono.error(new RuntimeException("La contrasena es obligatoria"));
+        }
 
         UserRole role = resolveRole(request.role());
-        ApprovalStatus approvalStatus = role == UserRole.ARTESANO ? ApprovalStatus.PENDING : ApprovalStatus.APPROVED;
+        ApprovalStatus approvalStatus = requiresAdminApproval(role) ? ApprovalStatus.PENDING : ApprovalStatus.APPROVED;
+        CourierMode courierMode = role == UserRole.DOMICILIARIO ? resolveCourierMode(request.courierMode()) : null;
+        String courierCompany = normalizeCourierCompany(courierMode, request.courierCompany());
         LocalDateTime now = LocalDateTime.now();
 
         return userRepository.existsByUsername(username)
@@ -63,6 +69,8 @@ public class AuthService {
                     user.setPasswordHash(passwordEncoder.encode(request.password()));
                     user.setRole(role);
                     user.setApprovalStatus(approvalStatus);
+                    user.setCourierMode(courierMode);
+                    user.setCourierCompany(courierCompany);
                     user.setCreatedAt(now);
                     user.setApprovedAt(approvalStatus == ApprovalStatus.APPROVED ? now : null);
                     return userRepository.save(user)
@@ -131,8 +139,12 @@ public class AuthService {
                 });
     }
 
-    public Flux<UserProfileResponse> findPendingArtisanRequests() {
-        return userRepository.findAllByRoleAndApprovalStatus(UserRole.ARTESANO, ApprovalStatus.PENDING)
+    public Flux<UserProfileResponse> findPendingApprovalRequests() {
+        return userRepository.findAllByApprovalStatus(ApprovalStatus.PENDING)
+                .filter(user -> {
+                    UserRole role = normalizeRole(user.getRole());
+                    return role == UserRole.ARTESANO || role == UserRole.DOMICILIARIO;
+                })
                 .sort(Comparator.comparing(UserAccount::getCreatedAt))
                 .map(user -> {
                     user.setNew(false);
@@ -140,17 +152,18 @@ public class AuthService {
                 });
     }
 
-    public Mono<UserProfileResponse> reviewArtisanRequest(UUID artisanUserId, UUID adminUserId, ArtisanApprovalRequest request) {
+    public Mono<UserProfileResponse> reviewApprovalRequest(UUID userId, UUID adminUserId, ArtisanApprovalRequest request) {
         ApprovalStatus nextStatus = resolveDecision(request.decision());
-        return userRepository.findById(artisanUserId)
-                .switchIfEmpty(Mono.error(new RuntimeException("No se encontro la solicitud de artesano")))
+        return userRepository.findById(userId)
+                .switchIfEmpty(Mono.error(new RuntimeException("No se encontro la solicitud indicada")))
                 .flatMap(user -> {
                     user.setNew(false);
-                    if (normalizeRole(user.getRole()) != UserRole.ARTESANO) {
-                        return Mono.error(new RuntimeException("La solicitud indicada no pertenece a un artesano"));
+                    UserRole normalizedRole = normalizeRole(user.getRole());
+                    if (normalizedRole != UserRole.ARTESANO && normalizedRole != UserRole.DOMICILIARIO) {
+                        return Mono.error(new RuntimeException("La solicitud indicada no requiere aprobacion administrativa"));
                     }
 
-                    user.setRole(UserRole.ARTESANO);
+                    user.setRole(normalizedRole);
                     user.setApprovalStatus(nextStatus);
                     user.setApprovedAt(LocalDateTime.now());
                     user.setApprovedBy(adminUserId);
@@ -208,15 +221,45 @@ public class AuthService {
         }
     }
 
+    private CourierMode resolveCourierMode(String rawCourierMode) {
+        if (rawCourierMode == null || rawCourierMode.isBlank()) {
+            return CourierMode.INDEPENDIENTE;
+        }
+
+        try {
+            return CourierMode.valueOf(rawCourierMode.trim().toUpperCase());
+        } catch (IllegalArgumentException ex) {
+            throw new RuntimeException("La modalidad del domiciliario debe ser INDEPENDIENTE o EMPRESA");
+        }
+    }
+
+    private String normalizeCourierCompany(CourierMode courierMode, String rawCompany) {
+        if (courierMode != CourierMode.EMPRESA) {
+            return null;
+        }
+
+        String company = rawCompany == null ? "" : rawCompany.trim();
+        if (company.isBlank()) {
+            throw new RuntimeException("Debes indicar la empresa del domiciliario");
+        }
+        return company;
+    }
+
     private Mono<UserAccount> ensureLoginAllowed(UserAccount user) {
         UserRole effectiveRole = normalizeRole(user.getRole());
-        if (effectiveRole == UserRole.ARTESANO && user.getApprovalStatus() == ApprovalStatus.PENDING) {
-            return Mono.error(new RuntimeException("Tu solicitud de artesano esta pendiente de aprobacion por un administrador"));
+        if (user.getApprovalStatus() == ApprovalStatus.PENDING && requiresAdminApproval(effectiveRole)) {
+            String profileLabel = effectiveRole == UserRole.DOMICILIARIO ? "domiciliario" : "artesano";
+            return Mono.error(new RuntimeException("Tu solicitud de " + profileLabel + " esta pendiente de aprobacion por un administrador"));
         }
-        if (effectiveRole == UserRole.ARTESANO && user.getApprovalStatus() == ApprovalStatus.REJECTED) {
-            return Mono.error(new RuntimeException("Tu solicitud de artesano fue rechazada por un administrador"));
+        if (user.getApprovalStatus() == ApprovalStatus.REJECTED && requiresAdminApproval(effectiveRole)) {
+            String profileLabel = effectiveRole == UserRole.DOMICILIARIO ? "domiciliario" : "artesano";
+            return Mono.error(new RuntimeException("Tu solicitud de " + profileLabel + " fue rechazada por un administrador"));
         }
         return Mono.just(user);
+    }
+
+    private boolean requiresAdminApproval(UserRole role) {
+        return role == UserRole.ARTESANO || role == UserRole.DOMICILIARIO;
     }
 
     private UserProfileResponse toUserProfileResponse(UserAccount user) {
@@ -225,6 +268,8 @@ public class AuthService {
                 user.getUsername(),
                 normalizeRole(user.getRole()).name(),
                 user.getApprovalStatus() != null ? user.getApprovalStatus().name() : ApprovalStatus.APPROVED.name(),
+                user.getCourierMode() != null ? user.getCourierMode().name() : null,
+                user.getCourierCompany(),
                 user.getDisplayName(),
                 user.getAvatarUrl(),
                 user.getCreatedAt(),

@@ -42,7 +42,8 @@ export class LoginComponent {
   hidePassword = true;
   readonly registerOptions: { role: UserRole; label: string; description: string }[] = [
     { role: 'CLIENTE', label: 'Cliente', description: 'Registro directo para clientes del sistema.' },
-    { role: 'ARTESANO', label: 'Artesano', description: 'Requiere aprobacion del administrador antes de iniciar sesion.' }
+    { role: 'ARTESANO', label: 'Artesano', description: 'Requiere aprobacion del administrador antes de iniciar sesion.' },
+    { role: 'DOMICILIARIO', label: 'Domiciliario', description: 'Registro para domiciliarios.' }
   ];
 
   submit(): void {

@@ -100,6 +100,10 @@ export class AuthService {
     return this.hasRole('CLIENTE');
   }
 
+  isDomiciliario(): boolean {
+    return this.hasRole('DOMICILIARIO');
+  }
+
   canManageProducts(): boolean {
     return this.hasAnyRole('ADMIN', 'ARTESANO');
   }
@@ -116,6 +120,10 @@ export class AuthService {
     return this.hasAnyRole('ADMIN', 'ARTESANO');
   }
 
+  canManageDeliveries(): boolean {
+    return this.hasAnyRole('ADMIN', 'DOMICILIARIO');
+  }
+
   canApproveArtisans(): boolean {
     return this.hasRole('ADMIN');
   }
@@ -125,14 +133,22 @@ export class AuthService {
   }
 
   getPendingArtisanRequests(): Observable<UserProfile[]> {
-    return this.http.get<UserProfile[]>(`${this.API}/artisan-requests`);
+    return this.getPendingApprovalRequests();
   }
 
   reviewArtisanRequest(userId: string, decision: ApprovalStatus): Observable<UserProfile> {
+    return this.reviewApprovalRequest(userId, decision);
+  }
+
+  getPendingApprovalRequests(): Observable<UserProfile[]> {
+    return this.http.get<UserProfile[]>(`${this.API}/approval-requests`);
+  }
+
+  reviewApprovalRequest(userId: string, decision: ApprovalStatus): Observable<UserProfile> {
     const payload: ArtisanReviewRequest = {
       decision: decision as 'APPROVED' | 'REJECTED'
     };
-    return this.http.patch<UserProfile>(`${this.API}/artisan-requests/${userId}`, payload);
+    return this.http.patch<UserProfile>(`${this.API}/approval-requests/${userId}`, payload);
   }
 
   getMe(): Observable<UserProfile> {

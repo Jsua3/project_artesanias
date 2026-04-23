@@ -16,8 +16,8 @@ import { UserProfile } from '../../../core/models/auth.model';
     <div class="page-container animate-in">
       <div class="page-header">
         <div>
-          <h2 class="page-title">Solicitudes de artesano</h2>
-          <p class="page-subtitle">Aprueba o rechaza las cuentas que solicitan acceso como artesano.</p>
+          <h2 class="page-title">Solicitudes de acceso</h2>
+          <p class="page-subtitle">Aprueba o rechaza las cuentas que solicitan acceso como artesano o domiciliario.</p>
         </div>
       </div>
 
@@ -29,6 +29,16 @@ import { UserProfile } from '../../../core/models/auth.model';
             <ng-container matColumnDef="username">
               <th mat-header-cell *matHeaderCellDef>Usuario</th>
               <td mat-cell *matCellDef="let user">{{ user.username }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="role">
+              <th mat-header-cell *matHeaderCellDef>Rol solicitado</th>
+              <td mat-cell *matCellDef="let user">{{ roleLabel(user) }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="details">
+              <th mat-header-cell *matHeaderCellDef>Detalle</th>
+              <td mat-cell *matCellDef="let user">{{ requestDetail(user) }}</td>
             </ng-container>
 
             <ng-container matColumnDef="createdAt">
@@ -75,7 +85,7 @@ export class ArtisanRequestsComponent implements OnInit {
   private authService = inject(AuthService);
   private snackBar = inject(MatSnackBar);
 
-  displayedColumns = ['username', 'createdAt', 'status', 'actions'];
+  displayedColumns = ['username', 'role', 'details', 'createdAt', 'status', 'actions'];
   loading = signal(false);
   requests = signal<UserProfile[]>([]);
 
@@ -85,7 +95,7 @@ export class ArtisanRequestsComponent implements OnInit {
 
   loadRequests(): void {
     this.loading.set(true);
-    this.authService.getPendingArtisanRequests().subscribe({
+    this.authService.getPendingApprovalRequests().subscribe({
       next: requests => {
         this.requests.set(requests);
         this.loading.set(false);
@@ -98,12 +108,28 @@ export class ArtisanRequestsComponent implements OnInit {
   }
 
   review(userId: string, decision: 'APPROVED' | 'REJECTED'): void {
-    this.authService.reviewArtisanRequest(userId, decision).subscribe({
+    this.authService.reviewApprovalRequest(userId, decision).subscribe({
       next: () => {
         this.snackBar.open(decision === 'APPROVED' ? 'Solicitud aprobada' : 'Solicitud rechazada', 'OK', { duration: 3000 });
         this.loadRequests();
       },
       error: () => this.snackBar.open('No fue posible actualizar la solicitud', 'OK', { duration: 3000 })
     });
+  }
+
+  roleLabel(user: UserProfile): string {
+    return user.role === 'DOMICILIARIO' ? 'Domiciliario' : 'Artesano';
+  }
+
+  requestDetail(user: UserProfile): string {
+    if (user.role !== 'DOMICILIARIO') {
+      return 'Acceso al catalogo de artesanias';
+    }
+
+    if (user.courierMode === 'EMPRESA') {
+      return user.courierCompany ? `Empresa asociada: ${user.courierCompany}` : 'Empresa asociada';
+    }
+
+    return 'Independiente';
   }
 }

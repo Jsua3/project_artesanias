@@ -1,0 +1,88 @@
+<div class="page-container animate-in">
+  <div class="page-header">
+    <div>
+      <h2 class="page-title">Pedidos</h2>
+      <p class="page-subtitle">{{ subtitle() }}</p>
+    </div>
+
+    <div class="page-actions">
+      @if (auth.canManageDeliveries()) {
+        <a mat-stroked-button routerLink="/entregas">
+          <mat-icon>local_shipping</mat-icon>
+          Gestionar envio
+        </a>
+      }
+
+      @if (auth.canAccessOperations()) {
+        <button mat-raised-button color="primary" (click)="openForm()">
+          <mat-icon>add_shopping_cart</mat-icon>
+          Nuevo Pedido
+        </button>
+      }
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-center"><mat-spinner /></div>
+  } @else if (pedidos().length === 0) {
+    <mat-card class="empty-card">
+      <mat-icon>receipt_long</mat-icon>
+      <p>No hay pedidos activos en este momento.</p>
+    </mat-card>
+  } @else {
+    <div class="pedido-grid">
+      @for (pedido of pedidos(); track pedido.id) {
+        <mat-card class="pedido-card">
+          <div class="pedido-card-header">
+            <div>
+              <p class="pedido-id">Pedido {{ pedido.id.slice(0, 8).toUpperCase() }}</p>
+              <h3>{{ getClienteNombre(pedido.clienteId) }}</h3>
+              <p class="pedido-meta">
+                {{ pedido.createdAt | date:'dd/MM/yyyy HH:mm' }}
+                · {{ itemCount(pedido) }} unidades
+                · {{ pedido.total | currency:'COP':'symbol':'1.0-0' }}
+              </p>
+            </div>
+
+            <div class="pedido-status-wrap">
+              <span class="status-chip">{{ pedido.estado }}</span>
+              <span class="stage-chip">{{ stageLabel(pedido) }}</span>
+            </div>
+          </div>
+
+          <div class="pedido-progress">
+            <mat-progress-bar mode="determinate" [value]="pedido.delivery.progress"></mat-progress-bar>
+            <div class="pedido-progress-caption">
+              <span>{{ pedido.delivery.progress }}% completado</span>
+              <span>{{ stageLabel(pedido) }}</span>
+            </div>
+          </div>
+
+          <div class="pedido-summary">
+            <div class="summary-item">
+              <span class="summary-label">Cliente</span>
+              <span class="summary-value">{{ getClienteNombre(pedido.clienteId) }}</span>
+            </div>
+
+            <div class="summary-item">
+              <span class="summary-label">Referencias</span>
+              <span class="summary-value">{{ referenceCount(pedido) }}</span>
+            </div>
+
+            <div class="summary-item">
+              <span class="summary-label">Envio</span>
+              <span class="summary-value">{{ assignmentLabel(pedido) }}</span>
+            </div>
+          </div>
+
+          <div class="pedido-steps">
+            <span class="step-pill" [class.complete]="pedido.delivery.packed">Empacado</span>
+            <span class="step-pill" [class.complete]="pedido.delivery.pickedUp">Recogido</span>
+            <span class="step-pill" [class.complete]="pedido.delivery.onTheWay">En ruta</span>
+            <span class="step-pill" [class.complete]="pedido.delivery.delivered">Entregado</span>
+          </div>
+        </mat-card>
+      }
+    </div>
+  }
+</div>

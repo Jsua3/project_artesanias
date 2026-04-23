@@ -1,8 +1,14 @@
 <div class="page-container animate-in">
   <div class="page-header">
-    <h2 class="page-title">{{ isArtesano() ? 'Panel del Artesano' : 'Dashboard' }}</h2>
+    <h2 class="page-title">{{ isDomiciliario() ? 'Panel del Domiciliario' : isArtesano() ? 'Panel del Artesano' : 'Dashboard' }}</h2>
     <p class="page-subtitle">
-      {{ isArtesano() ? 'Administra tus artesanías y revisa el movimiento del inventario.' : 'Resumen general del inventario' }}
+      {{
+        isDomiciliario()
+          ? 'Actualiza el checklist de cada pedido y manten informado al cliente con el avance de la entrega.'
+          : isArtesano()
+            ? 'Administra tus artesanias y revisa el movimiento del inventario.'
+            : 'Resumen general del inventario'
+      }}
     </p>
   </div>
 
@@ -26,9 +32,9 @@
       }
     </div>
 
-    @if (isArtesano()) {
+    @if (isArtesano() || isDomiciliario()) {
       <div class="quick-links-grid">
-        @for (link of quickLinks; track link.route) {
+        @for (link of quickLinks(); track link.route) {
           <a class="quick-link-card" [routerLink]="link.route">
             <mat-icon>{{ link.icon }}</mat-icon>
             <span>{{ link.label }}</span>
@@ -37,17 +43,46 @@
       </div>
     }
 
-    <div class="chart-card">
-      <div class="chart-header">
-        <h3>{{ isArtesano() ? 'Artesanías con mayor stock' : 'Top 10 Artesanías por Stock' }}</h3>
+    @if (isDomiciliario()) {
+      <div class="delivery-board">
+        <div class="chart-header">
+          <h3>Estado reciente de las entregas</h3>
+        </div>
+
+        @if (recentDeliveries().length === 0) {
+          <p class="empty-delivery">Todavia no hay entregas activas para mostrar.</p>
+        } @else {
+          <div class="delivery-board-grid">
+            @for (venta of recentDeliveries(); track venta.id) {
+              <div class="delivery-card">
+                <div class="delivery-card-head">
+                  <div>
+                    <p class="delivery-card-title">{{ deliveryTitle(venta) }}</p>
+                    <p class="delivery-card-subtitle">{{ venta.createdAt | date:'dd/MM/yyyy HH:mm' }}</p>
+                  </div>
+                  <span class="delivery-chip">{{ deliveryStageLabel(venta.delivery.stage) }}</span>
+                </div>
+
+                <mat-progress-bar mode="determinate" [value]="venta.delivery.progress"></mat-progress-bar>
+                <p class="delivery-progress-caption">{{ venta.delivery.progress }}% completado</p>
+              </div>
+            }
+          </div>
+        }
       </div>
-      <div class="chart-body">
-        <canvas baseChart
-                [data]="barChartData()"
-                [options]="barChartOptions"
-                type="bar">
-        </canvas>
+    } @else {
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3>{{ isArtesano() ? 'Artesanias con mayor stock' : 'Top 10 Artesanias por Stock' }}</h3>
+        </div>
+        <div class="chart-body">
+          <canvas baseChart
+                  [data]="barChartData()"
+                  [options]="barChartOptions"
+                  type="bar">
+          </canvas>
+        </div>
       </div>
-    </div>
+    }
   }
 </div>

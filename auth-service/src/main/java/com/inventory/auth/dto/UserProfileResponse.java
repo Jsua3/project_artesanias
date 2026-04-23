@@ -7,6 +7,8 @@ public record UserProfileResponse(
         String username,
         String role,
         String approvalStatus,
+        String courierMode,
+        String courierCompany,
         String displayName,
         String avatarUrl,
         java.time.LocalDateTime createdAt,

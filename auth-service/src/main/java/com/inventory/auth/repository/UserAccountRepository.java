@@ -13,4 +13,5 @@ public interface UserAccountRepository extends ReactiveCrudRepository<UserAccoun
     Mono<UserAccount> findByUsername(String username);
     Mono<Boolean> existsByUsername(String username);
     Flux<UserAccount> findAllByRoleAndApprovalStatus(UserRole role, ApprovalStatus approvalStatus);
+    Flux<UserAccount> findAllByApprovalStatus(ApprovalStatus approvalStatus);
 }

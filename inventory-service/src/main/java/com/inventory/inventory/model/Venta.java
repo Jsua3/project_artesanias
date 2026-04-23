@@ -18,6 +18,12 @@ public class Venta implements Persistable<UUID> {
     private UUID vendedorId;
     private BigDecimal total;
     private String estado;
+    private UUID assignedCourierId;
+    private boolean packed;
+    private boolean pickedUp;
+    private boolean onTheWay;
+    private boolean delivered;
+    private LocalDateTime deliveryUpdatedAt;
     private LocalDateTime createdAt;
 
     @Transient
@@ -33,6 +39,12 @@ public class Venta implements Persistable<UUID> {
         this.vendedorId = vendedorId;
         this.total = total != null ? total : BigDecimal.ZERO;
         this.estado = estado != null ? estado : "COMPLETADA";
+        this.assignedCourierId = null;
+        this.packed = false;
+        this.pickedUp = false;
+        this.onTheWay = false;
+        this.delivered = false;
+        this.deliveryUpdatedAt = null;
         this.createdAt = createdAt != null ? createdAt : LocalDateTime.now();
     }
 
@@ -55,6 +67,30 @@ public class Venta implements Persistable<UUID> {
 
     public String estado() {
         return estado;
+    }
+
+    public UUID assignedCourierId() {
+        return assignedCourierId;
+    }
+
+    public boolean packed() {
+        return packed;
+    }
+
+    public boolean pickedUp() {
+        return pickedUp;
+    }
+
+    public boolean onTheWay() {
+        return onTheWay;
+    }
+
+    public boolean delivered() {
+        return delivered;
+    }
+
+    public LocalDateTime deliveryUpdatedAt() {
+        return deliveryUpdatedAt;
     }
 
     public LocalDateTime createdAt() {
@@ -100,6 +136,54 @@ public class Venta implements Persistable<UUID> {
 
     public void setEstado(String estado) {
         this.estado = estado;
+    }
+
+    public UUID getAssignedCourierId() {
+        return assignedCourierId;
+    }
+
+    public void setAssignedCourierId(UUID assignedCourierId) {
+        this.assignedCourierId = assignedCourierId;
+    }
+
+    public boolean isPacked() {
+        return packed;
+    }
+
+    public void setPacked(boolean packed) {
+        this.packed = packed;
+    }
+
+    public boolean isPickedUp() {
+        return pickedUp;
+    }
+
+    public void setPickedUp(boolean pickedUp) {
+        this.pickedUp = pickedUp;
+    }
+
+    public boolean isOnTheWay() {
+        return onTheWay;
+    }
+
+    public void setOnTheWay(boolean onTheWay) {
+        this.onTheWay = onTheWay;
+    }
+
+    public boolean isDelivered() {
+        return delivered;
+    }
+
+    public void setDelivered(boolean delivered) {
+        this.delivered = delivered;
+    }
+
+    public LocalDateTime getDeliveryUpdatedAt() {
+        return deliveryUpdatedAt;
+    }
+
+    public void setDeliveryUpdatedAt(LocalDateTime deliveryUpdatedAt) {
+        this.deliveryUpdatedAt = deliveryUpdatedAt;
     }
 
     public LocalDateTime getCreatedAt() {

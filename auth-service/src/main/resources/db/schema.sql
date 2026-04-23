@@ -4,6 +4,8 @@ CREATE TABLE IF NOT EXISTS user_accounts (
     password_hash VARCHAR(255) NOT NULL,
     role VARCHAR(50) NOT NULL,
     approval_status VARCHAR(30) NOT NULL DEFAULT 'APPROVED',
+    courier_mode VARCHAR(30),
+    courier_company VARCHAR(150),
     display_name VARCHAR(100),
     avatar_url TEXT,
     created_at TIMESTAMP NOT NULL,
@@ -21,6 +23,8 @@ CREATE TABLE IF NOT EXISTS refresh_tokens (
 
 -- Migration: add columns if they don't exist (safe for existing DBs)
 ALTER TABLE user_accounts ADD COLUMN IF NOT EXISTS approval_status VARCHAR(30) NOT NULL DEFAULT 'APPROVED';
+ALTER TABLE user_accounts ADD COLUMN IF NOT EXISTS courier_mode VARCHAR(30);
+ALTER TABLE user_accounts ADD COLUMN IF NOT EXISTS courier_company VARCHAR(150);
 ALTER TABLE user_accounts ADD COLUMN IF NOT EXISTS display_name VARCHAR(100);
 ALTER TABLE user_accounts ADD COLUMN IF NOT EXISTS avatar_url TEXT;
 ALTER TABLE user_accounts ADD COLUMN IF NOT EXISTS approved_at TIMESTAMP;
