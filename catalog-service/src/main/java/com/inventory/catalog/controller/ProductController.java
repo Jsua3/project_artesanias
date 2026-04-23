@@ -47,7 +47,7 @@ public class ProductController {
     public Mono<ResponseEntity<ProductResponse>> createProduct(
             @RequestBody ProductRequest request,
             @RequestHeader(value = "X-User-Role", defaultValue = "") String userRole) {
-        if (!"ADMIN".equals(userRole)) {
+        if (!canManageProducts(userRole)) {
             return Mono.just(ResponseEntity.status(HttpStatus.FORBIDDEN).build());
         }
         return productService.createProduct(request)
@@ -59,7 +59,7 @@ public class ProductController {
             @PathVariable UUID id,
             @RequestBody ProductRequest request,
             @RequestHeader(value = "X-User-Role", defaultValue = "") String userRole) {
-        if (!"ADMIN".equals(userRole)) {
+        if (!canManageProducts(userRole)) {
             return Mono.just(ResponseEntity.status(HttpStatus.FORBIDDEN).build());
         }
         return productService.updateProduct(id, request)
@@ -71,10 +71,14 @@ public class ProductController {
     public Mono<ResponseEntity<Void>> deleteProduct(
             @PathVariable UUID id,
             @RequestHeader(value = "X-User-Role", defaultValue = "") String userRole) {
-        if (!"ADMIN".equals(userRole)) {
+        if (!canManageProducts(userRole)) {
             return Mono.just(ResponseEntity.status(HttpStatus.FORBIDDEN).build());
         }
         return productService.deleteProduct(id)
                 .then(Mono.just(ResponseEntity.<Void>noContent().build()));
+    }
+
+    private boolean canManageProducts(String userRole) {
+        return "ADMIN".equals(userRole) || "ARTESANO".equals(userRole);
     }
 }

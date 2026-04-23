@@ -1,0 +1,169 @@
+.page-container {
+  padding: 32px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.page-header {
+  margin-bottom: 28px;
+}
+
+.page-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2rem;
+  margin: 0 0 6px;
+  color: var(--charcoal);
+}
+
+.page-subtitle {
+  margin: 0;
+  color: var(--text-light);
+}
+
+.loading-center {
+  display: flex;
+  justify-content: center;
+  padding: 80px;
+}
+
+.empty-card {
+  padding: 40px 24px;
+  text-align: center;
+
+  mat-icon {
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+    color: var(--terracotta);
+    margin-bottom: 12px;
+  }
+
+  p {
+    margin: 0;
+    color: var(--text-light);
+  }
+}
+
+.delivery-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.delivery-card {
+  padding: 24px;
+  border-radius: 18px;
+  border: 1px solid rgba(166, 124, 82, 0.12);
+  background: rgba(253, 251, 247, 0.92);
+}
+
+.delivery-card-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.delivery-id {
+  margin: 0 0 8px;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--terracotta-deep);
+}
+
+.delivery-card-header h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  color: var(--charcoal);
+}
+
+.delivery-meta {
+  margin: 8px 0 0;
+  color: var(--text-light);
+  font-size: 0.85rem;
+}
+
+.delivery-status-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.assignment-chip,
+.stage-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+}
+
+.assignment-chip {
+  background: rgba(138, 154, 123, 0.14);
+  color: var(--sage-deep);
+}
+
+.stage-chip {
+  background: rgba(166, 124, 82, 0.14);
+  color: var(--terracotta-deep);
+  text-align: right;
+}
+
+.delivery-progress {
+  margin-top: 18px;
+}
+
+.delivery-progress-caption {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 10px;
+  color: var(--text-light);
+  font-size: 0.82rem;
+}
+
+.checklist {
+  display: grid;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.saving-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+  color: var(--text-light);
+  font-size: 0.85rem;
+}
+
+@media (max-width: 960px) {
+  .delivery-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .page-container {
+    padding: 20px 16px;
+  }
+
+  .delivery-card {
+    padding: 18px;
+  }
+
+  .delivery-card-header {
+    flex-direction: column;
+  }
+
+  .delivery-status-wrap {
+    align-items: flex-start;
+  }
+
+  .delivery-progress-caption {
+    flex-direction: column;
+  }
+}

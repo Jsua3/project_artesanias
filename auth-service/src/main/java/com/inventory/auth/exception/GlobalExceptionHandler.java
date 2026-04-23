@@ -36,6 +36,15 @@ public class GlobalExceptionHandler {
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
         if (ex.getMessage() != null && ex.getMessage().contains("Invalid credentials")) {
             status = HttpStatus.UNAUTHORIZED;
+        } else if (ex.getMessage() != null && (
+                ex.getMessage().contains("pendiente") ||
+                ex.getMessage().contains("rechazada") ||
+                ex.getMessage().contains("permisos"))) {
+            status = HttpStatus.FORBIDDEN;
+        } else if (ex.getMessage() != null && ex.getMessage().contains("ya existe")) {
+            status = HttpStatus.CONFLICT;
+        } else if (ex.getMessage() != null && ex.getMessage().contains("No se encontró")) {
+            status = HttpStatus.NOT_FOUND;
         }
 
         Map<String, Object> body = new HashMap<>();

@@ -7,6 +7,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ProductService } from '../../../core/services/product.service';
 import { CategoryService } from '../../../core/services/category.service';
 import { ArtesanoService } from '../../../core/services/artesano.service';
@@ -58,6 +59,7 @@ export class ProductFormComponent implements OnInit {
   private categoryService = inject(CategoryService);
   private artesanoService = inject(ArtesanoService);
   private dialogRef = inject(MatDialogRef<ProductFormComponent>);
+  private snackBar = inject(MatSnackBar);
   data: Product | null = inject(MAT_DIALOG_DATA);
 
   readonly categories = this.categoryService.categories;
@@ -98,7 +100,17 @@ export class ProductFormComponent implements OnInit {
   }
 
   submit(): void {
-    if (this.form.invalid) return;
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+
+      if (!this.categories().length) {
+        this.snackBar.open('No hay categorias disponibles para asociar la artesania.', 'OK', { duration: 3500 });
+      } else {
+        this.snackBar.open('Completa los campos obligatorios antes de guardar.', 'OK', { duration: 3000 });
+      }
+      return;
+    }
+
     this.loading.set(true);
 
     const req: ProductRequest = {
@@ -118,7 +130,10 @@ export class ProductFormComponent implements OnInit {
 
     op.subscribe({
       next: () => this.dialogRef.close(true),
-      error: () => this.loading.set(false)
+      error: (error) => {
+        this.loading.set(false);
+        this.snackBar.open(error?.error?.message || 'No fue posible guardar la artesania.', 'OK', { duration: 3500 });
+      }
     });
   }
 }

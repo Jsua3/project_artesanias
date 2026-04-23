@@ -12,5 +12,6 @@ public record VentaResponse(
     BigDecimal total,
     String estado,
     LocalDateTime createdAt,
+    DeliveryTrackingResponse delivery,
     List<VentaDetalleResponse> detalles
 ) {}
