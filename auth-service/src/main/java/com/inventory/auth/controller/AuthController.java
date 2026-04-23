@@ -28,6 +28,8 @@ public class AuthController {
                         user.getUsername(),
                         user.getRole().name(),
                         user.getApprovalStatus().name(),
+                        user.getCourierMode() != null ? user.getCourierMode().name() : null,
+                        user.getCourierCompany(),
                         user.getDisplayName(),
                         user.getAvatarUrl(),
                         user.getCreatedAt(),
@@ -63,10 +65,25 @@ public class AuthController {
         return authService.findAllUsers();
     }
 
+    @GetMapping("/approval-requests")
+    @PreAuthorize("hasRole('ADMIN')")
+    public Flux<UserProfileResponse> findPendingApprovalRequests() {
+        return authService.findPendingApprovalRequests();
+    }
+
     @GetMapping("/artisan-requests")
     @PreAuthorize("hasRole('ADMIN')")
     public Flux<UserProfileResponse> findPendingArtisanRequests() {
-        return authService.findPendingArtisanRequests();
+        return authService.findPendingApprovalRequests();
+    }
+
+    @PatchMapping("/approval-requests/{userId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public Mono<UserProfileResponse> reviewApprovalRequest(
+            @PathVariable UUID userId,
+            @AuthenticationPrincipal UUID adminUserId,
+            @RequestBody ArtisanApprovalRequest request) {
+        return authService.reviewApprovalRequest(userId, adminUserId, request);
     }
 
     @PatchMapping("/artisan-requests/{userId}")
@@ -75,6 +92,6 @@ public class AuthController {
             @PathVariable UUID userId,
             @AuthenticationPrincipal UUID adminUserId,
             @RequestBody ArtisanApprovalRequest request) {
-        return authService.reviewArtisanRequest(userId, adminUserId, request);
+        return authService.reviewApprovalRequest(userId, adminUserId, request);
     }
 }

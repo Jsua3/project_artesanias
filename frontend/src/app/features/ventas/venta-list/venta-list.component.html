@@ -1,15 +1,16 @@
 <div class="page-container animate-in">
   <div class="page-header">
     <h2 class="page-title">Ventas</h2>
-    <button mat-raised-button color="primary" (click)="openForm()">
-      <mat-icon>add_shopping_cart</mat-icon> Nueva Venta
-    </button>
+    @if (auth.canAccessOperations()) {
+      <button mat-raised-button color="primary" (click)="openForm()">
+        <mat-icon>add_shopping_cart</mat-icon> Nueva Venta
+      </button>
+    }
   </div>
 
   @if (loading()) {
     <div class="loading-center"><mat-spinner /></div>
   } @else {
-    <!-- DESKTOP TABLE -->
     <div class="desktop-table">
       <mat-card>
         <table mat-table [dataSource]="ventas()" class="full-width">
@@ -27,6 +28,17 @@
             <th mat-header-cell *matHeaderCellDef>Total</th>
             <td mat-cell *matCellDef="let v">
               <strong>{{ v.total | currency:'COP':'symbol':'1.0-0' }}</strong>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="delivery">
+            <th mat-header-cell *matHeaderCellDef>Entrega</th>
+            <td mat-cell *matCellDef="let v">
+              <div class="delivery-cell">
+                <span class="delivery-label">{{ deliveryStageLabel(v) }}</span>
+                <mat-progress-bar mode="determinate" [value]="v.delivery.progress"></mat-progress-bar>
+                <small>{{ v.delivery.progress }}% completado</small>
+              </div>
             </td>
           </ng-container>
 
@@ -60,7 +72,6 @@
       </mat-card>
     </div>
 
-    <!-- MOBILE CARDS -->
     <div class="mobile-cards">
       @if (ventas().length === 0) {
         <p class="empty-msg">No hay ventas registradas.</p>
@@ -81,6 +92,14 @@
                 <div class="data-card-row">
                   <span class="label">Cliente</span>
                   <span class="value">{{ getClienteNombre(v.clienteId) }}</span>
+                </div>
+                <div class="data-card-row delivery-row">
+                  <span class="label">Entrega</span>
+                  <div class="delivery-cell">
+                    <span class="delivery-label">{{ deliveryStageLabel(v) }}</span>
+                    <mat-progress-bar mode="determinate" [value]="v.delivery.progress"></mat-progress-bar>
+                    <small>{{ v.delivery.progress }}% completado</small>
+                  </div>
                 </div>
               </div>
               @if (auth.isAdmin() && v.estado === 'COMPLETADA') {

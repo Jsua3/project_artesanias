@@ -1,5 +1,6 @@
-export type UserRole = 'ADMIN' | 'OPERATOR' | 'CLIENTE' | 'ARTESANO';
+export type UserRole = 'ADMIN' | 'OPERATOR' | 'CLIENTE' | 'ARTESANO' | 'DOMICILIARIO';
 export type ApprovalStatus = 'APPROVED' | 'PENDING' | 'REJECTED';
+export type CourierMode = 'INDEPENDIENTE' | 'EMPRESA';
 
 export interface LoginRequest {
   username: string;
@@ -10,6 +11,8 @@ export interface RegisterRequest {
   username: string;
   password: string;
   role: UserRole;
+  courierMode?: CourierMode | null;
+  courierCompany?: string | null;
 }
 
 export interface AuthResponse {
@@ -24,6 +27,8 @@ export interface UserProfile {
   username: string;
   role: UserRole;
   approvalStatus: ApprovalStatus;
+  courierMode?: CourierMode | null;
+  courierCompany?: string | null;
   displayName?: string;
   avatarUrl?: string;
   createdAt?: string;

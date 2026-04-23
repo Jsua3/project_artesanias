@@ -59,7 +59,14 @@ export class ShellComponent {
       title: 'Ventas',
       items: [
         { label: 'Clientes', icon: 'people', route: '/clientes', roles: ['ADMIN', 'ARTESANO'] },
+        { label: 'Pedidos', icon: 'receipt_long', route: '/pedidos', roles: ['ADMIN', 'ARTESANO', 'DOMICILIARIO'] },
         { label: 'Ventas', icon: 'point_of_sale', route: '/ventas', roles: ['ADMIN', 'ARTESANO'] }
+      ]
+    },
+    {
+      title: 'Logistica',
+      items: [
+        { label: 'Entregas', icon: 'local_shipping', route: '/entregas', roles: ['ADMIN', 'DOMICILIARIO'] }
       ]
     },
     {
@@ -74,7 +81,7 @@ export class ShellComponent {
       title: 'Admin',
       items: [
         { label: 'Reportes', icon: 'assessment', route: '/reports', roles: ['ADMIN', 'ARTESANO'] },
-        { label: 'Solicitudes artesano', icon: 'verified_user', route: '/admin/artisan-requests', roles: ['ADMIN'] }
+        { label: 'Solicitudes de acceso', icon: 'verified_user', route: '/admin/artisan-requests', roles: ['ADMIN'] }
       ]
     }
   ];
@@ -98,6 +105,10 @@ export class ShellComponent {
         return 'Artesano';
       case 'CLIENTE':
         return 'Cliente';
+      case 'DOMICILIARIO':
+        return this.auth.currentUser()?.courierCompany
+          ? `Domiciliario - ${this.auth.currentUser()?.courierCompany}`
+          : 'Domiciliario';
       default:
         return this.auth.currentUser()?.role ?? '';
     }

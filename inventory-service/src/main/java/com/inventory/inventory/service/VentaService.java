@@ -79,6 +79,17 @@ public class VentaService {
                         .map(detalles -> toResponse(venta, detalles)));
     }
 
+    public Flux<VentaResponse> getDeliveriesForUser(String userRole, UUID userId) {
+        return ventaRepository.findAll()
+                .filter(venta -> !"ANULADA".equalsIgnoreCase(venta.getEstado()))
+                .filter(venta -> "ADMIN".equals(userRole)
+                        || venta.getAssignedCourierId() == null
+                        || userId.equals(venta.getAssignedCourierId()))
+                .flatMap(venta -> ventaDetalleRepository.findByVentaId(venta.id())
+                        .collectList()
+                        .map(detalles -> toResponse(venta, detalles)));
+    }
+
     public Flux<VentaResponse> getVentasByCliente(UUID clienteId) {
         return ventaRepository.findByClienteId(clienteId)
                 .flatMap(venta -> ventaDetalleRepository.findByVentaId(venta.id())
@@ -97,9 +108,43 @@ public class VentaService {
     public Mono<VentaResponse> anularVenta(UUID ventaId, UUID userId) {
         return ventaRepository.findById(ventaId)
                 .flatMap(venta -> {
-                    Venta anulada = new Venta(ventaId, venta.clienteId(), venta.vendedorId(),
-                                             venta.total(), "ANULADA", venta.createdAt());
-                    return ventaRepository.save(anulada);
+                    venta.setEstado("ANULADA");
+                    return ventaRepository.save(venta);
+                })
+                .zipWith(ventaDetalleRepository.findByVentaId(ventaId).collectList())
+                .map(tuple -> toResponse(tuple.getT1(), tuple.getT2()));
+    }
+
+    @Transactional
+    public Mono<VentaResponse> updateDeliveryTracking(UUID ventaId,
+                                                      UUID requesterId,
+                                                      String requesterRole,
+                                                      DeliveryTrackingUpdateRequest request) {
+        return ventaRepository.findById(ventaId)
+                .switchIfEmpty(Mono.error(new RuntimeException("No se encontro la venta indicada")))
+                .flatMap(venta -> {
+                    if ("ANULADA".equalsIgnoreCase(venta.getEstado())) {
+                        return Mono.error(new RuntimeException("No se puede actualizar una venta anulada"));
+                    }
+
+                    boolean isAdmin = "ADMIN".equalsIgnoreCase(requesterRole);
+                    UUID assignedCourierId = venta.getAssignedCourierId();
+                    if (!isAdmin && assignedCourierId != null && !requesterId.equals(assignedCourierId)) {
+                        return Mono.error(new RuntimeException("Esta entrega ya fue tomada por otro domiciliario"));
+                    }
+
+                    DeliveryState nextState = sanitizeDeliveryState(request);
+                    venta.setPacked(nextState.packed());
+                    venta.setPickedUp(nextState.pickedUp());
+                    venta.setOnTheWay(nextState.onTheWay());
+                    venta.setDelivered(nextState.delivered());
+                    venta.setDeliveryUpdatedAt(LocalDateTime.now());
+
+                    if (!isAdmin && venta.getAssignedCourierId() == null && nextState.hasProgress()) {
+                        venta.setAssignedCourierId(requesterId);
+                    }
+
+                    return ventaRepository.save(venta);
                 })
                 .zipWith(ventaDetalleRepository.findByVentaId(ventaId).collectList())
                 .map(tuple -> toResponse(tuple.getT1(), tuple.getT2()));
@@ -120,7 +165,89 @@ public class VentaService {
                                                    d.precioUnitario(), d.subtotal()))
                 .collect(Collectors.toList());
 
+        DeliveryTrackingResponse deliveryTracking = new DeliveryTrackingResponse(
+                venta.getAssignedCourierId(),
+                venta.isPacked(),
+                venta.isPickedUp(),
+                venta.isOnTheWay(),
+                venta.isDelivered(),
+                calculateProgress(venta),
+                resolveStage(venta),
+                venta.getDeliveryUpdatedAt()
+        );
+
         return new VentaResponse(venta.id(), venta.clienteId(), venta.vendedorId(),
-                                venta.total(), venta.estado(), venta.createdAt(), detalleResponses);
+                                venta.total(), venta.estado(), venta.createdAt(), deliveryTracking, detalleResponses);
+    }
+
+    private int calculateProgress(Venta venta) {
+        int completedSteps = 0;
+        if (venta.isPacked()) {
+            completedSteps++;
+        }
+        if (venta.isPickedUp()) {
+            completedSteps++;
+        }
+        if (venta.isOnTheWay()) {
+            completedSteps++;
+        }
+        if (venta.isDelivered()) {
+            completedSteps++;
+        }
+        return completedSteps * 25;
+    }
+
+    private String resolveStage(Venta venta) {
+        if (venta.isDelivered()) {
+            return "ENTREGADO";
+        }
+        if (venta.isOnTheWay()) {
+            return "EN_RUTA";
+        }
+        if (venta.isPickedUp()) {
+            return "RECOGIDO";
+        }
+        if (venta.isPacked()) {
+            return "EMPACADO";
+        }
+        return "PENDIENTE";
+    }
+
+    private DeliveryState sanitizeDeliveryState(DeliveryTrackingUpdateRequest request) {
+        boolean packed = Boolean.TRUE.equals(request.packed());
+        boolean pickedUp = Boolean.TRUE.equals(request.pickedUp());
+        boolean onTheWay = Boolean.TRUE.equals(request.onTheWay());
+        boolean delivered = Boolean.TRUE.equals(request.delivered());
+
+        if (!packed) {
+            pickedUp = false;
+            onTheWay = false;
+            delivered = false;
+        }
+        if (pickedUp) {
+            packed = true;
+        } else {
+            onTheWay = false;
+            delivered = false;
+        }
+        if (onTheWay) {
+            packed = true;
+            pickedUp = true;
+        } else {
+            delivered = false;
+        }
+        if (delivered) {
+            packed = true;
+            pickedUp = true;
+            onTheWay = true;
+        }
+
+        return new DeliveryState(packed, pickedUp, onTheWay, delivered);
+    }
+
+    private record DeliveryState(boolean packed, boolean pickedUp, boolean onTheWay, boolean delivered) {
+        boolean hasProgress() {
+            return packed || pickedUp || onTheWay || delivered;
+        }
     }
 }

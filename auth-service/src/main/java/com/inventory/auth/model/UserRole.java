@@ -1,5 +1,5 @@
 package com.inventory.auth.model;
 
 public enum UserRole {
-    ADMIN, OPERATOR, CLIENTE, ARTESANO
+    ADMIN, OPERATOR, CLIENTE, ARTESANO, DOMICILIARIO
 }

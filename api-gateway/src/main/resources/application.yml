@@ -36,7 +36,7 @@ spring:
         - id: auth-service-private
           uri: ${AUTH_SERVICE_URL:http://localhost:8081}
           predicates:
-            - Path=/api/auth/me, /api/auth/users, /api/auth/profile, /api/auth/artisan-requests, /api/auth/artisan-requests/**
+            - Path=/api/auth/me, /api/auth/users, /api/auth/profile, /api/auth/artisan-requests, /api/auth/artisan-requests/**, /api/auth/approval-requests, /api/auth/approval-requests/**
           filters:
             - JwtAuth
 

@@ -20,7 +20,9 @@ export const routes: Routes = [
       { path: 'artesanos', loadComponent: () => import('./features/artesanos/artesano-list/artesano-list.component').then(m => m.ArtesanoListComponent), canActivate: [roleGuard(['ADMIN'])] },
 
       { path: 'clientes', loadComponent: () => import('./features/clientes/cliente-list/cliente-list.component').then(m => m.ClienteListComponent), canActivate: [roleGuard(['ADMIN', 'ARTESANO'])] },
+      { path: 'pedidos', loadComponent: () => import('./features/pedidos/pedido-list/pedido-list.component').then(m => m.PedidoListComponent), canActivate: [roleGuard(['ADMIN', 'ARTESANO', 'DOMICILIARIO'])] },
       { path: 'ventas', loadComponent: () => import('./features/ventas/venta-list/venta-list.component').then(m => m.VentaListComponent), canActivate: [roleGuard(['ADMIN', 'ARTESANO'])] },
+      { path: 'entregas', loadComponent: () => import('./features/entregas/delivery-list/delivery-list.component').then(m => m.DeliveryListComponent), canActivate: [roleGuard(['ADMIN', 'DOMICILIARIO'])] },
 
       { path: 'stock', loadComponent: () => import('./features/stock/stock.component').then(m => m.StockComponent), canActivate: [roleGuard(['ADMIN', 'ARTESANO'])] },
       { path: 'inventory/entries', loadComponent: () => import('./features/inventory/entry-form/entry-form.component').then(m => m.EntryFormComponent), canActivate: [roleGuard(['ADMIN', 'ARTESANO'])] },

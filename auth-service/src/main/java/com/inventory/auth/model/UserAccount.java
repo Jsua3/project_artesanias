@@ -16,6 +16,8 @@ public class UserAccount implements Persistable<UUID> {
     private String passwordHash;
     private UserRole role;
     private ApprovalStatus approvalStatus;
+    private CourierMode courierMode;
+    private String courierCompany;
     private String displayName;
     private String avatarUrl;
     private LocalDateTime createdAt;
@@ -100,6 +102,22 @@ public class UserAccount implements Persistable<UUID> {
 
     public void setApprovalStatus(ApprovalStatus approvalStatus) {
         this.approvalStatus = approvalStatus;
+    }
+
+    public CourierMode getCourierMode() {
+        return courierMode;
+    }
+
+    public void setCourierMode(CourierMode courierMode) {
+        this.courierMode = courierMode;
+    }
+
+    public String getCourierCompany() {
+        return courierCompany;
+    }
+
+    public void setCourierCompany(String courierCompany) {
+        this.courierCompany = courierCompany;
     }
 
     public LocalDateTime getCreatedAt() {
