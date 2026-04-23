@@ -11,6 +11,10 @@
 **/target/
 **/node_modules/
 **/dist/
+!frontend/dist/
+!frontend/dist/frontend/
+!frontend/dist/frontend/browser/
+!frontend/dist/frontend/browser/**
 
 # Docker
 docker-compose.override.yml

@@ -1,67 +1,88 @@
 <div class="page-container animate-in">
   <div class="page-header">
-    <h2 class="page-title">Dashboard</h2>
-    <p class="page-subtitle">Resumen general del inventario</p>
+    <h2 class="page-title">{{ isDomiciliario() ? 'Panel del Domiciliario' : isArtesano() ? 'Panel del Artesano' : 'Dashboard' }}</h2>
+    <p class="page-subtitle">
+      {{
+        isDomiciliario()
+          ? 'Actualiza el checklist de cada pedido y manten informado al cliente con el avance de la entrega.'
+          : isArtesano()
+            ? 'Administra tus artesanias y revisa el movimiento del inventario.'
+            : 'Resumen general del inventario'
+      }}
+    </p>
   </div>
 
   @if (loading()) {
     <div class="loading-center"><mat-spinner /></div>
   } @else {
     <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-icon-wrap terracotta">
-          <mat-icon>palette</mat-icon>
-        </div>
-        <div class="stat-content">
-          <p class="stat-value">{{ stats().products }}</p>
-          <p class="stat-label">Artesanías</p>
-        </div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-icon-wrap mauve">
-          <mat-icon>category</mat-icon>
-        </div>
-        <div class="stat-content">
-          <p class="stat-value">{{ stats().categories }}</p>
-          <p class="stat-label">Categorías</p>
-        </div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-icon-wrap sage">
-          <mat-icon>warehouse</mat-icon>
-        </div>
-        <div class="stat-content">
-          <p class="stat-value">{{ stats().stockItems }}</p>
-          <p class="stat-label">En Stock</p>
-        </div>
-      </div>
-
-      @if (auth.isAdmin()) {
+      @for (stat of stats(); track stat.label) {
         <div class="stat-card">
-          <div class="stat-icon-wrap danger">
-            <mat-icon>warning_amber</mat-icon>
+          <div class="stat-icon-wrap" [class.terracotta]="stat.tone === 'terracotta'"
+               [class.mauve]="stat.tone === 'mauve'"
+               [class.sage]="stat.tone === 'sage'"
+               [class.danger]="stat.tone === 'danger'">
+            <mat-icon>{{ stat.icon }}</mat-icon>
           </div>
           <div class="stat-content">
-            <p class="stat-value">{{ stats().lowStock }}</p>
-            <p class="stat-label">Stock Bajo</p>
+            <p class="stat-value">{{ stat.value }}</p>
+            <p class="stat-label">{{ stat.label }}</p>
           </div>
         </div>
       }
     </div>
 
-    <div class="chart-card">
-      <div class="chart-header">
-        <h3>Top 10 Artesanías por Stock</h3>
+    @if (isArtesano() || isDomiciliario()) {
+      <div class="quick-links-grid">
+        @for (link of quickLinks(); track link.route) {
+          <a class="quick-link-card" [routerLink]="link.route">
+            <mat-icon>{{ link.icon }}</mat-icon>
+            <span>{{ link.label }}</span>
+          </a>
+        }
       </div>
-      <div class="chart-body">
-        <canvas baseChart
-                [data]="barChartData()"
-                [options]="barChartOptions"
-                type="bar">
-        </canvas>
+    }
+
+    @if (isDomiciliario()) {
+      <div class="delivery-board">
+        <div class="chart-header">
+          <h3>Estado reciente de las entregas</h3>
+        </div>
+
+        @if (recentDeliveries().length === 0) {
+          <p class="empty-delivery">Todavia no hay entregas activas para mostrar.</p>
+        } @else {
+          <div class="delivery-board-grid">
+            @for (venta of recentDeliveries(); track venta.id) {
+              <div class="delivery-card">
+                <div class="delivery-card-head">
+                  <div>
+                    <p class="delivery-card-title">{{ deliveryTitle(venta) }}</p>
+                    <p class="delivery-card-subtitle">{{ venta.createdAt | date:'dd/MM/yyyy HH:mm' }}</p>
+                  </div>
+                  <span class="delivery-chip">{{ deliveryStageLabel(venta.delivery.stage) }}</span>
+                </div>
+
+                <mat-progress-bar mode="determinate" [value]="venta.delivery.progress"></mat-progress-bar>
+                <p class="delivery-progress-caption">{{ venta.delivery.progress }}% completado</p>
+              </div>
+            }
+          </div>
+        }
       </div>
-    </div>
+    } @else {
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3>{{ isArtesano() ? 'Artesanias con mayor stock' : 'Top 10 Artesanias por Stock' }}</h3>
+        </div>
+        <div class="chart-body">
+          <canvas baseChart
+                  [data]="barChartData()"
+                  [options]="barChartOptions"
+                  type="bar">
+          </canvas>
+        </div>
+      </div>
+    }
   }
 </div>

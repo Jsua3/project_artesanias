@@ -1,0 +1,80 @@
+<div class="page-container animate-in">
+  <div class="page-header">
+    <div>
+      <h2 class="page-title">Entregas</h2>
+      <p class="page-subtitle">Marca cada paso del pedido para reflejar el avance hacia el cliente.</p>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-center"><mat-spinner /></div>
+  } @else if (deliveries().length === 0) {
+    <mat-card class="empty-card">
+      <mat-icon>local_shipping</mat-icon>
+      <p>No hay entregas disponibles en este momento.</p>
+    </mat-card>
+  } @else {
+    <div class="delivery-grid">
+      @for (venta of deliveries(); track venta.id) {
+        <mat-card class="delivery-card">
+          <div class="delivery-card-header">
+            <div>
+              <p class="delivery-id">Pedido {{ venta.id.slice(0, 8).toUpperCase() }}</p>
+              <h3>{{ getClienteNombre(venta.clienteId) }}</h3>
+              <p class="delivery-meta">{{ venta.createdAt | date:'dd/MM/yyyy HH:mm' }} · {{ venta.total | currency:'COP':'symbol':'1.0-0' }}</p>
+            </div>
+            <div class="delivery-status-wrap">
+              <span class="assignment-chip">{{ assignmentLabel(venta) }}</span>
+              <span class="stage-chip">{{ stageLabel(venta) }}</span>
+            </div>
+          </div>
+
+          <div class="delivery-progress">
+            <mat-progress-bar mode="determinate" [value]="venta.delivery.progress"></mat-progress-bar>
+            <div class="delivery-progress-caption">
+              <span>{{ venta.delivery.progress }}% completado</span>
+              <span>{{ stageLabel(venta) }}</span>
+            </div>
+          </div>
+
+          <div class="checklist">
+            <mat-checkbox
+              [checked]="venta.delivery.packed"
+              [disabled]="savingId() === venta.id || !canEdit(venta)"
+              (change)="updateStep(venta, 'packed', $event.checked)">
+              El pedido ya ha sido empacado
+            </mat-checkbox>
+
+            <mat-checkbox
+              [checked]="venta.delivery.pickedUp"
+              [disabled]="savingId() === venta.id || !canEdit(venta)"
+              (change)="updateStep(venta, 'pickedUp', $event.checked)">
+              El domiciliario recogio el pedido
+            </mat-checkbox>
+
+            <mat-checkbox
+              [checked]="venta.delivery.onTheWay"
+              [disabled]="savingId() === venta.id || !canEdit(venta)"
+              (change)="updateStep(venta, 'onTheWay', $event.checked)">
+              El pedido ya va en camino
+            </mat-checkbox>
+
+            <mat-checkbox
+              [checked]="venta.delivery.delivered"
+              [disabled]="savingId() === venta.id || !canEdit(venta)"
+              (change)="updateStep(venta, 'delivered', $event.checked)">
+              El pedido fue entregado al cliente
+            </mat-checkbox>
+          </div>
+
+          @if (savingId() === venta.id) {
+            <div class="saving-state">
+              <mat-spinner diameter="20"></mat-spinner>
+              <span>Guardando seguimiento...</span>
+            </div>
+          }
+        </mat-card>
+      }
+    </div>
+  }
+</div>

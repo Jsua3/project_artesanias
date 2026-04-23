@@ -1,6 +1,7 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { Observable, of, tap } from 'rxjs';
+import { catchError, timeout } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { Category, CategoryRequest } from '../models/category.model';
 
@@ -29,7 +30,10 @@ export class CategoryService {
 
   loadAll(): void {
     this._loading.set(true);
-    this.http.get<Category[]>(this.API).subscribe({
+    this.http.get<Category[]>(this.API).pipe(
+      timeout(3000),
+      catchError(() => of([]))
+    ).subscribe({
       next: data => {
         this._categories.set(data);
         this._loading.set(false);

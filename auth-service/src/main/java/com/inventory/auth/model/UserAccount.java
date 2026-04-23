@@ -15,9 +15,14 @@ public class UserAccount implements Persistable<UUID> {
     private String username;
     private String passwordHash;
     private UserRole role;
+    private ApprovalStatus approvalStatus;
+    private CourierMode courierMode;
+    private String courierCompany;
     private String displayName;
     private String avatarUrl;
     private LocalDateTime createdAt;
+    private LocalDateTime approvedAt;
+    private UUID approvedBy;
 
     @Transient
     private boolean isNew = true;
@@ -34,11 +39,12 @@ public class UserAccount implements Persistable<UUID> {
     public UserAccount() {
     }
 
-    public UserAccount(UUID id, String username, String passwordHash, UserRole role, LocalDateTime createdAt) {
+    public UserAccount(UUID id, String username, String passwordHash, UserRole role, ApprovalStatus approvalStatus, LocalDateTime createdAt) {
         this.id = id;
         this.username = username;
         this.passwordHash = passwordHash;
         this.role = role;
+        this.approvalStatus = approvalStatus;
         this.createdAt = createdAt;
     }
 
@@ -90,11 +96,51 @@ public class UserAccount implements Persistable<UUID> {
         this.role = role;
     }
 
+    public ApprovalStatus getApprovalStatus() {
+        return approvalStatus;
+    }
+
+    public void setApprovalStatus(ApprovalStatus approvalStatus) {
+        this.approvalStatus = approvalStatus;
+    }
+
+    public CourierMode getCourierMode() {
+        return courierMode;
+    }
+
+    public void setCourierMode(CourierMode courierMode) {
+        this.courierMode = courierMode;
+    }
+
+    public String getCourierCompany() {
+        return courierCompany;
+    }
+
+    public void setCourierCompany(String courierCompany) {
+        this.courierCompany = courierCompany;
+    }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getApprovedAt() {
+        return approvedAt;
+    }
+
+    public void setApprovedAt(LocalDateTime approvedAt) {
+        this.approvedAt = approvedAt;
+    }
+
+    public UUID getApprovedBy() {
+        return approvedBy;
+    }
+
+    public void setApprovedBy(UUID approvedBy) {
+        this.approvedBy = approvedBy;
     }
 }

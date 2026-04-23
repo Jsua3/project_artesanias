@@ -1,0 +1,19 @@
+.delivery-cell {
+  display: grid;
+  gap: 6px;
+  min-width: 180px;
+}
+
+.delivery-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--terracotta-deep);
+}
+
+.delivery-cell small {
+  color: var(--text-light);
+}
+
+.delivery-row {
+  align-items: flex-start;
+}

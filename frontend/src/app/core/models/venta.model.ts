@@ -1,3 +1,14 @@
+export interface DeliveryTracking {
+  assignedCourierId?: string | null;
+  packed: boolean;
+  pickedUp: boolean;
+  onTheWay: boolean;
+  delivered: boolean;
+  progress: number;
+  stage: 'PENDIENTE' | 'EMPACADO' | 'RECOGIDO' | 'EN_RUTA' | 'ENTREGADO';
+  updatedAt?: string | null;
+}
+
 export interface VentaDetalle {
   id: string;
   productId: string;
@@ -6,16 +17,14 @@ export interface VentaDetalle {
   subtotal: number;
 }
 
-/** Estados que puede tener una venta (Fase 2a agrega PENDIENTE + PAGADA). */
-export type VentaEstado = 'PENDIENTE' | 'PAGADA' | 'COMPLETADA' | 'ANULADA';
-
 export interface Venta {
   id: string;
   clienteId: string;
   vendedorId: string;
   total: number;
-  estado: VentaEstado;
+  estado: 'COMPLETADA' | 'ANULADA';
   createdAt: string;
+  delivery: DeliveryTracking;
   detalles: VentaDetalle[];
 }
 
@@ -29,8 +38,9 @@ export interface VentaRequest {
   items: VentaItemRequest[];
 }
 
-/** Payload que envia el CLIENTE al checkout (no lleva clienteId ni precios). */
-export interface ClienteVentaRequest {
-  items: VentaItemRequest[];
-  displayName?: string;
+export interface DeliveryTrackingUpdateRequest {
+  packed: boolean;
+  pickedUp: boolean;
+  onTheWay: boolean;
+  delivered: boolean;
 }

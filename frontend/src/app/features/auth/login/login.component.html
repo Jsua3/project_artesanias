@@ -1,5 +1,4 @@
 <div class="auth-container">
-  <!-- Organic background shapes -->
   <div class="organic organic-1"></div>
   <div class="organic organic-2"></div>
   <div class="organic organic-3"></div>
@@ -8,13 +7,18 @@
     <div class="auth-header">
       <div class="auth-logo">
         <svg viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="25" cy="25" r="22" stroke="currentColor" stroke-width="1.5" opacity="0.3"/>
-          <path d="M25 7C25 7 17 15 17 25C17 35 25 43 25 43C25 43 33 35 33 25C33 15 25 7 25 7Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
-          <circle cx="25" cy="25" r="5" stroke="currentColor" stroke-width="1.5"/>
+          <circle cx="25" cy="25" r="22" stroke="currentColor" stroke-width="1.5" opacity="0.3" />
+          <path
+            d="M25 7C25 7 17 15 17 25C17 35 25 43 25 43C25 43 33 35 33 25C33 15 25 7 25 7Z"
+            stroke="currentColor"
+            stroke-width="1.5"
+            fill="none"
+          />
+          <circle cx="25" cy="25" r="5" stroke="currentColor" stroke-width="1.5" />
         </svg>
       </div>
-      <h1 class="auth-title">Artesanías</h1>
-      <p class="auth-subtitle">Inicia sesión en tu cuenta</p>
+      <h1 class="auth-title">Artesanias</h1>
+      <p class="auth-subtitle">Inicia sesion en tu cuenta</p>
     </div>
 
     <div class="auth-body">
@@ -24,6 +28,7 @@
           <span>{{ error }}</span>
         </div>
       }
+
       <form [formGroup]="form" (ngSubmit)="submit()">
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Usuario</mat-label>
@@ -32,30 +37,48 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Contraseña</mat-label>
+          <mat-label>Contrasena</mat-label>
           <mat-icon matPrefix>lock_outline</mat-icon>
-          <input matInput formControlName="password"
-                 [type]="hidePassword ? 'password' : 'text'"
-                 autocomplete="current-password" />
-          <button mat-icon-button matSuffix type="button"
-                  (click)="hidePassword = !hidePassword">
+          <input
+            matInput
+            formControlName="password"
+            [type]="hidePassword ? 'password' : 'text'"
+            autocomplete="current-password"
+          />
+          <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword">
             <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
           </button>
         </mat-form-field>
 
-        <button mat-raised-button color="primary" type="submit"
-                class="full-width submit-btn" [disabled]="loading">
+        <button mat-raised-button color="primary" type="submit" class="full-width submit-btn" [disabled]="loading">
           @if (loading) {
             <mat-spinner diameter="20" />
           } @else {
-            Iniciar Sesión
+            Iniciar sesion
           }
         </button>
       </form>
     </div>
 
     <div class="auth-footer">
-      <p>¿No tienes cuenta? <a routerLink="/register">Regístrate</a></p>
+      <div class="register-cta">
+        <span>No tienes cuenta?</span>
+        <button mat-stroked-button type="button" [matMenuTriggerFor]="registerMenu" class="register-menu-button">
+          Registrarse
+          <mat-icon>expand_more</mat-icon>
+        </button>
+      </div>
     </div>
+
+    <mat-menu #registerMenu="matMenu" xPosition="before">
+      @for (option of registerOptions; track option.role) {
+        <button mat-menu-item [routerLink]="['/register']" [queryParams]="{ role: option.role }">
+          <div class="menu-option">
+            <span class="menu-option-title">{{ option.label }}</span>
+            <span class="menu-option-description">{{ option.description }}</span>
+          </div>
+        </button>
+      }
+    </mat-menu>
   </div>
 </div>

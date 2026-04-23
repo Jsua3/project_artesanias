@@ -35,15 +35,14 @@ export class ProductListComponent implements OnInit {
   readonly products = this.productService.products;
   readonly loading = this.productService.loading;
   readonly categoryMap = this.categoryService.categoryMap;
+  readonly canManageProducts = computed(() => this.auth.canManageProducts());
 
-  /** Map artesanoId → Artesano name */
   readonly artesanoMap = computed(() => {
     const map = new Map<string, string>();
     this.artesanoService.artesanos().forEach(a => map.set(a.id, a.nombre));
     return map;
   });
 
-  /** Map productId → stock quantity */
   readonly stockMap = computed(() => {
     const map = new Map<string, number>();
     this.stockService.stock().forEach(s => map.set(s.productId, s.quantity));
@@ -76,6 +75,8 @@ export class ProductListComponent implements OnInit {
   }
 
   openForm(product?: Product): void {
+    if (!this.canManageProducts()) return;
+
     const ref = this.dialog.open(ProductFormComponent, {
       width: '560px',
       maxWidth: '95vw',
@@ -87,7 +88,9 @@ export class ProductListComponent implements OnInit {
   }
 
   delete(id: string): void {
+    if (!this.canManageProducts()) return;
     if (!confirm('¿Eliminar esta artesanía?')) return;
+
     this.productService.delete(id).subscribe({
       next: () => {
         this.snackBar.open('Artesanía eliminada', 'OK', { duration: 3000 });

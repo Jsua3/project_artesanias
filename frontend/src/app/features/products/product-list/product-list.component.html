@@ -4,7 +4,7 @@
       <h2 class="page-title">Artesanías</h2>
       <p class="page-subtitle">Catálogo de piezas artesanales</p>
     </div>
-    @if (auth.isAdmin()) {
+    @if (canManageProducts()) {
       <button mat-raised-button color="primary" (click)="openForm()">
         <mat-icon>add</mat-icon> Nueva Artesanía
       </button>
@@ -17,7 +17,7 @@
     <div class="empty-state">
       <mat-icon>palette</mat-icon>
       <p>No hay artesanías registradas aún.</p>
-      @if (auth.isAdmin()) {
+      @if (canManageProducts()) {
         <button mat-raised-button color="primary" (click)="openForm()">
           <mat-icon>add</mat-icon> Crear primera artesanía
         </button>
@@ -27,8 +27,7 @@
     <div class="gallery-grid">
       @for (p of products(); track p.id) {
         <div class="product-card" [class.low-stock-card]="isLowStock(p.id, p.stockMinimo)">
-          <!-- Image -->
-          <div class="card-image" (click)="openForm(p)">
+          <div class="card-image" (click)="canManageProducts() && openForm(p)">
             @if (p.imageUrl) {
               <img [src]="p.imageUrl" [alt]="p.name" />
             } @else {
@@ -36,9 +35,9 @@
                 <mat-icon>palette</mat-icon>
               </div>
             }
-            <!-- Category badge -->
+
             <span class="category-badge">{{ getCategoryName(p.categoryId) }}</span>
-            <!-- Low stock alert -->
+
             @if (isLowStock(p.id, p.stockMinimo)) {
               <span class="stock-alert-badge">
                 <mat-icon>warning</mat-icon>
@@ -47,7 +46,6 @@
             }
           </div>
 
-          <!-- Info -->
           <div class="card-body">
             <h3 class="card-title">{{ p.name }}</h3>
 
@@ -75,7 +73,7 @@
               </div>
             </div>
 
-            @if (auth.isAdmin()) {
+            @if (canManageProducts()) {
               <div class="card-actions">
                 <button mat-icon-button color="primary" (click)="openForm(p)" title="Editar">
                   <mat-icon>edit</mat-icon>

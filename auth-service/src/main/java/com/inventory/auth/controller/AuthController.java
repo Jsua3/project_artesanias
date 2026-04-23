@@ -23,8 +23,18 @@ public class AuthController {
     @PostMapping("/register")
     public Mono<UserProfileResponse> register(@RequestBody RegisterRequest request) {
         return authService.register(request)
-                .map(user -> new UserProfileResponse(user.getId(), user.getUsername(), user.getRole().name(),
-                        user.getDisplayName(), user.getAvatarUrl()));
+                .map(user -> new UserProfileResponse(
+                        user.getId(),
+                        user.getUsername(),
+                        user.getRole().name(),
+                        user.getApprovalStatus().name(),
+                        user.getCourierMode() != null ? user.getCourierMode().name() : null,
+                        user.getCourierCompany(),
+                        user.getDisplayName(),
+                        user.getAvatarUrl(),
+                        user.getCreatedAt(),
+                        user.getApprovedAt()
+                ));
     }
 
     /** Registro público de clientes finales — siempre asigna rol CLIENTE. */
@@ -61,5 +71,35 @@ public class AuthController {
     @PreAuthorize("hasRole('ADMIN')")
     public Flux<UserProfileResponse> findAllUsers() {
         return authService.findAllUsers();
+    }
+
+    @GetMapping("/approval-requests")
+    @PreAuthorize("hasRole('ADMIN')")
+    public Flux<UserProfileResponse> findPendingApprovalRequests() {
+        return authService.findPendingApprovalRequests();
+    }
+
+    @GetMapping("/artisan-requests")
+    @PreAuthorize("hasRole('ADMIN')")
+    public Flux<UserProfileResponse> findPendingArtisanRequests() {
+        return authService.findPendingApprovalRequests();
+    }
+
+    @PatchMapping("/approval-requests/{userId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public Mono<UserProfileResponse> reviewApprovalRequest(
+            @PathVariable UUID userId,
+            @AuthenticationPrincipal UUID adminUserId,
+            @RequestBody ArtisanApprovalRequest request) {
+        return authService.reviewApprovalRequest(userId, adminUserId, request);
+    }
+
+    @PatchMapping("/artisan-requests/{userId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public Mono<UserProfileResponse> reviewArtisanRequest(
+            @PathVariable UUID userId,
+            @AuthenticationPrincipal UUID adminUserId,
+            @RequestBody ArtisanApprovalRequest request) {
+        return authService.reviewApprovalRequest(userId, adminUserId, request);
     }
 }

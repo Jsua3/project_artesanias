@@ -23,6 +23,12 @@
           <span>{{ error }}</span>
         </div>
       }
+      @if (successMessage) {
+        <div class="success-msg">
+          <mat-icon>check_circle</mat-icon>
+          <span>{{ successMessage }}</span>
+        </div>
+      }
       <form [formGroup]="form" (ngSubmit)="submit()">
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Usuario</mat-label>
@@ -46,6 +52,64 @@
             <mat-error>Mínimo 6 caracteres</mat-error>
           }
         </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Tipo de cuenta</mat-label>
+          <mat-select formControlName="role">
+            @for (option of roleOptions; track option.value) {
+              <mat-option [value]="option.value">{{ option.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        @if (selectedRoleDescription()) {
+          <p class="role-hint">
+            {{ selectedRoleDescription() }}
+          </p>
+        }
+
+        @if (isCourierRole()) {
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Modalidad del domiciliario</mat-label>
+            <mat-select formControlName="courierMode">
+              @for (option of courierModeOptions; track option.value) {
+                <mat-option [value]="option.value">{{ option.label }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <p class="role-hint role-hint-secondary">
+            {{ selectedCourierModeDescription() }}
+          </p>
+
+          @if (requiresCourierCompany()) {
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Empresa asociada</mat-label>
+              <mat-icon matPrefix>local_shipping</mat-icon>
+              <mat-select formControlName="courierCompanySelection">
+                @for (company of courierCompanyOptions; track company) {
+                  <mat-option [value]="company">
+                    {{ company === 'OTRA' ? 'Otra' : company }}
+                  </mat-option>
+                }
+              </mat-select>
+              @if (form.get('courierCompanySelection')?.hasError('required')) {
+                <mat-error>Debes indicar la empresa</mat-error>
+              }
+            </mat-form-field>
+
+            @if (isOtherCourierCompanySelected()) {
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Especifica la empresa</mat-label>
+                <mat-icon matPrefix>business</mat-icon>
+                <input matInput formControlName="courierCompanyOther" />
+                @if (form.get('courierCompanyOther')?.hasError('required')) {
+                  <mat-error>Debes especificar la empresa</mat-error>
+                }
+              </mat-form-field>
+            }
+          }
+        }
 
         <button mat-raised-button color="primary" type="submit"
                 class="full-width submit-btn" [disabled]="loading">
