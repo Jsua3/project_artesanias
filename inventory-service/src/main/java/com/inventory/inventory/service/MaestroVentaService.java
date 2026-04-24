@@ -1,6 +1,7 @@
 package com.inventory.inventory.service;
 
 import com.inventory.inventory.dto.ArtesanoInfoDto;
+import com.inventory.inventory.dto.DeliveryTrackingResponse;
 import com.inventory.inventory.dto.VentaDetalleResponse;
 import com.inventory.inventory.dto.VentaResponse;
 import com.inventory.inventory.model.Venta;
@@ -81,8 +82,53 @@ public class MaestroVentaService {
                         d.id(), d.productId(), d.cantidad(),
                         d.precioUnitario(), d.subtotal(), d.artesanoId()))
                 .collect(Collectors.toList());
+
+        DeliveryTrackingResponse deliveryTracking = new DeliveryTrackingResponse(
+                venta.getAssignedCourierId(),
+                venta.isPacked(),
+                venta.isPickedUp(),
+                venta.isOnTheWay(),
+                venta.isDelivered(),
+                calculateProgress(venta),
+                resolveStage(venta),
+                venta.getDeliveryUpdatedAt()
+        );
+
         return new VentaResponse(
                 venta.id(), venta.clienteId(), venta.vendedorId(),
-                venta.total(), venta.estado(), venta.createdAt(), detalleResponses);
+                venta.total(), venta.estado(), venta.createdAt(), deliveryTracking, detalleResponses);
+    }
+
+    private int calculateProgress(Venta venta) {
+        int completedSteps = 0;
+        if (venta.isPacked()) {
+            completedSteps++;
+        }
+        if (venta.isPickedUp()) {
+            completedSteps++;
+        }
+        if (venta.isOnTheWay()) {
+            completedSteps++;
+        }
+        if (venta.isDelivered()) {
+            completedSteps++;
+        }
+        return completedSteps * 25;
+    }
+
+    private String resolveStage(Venta venta) {
+        if (venta.isDelivered()) {
+            return "ENTREGADO";
+        }
+        if (venta.isOnTheWay()) {
+            return "EN_RUTA";
+        }
+        if (venta.isPickedUp()) {
+            return "RECOGIDO";
+        }
+        if (venta.isPacked()) {
+            return "EMPACADO";
+        }
+        return "PENDIENTE";
     }
 }

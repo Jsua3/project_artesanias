@@ -66,6 +66,7 @@ export class ShellComponent {
     {
       title: 'Logistica',
       items: [
+        { label: 'Panel de entregas', icon: 'delivery_dining', route: '/domiciliario/panel', roles: ['DOMICILIARIO'] },
         { label: 'Entregas', icon: 'local_shipping', route: '/entregas', roles: ['ADMIN', 'DOMICILIARIO'] }
       ]
     },
@@ -78,10 +79,18 @@ export class ShellComponent {
       ]
     },
     {
+      title: 'Comunidad',
+      items: [
+        { label: 'Feed artesanos', icon: 'groups', route: '/artesano/comunidad', roles: ['ARTESANO', 'ADMIN'] },
+        { label: 'Eventos y ferias', icon: 'event', route: '/artesano/eventos', roles: ['ARTESANO', 'ADMIN'] }
+      ]
+    },
+    {
       title: 'Admin',
       items: [
         { label: 'Reportes', icon: 'assessment', route: '/reports', roles: ['ADMIN', 'ARTESANO'] },
-        { label: 'Solicitudes de acceso', icon: 'verified_user', route: '/admin/artisan-requests', roles: ['ADMIN'] }
+        { label: 'Solicitudes de acceso', icon: 'verified_user', route: '/admin/aprobaciones', roles: ['ADMIN'] },
+        { label: 'Moderación comunidad', icon: 'shield', route: '/admin/moderacion', roles: ['ADMIN'] }
       ]
     }
   ];

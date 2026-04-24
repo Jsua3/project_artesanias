@@ -5,6 +5,7 @@ import com.inventory.auth.dto.AuthResponse;
 import com.inventory.auth.dto.LoginRequest;
 import com.inventory.auth.dto.ProfileUpdateRequest;
 import com.inventory.auth.dto.RefreshRequest;
+import com.inventory.auth.dto.RegisterClienteRequest;
 import com.inventory.auth.dto.RegisterRequest;
 import com.inventory.auth.dto.UserProfileResponse;
 import com.inventory.auth.model.ApprovalStatus;
@@ -131,6 +132,23 @@ public class AuthService {
                 });
     }
 
+    public Mono<UserAccount> registerCliente(RegisterClienteRequest request) {
+        return userRepository.findByUsername(request.username())
+                .flatMap(u -> Mono.<UserAccount>error(new RuntimeException("El nombre de usuario ya esta registrado")))
+                .switchIfEmpty(Mono.defer(() -> {
+                    UserAccount user = new UserAccount();
+                    user.setId(UUID.randomUUID());
+                    user.setUsername(request.username());
+                    user.setPasswordHash(passwordEncoder.encode(request.password()));
+                    user.setRole(UserRole.CLIENTE);
+                    user.setDisplayName(request.displayName());
+                    user.setApprovalStatus(ApprovalStatus.APPROVED);
+                    user.setCreatedAt(LocalDateTime.now());
+                    user.setNew(true);
+                    return userRepository.save(user);
+                }));
+    }
+
     public Flux<UserProfileResponse> findAllUsers() {
         return userRepository.findAll()
                 .map(user -> {
@@ -143,7 +161,7 @@ public class AuthService {
         return userRepository.findAllByApprovalStatus(ApprovalStatus.PENDING)
                 .filter(user -> {
                     UserRole role = normalizeRole(user.getRole());
-                    return role == UserRole.ARTESANO || role == UserRole.DOMICILIARIO;
+                    return role == UserRole.MAESTRO || role == UserRole.DOMICILIARIO;
                 })
                 .sort(Comparator.comparing(UserAccount::getCreatedAt))
                 .map(user -> {
@@ -159,7 +177,7 @@ public class AuthService {
                 .flatMap(user -> {
                     user.setNew(false);
                     UserRole normalizedRole = normalizeRole(user.getRole());
-                    if (normalizedRole != UserRole.ARTESANO && normalizedRole != UserRole.DOMICILIARIO) {
+                    if (normalizedRole != UserRole.MAESTRO && normalizedRole != UserRole.DOMICILIARIO) {
                         return Mono.error(new RuntimeException("La solicitud indicada no requiere aprobacion administrativa"));
                     }
 
@@ -200,7 +218,7 @@ public class AuthService {
             }
 
             if (requestedRole == UserRole.OPERATOR) {
-                return UserRole.ARTESANO;
+                return UserRole.MAESTRO;
             }
 
             return requestedRole;
@@ -248,21 +266,21 @@ public class AuthService {
     private Mono<UserAccount> ensureLoginAllowed(UserAccount user) {
         UserRole effectiveRole = normalizeRole(user.getRole());
         if (user.getApprovalStatus() == ApprovalStatus.PENDING && requiresAdminApproval(effectiveRole)) {
-            String profileLabel = effectiveRole == UserRole.DOMICILIARIO ? "domiciliario" : "artesano";
+            String profileLabel = effectiveRole == UserRole.DOMICILIARIO ? "domiciliario" : "maestro";
             return Mono.error(new RuntimeException("Tu solicitud de " + profileLabel + " esta pendiente de aprobacion por un administrador"));
         }
         if (user.getApprovalStatus() == ApprovalStatus.REJECTED && requiresAdminApproval(effectiveRole)) {
-            String profileLabel = effectiveRole == UserRole.DOMICILIARIO ? "domiciliario" : "artesano";
+            String profileLabel = effectiveRole == UserRole.DOMICILIARIO ? "domiciliario" : "maestro";
             return Mono.error(new RuntimeException("Tu solicitud de " + profileLabel + " fue rechazada por un administrador"));
         }
         return Mono.just(user);
     }
 
     private boolean requiresAdminApproval(UserRole role) {
-        return role == UserRole.ARTESANO || role == UserRole.DOMICILIARIO;
+        return role == UserRole.MAESTRO || role == UserRole.DOMICILIARIO;
     }
 
-    private UserProfileResponse toUserProfileResponse(UserAccount user) {
+    public UserProfileResponse toUserProfileResponse(UserAccount user) {
         return new UserProfileResponse(
                 user.getId(),
                 user.getUsername(),
@@ -278,6 +296,6 @@ public class AuthService {
     }
 
     private UserRole normalizeRole(UserRole role) {
-        return role == UserRole.OPERATOR ? UserRole.ARTESANO : role;
+        return role == UserRole.OPERATOR ? UserRole.MAESTRO : role;
     }
 }

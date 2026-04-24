@@ -1,4 +1,6 @@
 com\inventory\auth\dto\UserProfileResponse.class
+com\inventory\auth\model\CourierMode.class
+com\inventory\auth\dto\ProfileUpdateRequest.class
 com\inventory\auth\exception\GlobalExceptionHandler.class
 com\inventory\auth\repository\UserAccountRepository.class
 com\inventory\auth\config\JwtProperties.class
@@ -6,11 +8,14 @@ com\inventory\auth\model\UserRole.class
 com\inventory\auth\AuthServiceApplication.class
 com\inventory\auth\controller\AuthController.class
 com\inventory\auth\service\AuthService.class
+com\inventory\auth\dto\RegisterClienteRequest.class
 com\inventory\auth\model\UserAccount.class
 com\inventory\auth\dto\LoginRequest.class
+com\inventory\auth\dto\ArtisanApprovalRequest.class
 com\inventory\auth\dto\AuthResponse.class
 com\inventory\auth\dto\RefreshRequest.class
 com\inventory\auth\dto\RegisterRequest.class
+com\inventory\auth\model\ApprovalStatus.class
 com\inventory\auth\config\WebSecurityConfig.class
 com\inventory\auth\service\JwtService.class
 com\inventory\auth\model\RefreshToken.class

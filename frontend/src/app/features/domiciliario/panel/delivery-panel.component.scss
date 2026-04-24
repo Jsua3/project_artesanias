@@ -1,0 +1,402 @@
+/* ─── Variables ────────────────────────────────────────────────────────── */
+$terracota: #A67C52;
+$crema:     #F5F0E8;
+$dark:      #2d2a26;
+$muted:     #6b6259;
+$border:    #ece5db;
+$sage:      #8a9e8d;
+$success:   #4caf8a;
+
+/* ─── Shell ─────────────────────────────────────────────────────────────── */
+:host { display: block; }
+
+.panel-shell {
+  padding: 28px 24px 60px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ─── Header ────────────────────────────────────────────────────────────── */
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+
+  &__left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  h1 {
+    margin: 0;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px;
+    font-weight: 500;
+  }
+}
+
+.header-icon {
+  font-size: 36px;
+  width: 36px;
+  height: 36px;
+  color: $terracota;
+}
+
+.header-sub {
+  margin: 2px 0 0;
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  color: $muted;
+}
+
+/* ─── Layout dividido ───────────────────────────────────────────────────── */
+.panel-layout {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 24px;
+  align-items: start;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+
+    &.has-selected .orders-list {
+      display: none; // En móvil el detalle ocupa toda la pantalla
+    }
+  }
+}
+
+/* ─── Lista de pedidos ──────────────────────────────────────────────────── */
+.orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 8px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: $muted;
+
+  mat-icon { font-size: 16px; width: 16px; height: 16px; }
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: $terracota;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  margin-left: 4px;
+}
+
+.loading-wrap, .empty-orders {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 48px 20px;
+  color: $muted;
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 14px;
+  border: 1px dashed $border;
+  text-align: center;
+
+  mat-icon { font-size: 40px; width: 40px; height: 40px; color: darken($border, 10%); }
+}
+
+/* ─── Tarjeta de pedido ─────────────────────────────────────────────────── */
+.order-card {
+  padding: 16px 18px;
+  background: #fff;
+  border: 1px solid $border;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  &:hover {
+    border-color: $terracota;
+    box-shadow: 0 4px 16px rgba(166, 124, 82, 0.12);
+    transform: translateY(-1px);
+  }
+
+  &.is-selected {
+    border-color: $terracota;
+    background: rgba(166, 124, 82, 0.04);
+    box-shadow: 0 0 0 2px rgba(166, 124, 82, 0.2), 0 4px 16px rgba(166, 124, 82, 0.1);
+  }
+
+  &.is-done {
+    opacity: 0.65;
+  }
+}
+
+.order-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.order-id {
+  font-family: 'Outfit', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  color: $dark;
+  letter-spacing: 0.05em;
+}
+
+.order-chip {
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.chip-available {
+  background: rgba(76, 175, 138, 0.12);
+  color: darken($success, 10%);
+}
+
+.chip-mine {
+  background: rgba(166, 124, 82, 0.12);
+  color: $terracota;
+}
+
+.order-card__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  color: $muted;
+
+  mat-icon { font-size: 15px; width: 15px; height: 15px; }
+}
+
+.mini-bar {
+  height: 4px;
+  border-radius: 2px;
+  margin-top: 4px;
+}
+
+/* ─── Detalle del pedido ─────────────────────────────────────────────────── */
+.order-detail {
+  position: relative;
+  background: #fff;
+  border: 1px solid $border;
+  border-radius: 20px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  box-shadow: 0 4px 24px rgba(45, 42, 38, 0.06);
+}
+
+.close-detail {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  color: $muted !important;
+}
+
+/* ─── Barra de progreso principal ───────────────────────────────────────── */
+.progress-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.progress-header {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.progress-pct {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 42px;
+  font-weight: 600;
+  line-height: 1;
+  color: $terracota;
+}
+
+.progress-label {
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  color: $muted;
+}
+
+.main-progress-bar {
+  height: 10px !important;
+  border-radius: 5px !important;
+
+  ::ng-deep .mdc-linear-progress__buffer-bar { background: $border; }
+  ::ng-deep .mdc-linear-progress__bar-inner  { border-color: $terracota; }
+}
+
+/* ─── Filas de info ─────────────────────────────────────────────────────── */
+.detail-info-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+
+  @media (max-width: 600px) { grid-template-columns: 1fr 1fr; }
+}
+
+.detail-info-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px;
+  background: $crema;
+  border-radius: 12px;
+
+  mat-icon { color: $terracota; font-size: 20px; width: 20px; height: 20px; flex-shrink: 0; }
+}
+
+.info-label {
+  margin: 0;
+  font-family: 'Outfit', sans-serif;
+  font-size: 11px;
+  color: $muted;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.info-value {
+  margin: 2px 0 0;
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: $dark;
+}
+
+/* ─── Checklist ─────────────────────────────────────────────────────────── */
+.checklist-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 20px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: $muted;
+
+  mat-icon { font-size: 16px; width: 16px; height: 16px; }
+}
+
+.checklist {
+  display: flex;
+  flex-direction: column;
+}
+
+.checklist-step {
+  display: grid;
+  grid-template-columns: 2px 48px 1fr;
+  gap: 0 14px;
+  min-height: 72px;
+  position: relative;
+
+  &:last-child .step-connector { display: none; }
+}
+
+.step-connector {
+  width: 2px;
+  background: $border;
+  margin: 0 auto;
+  transition: background 0.3s;
+
+  .step-done & { background: $terracota; }
+}
+
+.step-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: $crema;
+  border: 2px solid $border;
+  transition: all 0.3s ease;
+  align-self: start;
+  margin-top: 2px;
+  flex-shrink: 0;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; color: $muted; transition: color 0.3s; }
+
+  &.done {
+    background: $terracota;
+    border-color: $terracota;
+    box-shadow: 0 0 0 4px rgba(166, 124, 82, 0.15);
+    mat-icon { color: #fff; }
+  }
+}
+
+.step-body {
+  padding-bottom: 20px;
+}
+
+.step-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.step-label {
+  font-family: 'Outfit', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: $dark;
+  transition: color 0.2s;
+
+  .step-done & { color: $terracota; }
+}
+
+.step-desc {
+  margin: 4px 0 0;
+  font-family: 'Outfit', sans-serif;
+  font-size: 12.5px;
+  color: $muted;
+  line-height: 1.5;
+}
+
+/* ─── Notas ─────────────────────────────────────────────────────────────── */
+.no-edit-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: rgba(107, 98, 89, 0.06);
+  border-radius: 10px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  color: $muted;
+  margin: 0;
+
+  mat-icon { font-size: 16px; width: 16px; height: 16px; }
+}

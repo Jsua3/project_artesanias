@@ -13,6 +13,7 @@ spring:
             allowedOrigins:
               - "http://127.0.0.1:4200"
               - "http://localhost:4200"
+              - "http://localhost"
             allowedMethods:
               - GET
               - POST
@@ -97,3 +98,9 @@ eureka:
     enabled: false
     register-with-eureka: false
     fetch-registry: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics

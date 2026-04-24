@@ -10,6 +10,7 @@ com\inventory\catalog\controller\ProductController.class
 com\inventory\catalog\dto\ProductResponse.class
 com\inventory\catalog\dto\CategoryRequest.class
 com\inventory\catalog\model\Artesano.class
+com\inventory\catalog\controller\InternalArtesanoController.class
 com\inventory\catalog\repository\ProductRepository.class
 com\inventory\catalog\dto\ProductRequest.class
 com\inventory\catalog\controller\CategoryController.class

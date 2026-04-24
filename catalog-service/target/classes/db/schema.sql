@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS artesanos (
     email        VARCHAR(100),
     especialidad VARCHAR(100),
     ubicacion    VARCHAR(200),
+    image_url    TEXT,
     active       BOOLEAN NOT NULL DEFAULT TRUE,
     created_at   TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -22,7 +23,7 @@ CREATE TABLE IF NOT EXISTS products (
     sku          VARCHAR(100),
     description  TEXT,
     price        DECIMAL(10,2) NOT NULL DEFAULT 0,
-    image_url    VARCHAR(500),
+    image_url    TEXT,
     stock_minimo INTEGER NOT NULL DEFAULT 5,
     category_id  UUID REFERENCES categories(id),
     artesano_id  UUID REFERENCES artesanos(id),
@@ -30,3 +31,7 @@ CREATE TABLE IF NOT EXISTS products (
     created_at   TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at   TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Migration: widen image_url and add artesano image support for existing DBs
+ALTER TABLE products ALTER COLUMN image_url TYPE TEXT;
+ALTER TABLE artesanos ADD COLUMN IF NOT EXISTS image_url TEXT;

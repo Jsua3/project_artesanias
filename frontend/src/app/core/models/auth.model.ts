@@ -40,6 +40,12 @@ export interface ProfileUpdateRequest {
   avatarUrl?: string;
 }
 
+export interface RegisterClienteRequest {
+  displayName: string;
+  username: string;
+  password: string;
+}
+
 export interface RefreshRequest {
   refreshToken: string;
 }

@@ -2,12 +2,17 @@ C:\Users\Predator\IdeaProjects\almacen-arle\auth-service\src\main\java\com\inven
 C:\Users\Predator\IdeaProjects\almacen-arle\auth-service\src\main\java\com\inventory\auth\config\JwtProperties.java
 C:\Users\Predator\IdeaProjects\almacen-arle\auth-service\src\main\java\com\inventory\auth\config\WebSecurityConfig.java
 C:\Users\Predator\IdeaProjects\almacen-arle\auth-service\src\main\java\com\inventory\auth\controller\AuthController.java
+C:\Users\Predator\IdeaProjects\almacen-arle\auth-service\src\main\java\com\inventory\auth\dto\ArtisanApprovalRequest.java
 C:\Users\Predator\IdeaProjects\almacen-arle\auth-service\src\main\java\com\inventory\auth\dto\AuthResponse.java
 C:\Users\Predator\IdeaProjects\almacen-arle\auth-service\src\main\java\com\inventory\auth\dto\LoginRequest.java
+C:\Users\Predator\IdeaProjects\almacen-arle\auth-service\src\main\java\com\inventory\auth\dto\ProfileUpdateRequest.java
 C:\Users\Predator\IdeaProjects\almacen-arle\auth-service\src\main\java\com\inventory\auth\dto\RefreshRequest.java
+C:\Users\Predator\IdeaProjects\almacen-arle\auth-service\src\main\java\com\inventory\auth\dto\RegisterClienteRequest.java
 C:\Users\Predator\IdeaProjects\almacen-arle\auth-service\src\main\java\com\inventory\auth\dto\RegisterRequest.java
 C:\Users\Predator\IdeaProjects\almacen-arle\auth-service\src\main\java\com\inventory\auth\dto\UserProfileResponse.java
 C:\Users\Predator\IdeaProjects\almacen-arle\auth-service\src\main\java\com\inventory\auth\exception\GlobalExceptionHandler.java
+C:\Users\Predator\IdeaProjects\almacen-arle\auth-service\src\main\java\com\inventory\auth\model\ApprovalStatus.java
+C:\Users\Predator\IdeaProjects\almacen-arle\auth-service\src\main\java\com\inventory\auth\model\CourierMode.java
 C:\Users\Predator\IdeaProjects\almacen-arle\auth-service\src\main\java\com\inventory\auth\model\RefreshToken.java
 C:\Users\Predator\IdeaProjects\almacen-arle\auth-service\src\main\java\com\inventory\auth\model\UserAccount.java
 C:\Users\Predator\IdeaProjects\almacen-arle\auth-service\src\main\java\com\inventory\auth\model\UserRole.java

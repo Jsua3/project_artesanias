@@ -23,26 +23,14 @@ public class AuthController {
     @PostMapping("/register")
     public Mono<UserProfileResponse> register(@RequestBody RegisterRequest request) {
         return authService.register(request)
-                .map(user -> new UserProfileResponse(
-                        user.getId(),
-                        user.getUsername(),
-                        user.getRole().name(),
-                        user.getApprovalStatus().name(),
-                        user.getCourierMode() != null ? user.getCourierMode().name() : null,
-                        user.getCourierCompany(),
-                        user.getDisplayName(),
-                        user.getAvatarUrl(),
-                        user.getCreatedAt(),
-                        user.getApprovedAt()
-                ));
+                .map(authService::toUserProfileResponse);
     }
 
     /** Registro público de clientes finales — siempre asigna rol CLIENTE. */
     @PostMapping("/register-cliente")
     public Mono<UserProfileResponse> registerCliente(@RequestBody RegisterClienteRequest request) {
         return authService.registerCliente(request)
-                .map(user -> new UserProfileResponse(user.getId(), user.getUsername(), user.getRole().name(),
-                        user.getDisplayName(), user.getAvatarUrl()));
+                .map(authService::toUserProfileResponse);
     }
 
     @PostMapping("/login")

@@ -10,6 +10,7 @@ import {
   AuthResponse,
   LoginRequest,
   ProfileUpdateRequest,
+  RegisterClienteRequest,
   RegisterRequest,
   UserProfile,
   UserRole
@@ -63,6 +64,16 @@ export class AuthService {
 
   register(req: RegisterRequest): Observable<UserProfile> {
     return this.http.post<UserProfile>(`${this.API}/register`, req);
+  }
+
+  registerCliente(req: RegisterClienteRequest): Observable<UserProfile> {
+    const payload: RegisterRequest = {
+      username: req.username,
+      password: req.password,
+      role: 'CLIENTE',
+      displayName: req.displayName
+    } as unknown as RegisterRequest;
+    return this.http.post<UserProfile>(`${this.API}/register`, payload);
   }
 
   logout(): void {

@@ -44,8 +44,8 @@ catalog:
 stripe:
   secret-key: ${STRIPE_SECRET_KEY:}
   webhook-secret: ${STRIPE_WEBHOOK_SECRET:}
-  success-url: ${STRIPE_SUCCESS_URL:http://localhost:4200/mis-pedidos/{ventaId}?paid=1}
-  cancel-url: ${STRIPE_CANCEL_URL:http://localhost:4200/checkout?canceled=1}
+  success-url: ${STRIPE_SUCCESS_URL:http://localhost/mis-pedidos/{ventaId}?paid=1}
+  cancel-url: ${STRIPE_CANCEL_URL:http://localhost/checkout?canceled=1}
   currency: ${STRIPE_CURRENCY:cop}
 
 management:

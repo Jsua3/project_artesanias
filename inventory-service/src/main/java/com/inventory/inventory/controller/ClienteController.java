@@ -22,7 +22,11 @@ public class ClienteController {
     }
 
     @GetMapping
-    public Flux<ClienteResponse> getAllClientes() {
+    public Flux<ClienteResponse> getAllClientes(
+            @RequestHeader(value = "X-User-Role", defaultValue = "") String userRole) {
+        if (!"ADMIN".equals(userRole)) {
+            return Flux.empty();
+        }
         return clienteService.getAllClientes();
     }
 
