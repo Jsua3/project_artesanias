@@ -4,7 +4,7 @@
     <button mat-icon-button (click)="toggleSidenav()" class="menu-btn">
       <mat-icon>{{ sidenavOpen() ? 'close' : 'menu' }}</mat-icon>
     </button>
-    <span class="toolbar-brand">Artesanías</span>
+    <span class="toolbar-brand">REBECCA</span>
     <span class="toolbar-spacer"></span>
     @if (auth.currentUser()?.avatarUrl) {
       <img [src]="auth.currentUser()?.avatarUrl" class="toolbar-avatar" alt="Avatar" />
@@ -35,8 +35,8 @@
         </svg>
       </div>
       <div class="brand-text">
-        <span class="brand-name">Artesanías</span>
-        <span class="brand-sub">sistema de inventario</span>
+        <span class="brand-name">REBECCA</span>
+        <span class="brand-sub">sistema de gestión</span>
       </div>
     </div>
 
@@ -76,6 +76,12 @@
       <button mat-button class="logout-btn" (click)="auth.logout()">
         <mat-icon>logout</mat-icon> Cerrar sesión
       </button>
+      <div class="footer-credits">
+        <p class="footer-credits__title">REBECCA · Fundadores</p>
+        <p class="footer-credits__line">Juan José Sua Gómez</p>
+        <p class="footer-credits__line">Emerson Ángel Gómez</p>
+        <p class="footer-credits__line">Gabriel Gallego Sánchez</p>
+      </div>
     </div>
   </mat-sidenav>
 
