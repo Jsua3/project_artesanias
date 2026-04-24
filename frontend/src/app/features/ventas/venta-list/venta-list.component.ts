@@ -53,7 +53,11 @@ export class VentaListComponent implements OnInit {
   }
 
   openForm(): void {
-    const ref = this.dialog.open(VentaFormComponent, { width: '600px' });
+    const ref = this.dialog.open(VentaFormComponent, {
+      width: '960px',
+      maxWidth: '96vw',
+      panelClass: 'venta-liquid-dialog'
+    });
     ref.afterClosed().subscribe(result => {
       if (result) {
         this.ventaService.loadAll();

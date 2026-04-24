@@ -90,6 +90,21 @@ export class AuthService {
     return !!this.getToken();
   }
 
+  homeRouteForCurrentUser(): string {
+    switch (this.currentUser()?.role) {
+      case 'CLIENTE':
+        return '/';
+      case 'DOMICILIARIO':
+        return '/domiciliario/panel';
+      case 'ADMIN':
+      case 'ARTESANO':
+      case 'OPERATOR':
+        return '/dashboard';
+      default:
+        return '/login';
+    }
+  }
+
   hasRole(role: UserRole): boolean {
     return this.currentUser()?.role === this.normalizeRole(role);
   }

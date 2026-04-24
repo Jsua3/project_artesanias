@@ -42,6 +42,19 @@ interface HeroCaption {
   sub: string;
 }
 
+interface HeroSlide {
+  src: string;
+  position: string;
+  caption: HeroCaption;
+}
+
+interface OficioHighlight {
+  material: string;
+  title: string;
+  text: string;
+  meta: string;
+}
+
 @Component({
   selector: 'app-public-landing',
   standalone: true,
@@ -66,19 +79,42 @@ export class PublicLandingComponent implements OnInit, OnDestroy {
   /** Producto crudo del API guardado para pasarlo a CartService al agregar. */
   private readonly productsById = new Map<string, Product>();
 
-  readonly photos: string[] = [
-    '/assets/photo-cocora.jpg',
-    '/assets/photo-pueblo.jpg',
-    '/assets/photo-iglesia.jpg',
-    '/assets/photo-arriero.jpg'
+  readonly heroSlides: HeroSlide[] = [
+    {
+      src: '/assets/territorio/filandia/filandia3.jpg',
+      position: 'center 48%',
+      caption: { place: 'Filandia artesanal', sub: 'color, calle y memoria' }
+    },
+    {
+      src: '/assets/territorio/filandia/filandia4.jpg',
+      position: 'center 50%',
+      caption: { place: 'Mirador de Filandia', sub: 'montana, viento y camino' }
+    },
+    {
+      src: '/assets/territorio/filandia/filandia5.jpeg',
+      position: 'center center',
+      caption: { place: 'Cultura cafetera', sub: 'plaza, madera y taller' }
+    },
+    {
+      src: '/assets/territorio/filandia/photo2jpg.jpg',
+      position: 'center 55%',
+      caption: { place: 'Rincones con historia', sub: 'detalle, sombra y vereda' }
+    },
+    {
+      src: '/assets/territorio/salento/salento1.jpg',
+      position: 'center 48%',
+      caption: { place: 'Salento, Quindio', sub: 'neblina, cafe y palma' }
+    },
+    {
+      src: '/assets/territorio/salento/salento2.jpg',
+      position: 'center 45%',
+      caption: { place: 'Camino a Salento', sub: 'territorio vivo' }
+    }
   ];
 
-  readonly captions: HeroCaption[] = [
-    { place: 'Valle del Cocora', sub: 'palma de cera · cuna' },
-    { place: 'Filandia, Quindío', sub: 'bahareque al amanecer' },
-    { place: 'Salento, Quindío', sub: 'iglesia de bahareque' },
-    { place: 'Arrieros cafeteros', sub: 'oficio que camina' }
-  ];
+  readonly photos: string[] = this.heroSlides.map(slide => slide.src);
+
+  readonly captions: HeroCaption[] = this.heroSlides.map(slide => slide.caption);
 
   readonly navLinks: { label: string; anchor: string }[] = [
     { label: 'Colecciones', anchor: '#coleccion' },
@@ -114,6 +150,33 @@ export class PublicLandingComponent implements OnInit, OnDestroy {
     { x: 170, y: 200, name: 'Calarcá'  },
     { x: 220, y: 160, name: 'Pijao'    },
     { x: 140, y: 230, name: 'Armenia'  }
+  ];
+
+  readonly oficioHighlights: OficioHighlight[] = [
+    {
+      material: 'Barro',
+      title: 'Pulso y fuego',
+      text: 'Arcilla modelada despacio, secada al aire y terminada con quemas que dejan marcas irrepetibles.',
+      meta: 'Alfareria'
+    },
+    {
+      material: 'Fique',
+      title: 'Fibra que sostiene',
+      text: 'Tramas firmes para canastos, bolsos y piezas utilitarias nacidas de manos campesinas.',
+      meta: 'Cesteria'
+    },
+    {
+      material: 'Guadua',
+      title: 'Arquitectura pequena',
+      text: 'Cortes, ensambles y curvaturas que convierten una planta del paisaje en objeto de casa.',
+      meta: 'Talla y estructura'
+    },
+    {
+      material: 'Lana',
+      title: 'Hilo con memoria',
+      text: 'Telares, nudos y urdimbres que guardan el ritmo de quien trabaja sin prisa.',
+      meta: 'Textil'
+    }
   ];
 
   readonly categoryClass: Record<string, string> = {
@@ -241,6 +304,10 @@ export class PublicLandingComponent implements OnInit, OnDestroy {
     return this.captions[this.heroSlide()];
   }
 
+  heroPosition(index: number): string {
+    return this.heroSlides[index]?.position ?? 'center center';
+  }
+
   onOpenPiece(p: Pieza): void {
     this.openPiece.set(p);
   }
@@ -287,8 +354,8 @@ export class PublicLandingComponent implements OnInit, OnDestroy {
     this.router.navigate(['/registro-cliente']);
   }
 
-  goToAdmin(): void {
-    this.router.navigate(['/admin/dashboard']);
+  goToPanel(): void {
+    this.router.navigateByUrl(this.auth.homeRouteForCurrentUser());
   }
 
   logout(): void {

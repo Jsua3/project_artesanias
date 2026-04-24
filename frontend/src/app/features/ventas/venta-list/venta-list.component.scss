@@ -1,3 +1,42 @@
+:host {
+  display: block;
+}
+
+.page-header {
+  padding: 18px 20px;
+  border: 1px solid rgba(255, 255, 255, 0.48);
+  border-radius: 20px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.72), rgba(245, 240, 230, 0.52)),
+    radial-gradient(circle at 12% 0%, rgba(184, 137, 154, 0.16), transparent 38%),
+    radial-gradient(circle at 100% 20%, rgba(138, 154, 123, 0.16), transparent 34%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 18px 42px rgba(58, 53, 48, 0.08);
+}
+
+.desktop-table mat-card {
+  overflow: hidden;
+  border-color: rgba(255, 255, 255, 0.52) !important;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.62), rgba(253, 251, 247, 0.46)),
+    var(--warm-white) !important;
+  backdrop-filter: blur(14px) saturate(1.14);
+  -webkit-backdrop-filter: blur(14px) saturate(1.14);
+  box-shadow:
+    0 16px 44px rgba(58, 53, 48, 0.09),
+    inset 0 1px 0 rgba(255, 255, 255, 0.58) !important;
+}
+
+.desktop-table .mat-mdc-row {
+  transition: background-color 180ms ease, transform 180ms ease, box-shadow 180ms ease !important;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.38) !important;
+    box-shadow: inset 3px 0 0 rgba(166, 124, 82, 0.35);
+  }
+}
+
 .delivery-cell {
   display: grid;
   gap: 6px;
@@ -16,4 +55,23 @@
 
 .delivery-row {
   align-items: flex-start;
+}
+
+.mobile-cards .data-card {
+  border-color: rgba(255, 255, 255, 0.5);
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.64), rgba(253, 251, 247, 0.48)),
+    radial-gradient(circle at 100% 0%, rgba(184, 137, 154, 0.14), transparent 34%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow:
+    0 12px 30px rgba(58, 53, 48, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.52);
+}
+
+@media (max-width: 768px) {
+  .page-header {
+    border-radius: 18px;
+    padding: 16px;
+  }
 }

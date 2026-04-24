@@ -1,0 +1,180 @@
+<h2 mat-dialog-title class="venta-dialog-title">Nueva Venta</h2>
+
+<mat-dialog-content class="venta-dialog-content">
+  <form [formGroup]="form" class="venta-liquid-form">
+    <section class="venta-customer-panel">
+      <div>
+        <span class="panel-kicker">Venta directa</span>
+        <h3>Cliente y piezas</h3>
+      </div>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Cliente</mat-label>
+        <mat-select formControlName="clienteId">
+          @for (c of clientes(); track c.id) {
+            <mat-option [value]="c.id">{{ c.nombre }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </section>
+
+    <section class="products-panel" aria-label="Productos disponibles para vender">
+      <div class="section-heading">
+        <div>
+          <span class="panel-kicker">Catalogo</span>
+          <h3>Artesanias disponibles</h3>
+        </div>
+        <span class="product-count">{{ products().length }} piezas</span>
+      </div>
+
+      @if (products().length === 0) {
+        <div class="empty-products">
+          <mat-icon>palette</mat-icon>
+          <p>No hay artesanias disponibles.</p>
+        </div>
+      } @else {
+        <div class="product-glass-grid">
+          @for (p of products(); track p.id) {
+            <button
+              type="button"
+              class="glass-card sale-product-card"
+              [class.is-selected]="isSelected(p.id)"
+              [class.is-low-stock]="isLowStock(p)"
+              [attr.aria-pressed]="isSelected(p.id)"
+              [attr.aria-label]="'Agregar ' + p.name + ' a la venta'"
+              (click)="addProduct(p)"
+              (pointermove)="handleCardPointer($event)"
+              (pointerleave)="resetCardPointer($event)"
+            >
+              <span class="liquid-spot"></span>
+
+              <span class="product-media">
+                <img [src]="productImage(p)" [alt]="p.name" loading="lazy" />
+              </span>
+
+              <span class="product-core">
+                <span class="product-meta">
+                  <span class="stock-pill">{{ stockLabel(p.id) }}</span>
+                  @if (isSelected(p.id)) {
+                    <span class="selected-pill">
+                      <mat-icon>check</mat-icon>
+                    </span>
+                  }
+                </span>
+
+                <span class="product-name">{{ p.name }}</span>
+                <span class="product-price">{{ p.price | currency:'COP':'symbol':'1.0-0' }}</span>
+              </span>
+
+              <span class="product-more">
+                <span class="product-description">
+                  {{ p.description || 'Pieza artesanal lista para registrar en la venta.' }}
+                </span>
+                <span class="product-facts">
+                  <span>
+                    <small>SKU</small>
+                    <strong>{{ p.sku || 'Sin SKU' }}</strong>
+                  </span>
+                  <span>
+                    <small>Minimo</small>
+                    <strong>{{ p.stockMinimo ?? 5 }} uds</strong>
+                  </span>
+                </span>
+              </span>
+            </button>
+          }
+        </div>
+      }
+    </section>
+
+    <section class="summary-panel" formArrayName="items">
+      <div class="section-heading">
+        <div>
+          <span class="panel-kicker">Detalle</span>
+          <h3>Venta en curso</h3>
+        </div>
+        <strong class="summary-total">{{ estimatedTotal() | currency:'COP':'symbol':'1.0-0' }}</strong>
+      </div>
+
+      @if (items.length === 0) {
+        <div class="empty-sale">
+          <mat-icon>shopping_bag</mat-icon>
+          <p>Selecciona una artesania del catalogo.</p>
+        </div>
+      } @else {
+        <div class="selected-items">
+          @for (item of items.controls; track item; let i = $index) {
+            <div class="selected-item" [formGroupName]="i">
+              @if (selectedProductAt(i); as product) {
+                <img [src]="productImage(product)" [alt]="product.name" loading="lazy" />
+                <div class="selected-copy">
+                  <strong>{{ product.name }}</strong>
+                  <span>{{ product.price | currency:'COP':'symbol':'1.0-0' }} / unidad</span>
+                </div>
+              } @else {
+                <div class="selected-copy">
+                  <strong>{{ productNameAt(i) }}</strong>
+                  <span>Producto pendiente</span>
+                </div>
+              }
+
+              <div class="quantity-tools">
+                <button
+                  mat-icon-button
+                  type="button"
+                  (click)="incrementItem(i, -1)"
+                  [disabled]="quantityAt(i) <= 1"
+                  [attr.aria-label]="'Restar ' + productNameAt(i)"
+                >
+                  <mat-icon>remove</mat-icon>
+                </button>
+
+                <mat-form-field appearance="outline" class="qty-field">
+                  <mat-label>Cant.</mat-label>
+                  <input matInput type="number" formControlName="cantidad" min="1" />
+                </mat-form-field>
+
+                <button
+                  mat-icon-button
+                  type="button"
+                  (click)="incrementItem(i, 1)"
+                  [attr.aria-label]="'Sumar ' + productNameAt(i)"
+                >
+                  <mat-icon>add</mat-icon>
+                </button>
+              </div>
+
+              <strong class="line-total">{{ itemSubtotal(i) | currency:'COP':'symbol':'1.0-0' }}</strong>
+
+              <button
+                mat-icon-button
+                color="warn"
+                type="button"
+                (click)="removeItem(i)"
+                [attr.aria-label]="'Quitar ' + productNameAt(i)"
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+          }
+        </div>
+      }
+    </section>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="venta-dialog-actions">
+  <button mat-button mat-dialog-close>Cancelar</button>
+  <button
+    mat-raised-button
+    color="primary"
+    [disabled]="form.invalid || items.length === 0 || loading()"
+    (click)="submit()"
+  >
+    @if (loading()) {
+      <mat-spinner diameter="20" />
+    } @else {
+      Registrar Venta
+    }
+  </button>
+</mat-dialog-actions>

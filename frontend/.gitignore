@@ -2,6 +2,11 @@
 
 # Compiled output
 /dist
+!/dist/
+!/dist/frontend/
+!/dist/frontend/browser/
+!/dist/frontend/browser/**
+/dist/frontend/prerendered-routes.json
 /tmp
 /out-tsc
 /bazel-out

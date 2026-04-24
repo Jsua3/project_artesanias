@@ -66,7 +66,7 @@ export class ShellComponent {
     {
       title: 'Logistica',
       items: [
-        { label: 'Panel de entregas', icon: 'delivery_dining', route: '/domiciliario/panel', roles: ['DOMICILIARIO'] },
+        { label: 'Panel de entregas', icon: 'delivery_dining', route: '/domiciliario/panel', roles: ['ADMIN', 'DOMICILIARIO'] },
         { label: 'Entregas', icon: 'local_shipping', route: '/entregas', roles: ['ADMIN', 'DOMICILIARIO'] }
       ]
     },

@@ -54,8 +54,7 @@ export class LoginComponent {
       next: async () => {
         try {
           // CLIENTEs van a la tienda pública; el resto al panel de gestión
-          const destination = this.auth.isCliente() ? '/' : '/dashboard';
-          await this.router.navigate([destination]);
+          await this.router.navigateByUrl(this.auth.homeRouteForCurrentUser());
         } catch {
           this.error = 'Inicio de sesion correcto, pero no se pudo abrir el panel.';
         } finally {
