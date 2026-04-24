@@ -40,6 +40,7 @@ export class DashboardComponent implements OnInit {
   private ventaService = inject(VentaService);
   auth = inject(AuthService);
 
+  isAdmin = computed(() => this.auth.isAdmin());
   isArtesano = computed(() => this.auth.isArtesano());
   isDomiciliario = computed(() => this.auth.isDomiciliario());
 
@@ -50,7 +51,8 @@ export class DashboardComponent implements OnInit {
 
     return this.productService.loading() ||
       this.categoryService.loading() ||
-      this.stockService.loading();
+      this.stockService.loading() ||
+      (this.isAdmin() && this.ventaService.deliveriesLoading());
   });
 
   stats = computed(() => {
@@ -60,6 +62,16 @@ export class DashboardComponent implements OnInit {
         { value: deliveries.filter(venta => venta.delivery.progress < 100).length, label: 'Entregas activas', icon: 'local_shipping', tone: 'terracotta' },
         { value: deliveries.filter(venta => venta.delivery.stage === 'EN_RUTA').length, label: 'En ruta', icon: 'route', tone: 'sage' },
         { value: deliveries.filter(venta => venta.delivery.stage === 'ENTREGADO').length, label: 'Entregadas', icon: 'task_alt', tone: 'mauve' }
+      ];
+    }
+
+    if (this.isAdmin()) {
+      const deliveries = this.ventaService.deliveries();
+      return [
+        { value: this.productService.productCount(), label: 'Artesanias', icon: 'palette', tone: 'terracotta' },
+        { value: this.categoryService.categoryCount(), label: 'Categorias', icon: 'category', tone: 'mauve' },
+        { value: deliveries.filter(venta => venta.delivery.stage !== 'ENTREGADO').length, label: 'Entregas activas', icon: 'local_shipping', tone: 'sage' },
+        { value: this.reportService.alerts().length, label: 'Stock bajo', icon: 'warning_amber', tone: 'danger' }
       ];
     }
 
@@ -80,6 +92,23 @@ export class DashboardComponent implements OnInit {
   });
 
   quickLinks = computed(() => {
+    if (this.isAdmin()) {
+      return [
+        { label: 'Artesanos', route: '/artesanos', icon: 'person_pin' },
+        { label: 'Categorias', route: '/categories', icon: 'category' },
+        { label: 'Artesanias', route: '/products', icon: 'palette' },
+        { label: 'Clientes', route: '/clientes', icon: 'people' },
+        { label: 'Pedidos', route: '/pedidos', icon: 'receipt_long' },
+        { label: 'Ventas', route: '/ventas', icon: 'point_of_sale' },
+        { label: 'Entregas', route: '/entregas', icon: 'local_shipping' },
+        { label: 'Panel de entregas', route: '/domiciliario/panel', icon: 'delivery_dining' },
+        { label: 'Inventario', route: '/stock', icon: 'inventory_2' },
+        { label: 'Reportes', route: '/reports', icon: 'assessment' },
+        { label: 'Solicitudes', route: '/admin/aprobaciones', icon: 'verified_user' },
+        { label: 'Moderacion', route: '/admin/moderacion', icon: 'shield' }
+      ];
+    }
+
     if (this.isDomiciliario()) {
       return [
         { label: 'Pedidos', route: '/pedidos', icon: 'receipt_long' },
@@ -155,6 +184,9 @@ export class DashboardComponent implements OnInit {
     this.stockService.loadAll();
     if (this.auth.canAccessReports()) {
       this.reportService.loadAll();
+    }
+    if (this.isAdmin()) {
+      this.ventaService.loadDeliveries();
     }
   }
 

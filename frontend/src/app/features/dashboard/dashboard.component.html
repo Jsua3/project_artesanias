@@ -1,9 +1,11 @@
 <div class="page-container animate-in">
   <div class="page-header">
-    <h2 class="page-title">{{ isDomiciliario() ? 'Panel del Domiciliario' : isArtesano() ? 'Panel del Artesano' : 'Dashboard' }}</h2>
+    <h2 class="page-title">{{ isAdmin() ? 'Dashboard general' : isDomiciliario() ? 'Panel del Domiciliario' : isArtesano() ? 'Panel del Artesano' : 'Dashboard' }}</h2>
     <p class="page-subtitle">
       {{
-        isDomiciliario()
+        isAdmin()
+          ? 'Monitorea catalogo, ventas, inventario, entregas y accesos desde un solo lugar.'
+          : isDomiciliario()
           ? 'Actualiza el checklist de cada pedido y manten informado al cliente con el avance de la entrega.'
           : isArtesano()
             ? 'Administra tus artesanias y revisa el movimiento del inventario.'
@@ -32,7 +34,7 @@
       }
     </div>
 
-    @if (isArtesano() || isDomiciliario()) {
+    @if (quickLinks().length) {
       <div class="quick-links-grid">
         @for (link of quickLinks(); track link.route) {
           <a class="quick-link-card" [routerLink]="link.route">

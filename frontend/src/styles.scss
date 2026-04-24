@@ -232,6 +232,19 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--charcoal) !important;
 }
 
+.cdk-overlay-pane.venta-liquid-dialog .mdc-dialog__surface {
+  border: 1px solid rgba(255, 255, 255, 0.58) !important;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.78), rgba(245, 240, 230, 0.62)),
+    var(--warm-white) !important;
+  backdrop-filter: blur(18px) saturate(1.14);
+  -webkit-backdrop-filter: blur(18px) saturate(1.14);
+  box-shadow:
+    0 28px 70px rgba(58, 53, 48, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72) !important;
+  overflow: hidden;
+}
+
 // Tabs
 .mat-mdc-tab:not(.mdc-tab--active) .mdc-tab__text-label {
   color: var(--text-light) !important;

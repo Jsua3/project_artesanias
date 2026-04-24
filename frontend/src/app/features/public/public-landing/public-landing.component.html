@@ -25,8 +25,8 @@
           </svg>
           <span>{{ currentUsername() }}</span>
         </div>
-        @if (auth.isAdmin()) {
-          <button class="btn-mini btn-mini--ghost" (click)="goToAdmin()">Panel</button>
+        @if (!auth.isCliente()) {
+          <button class="btn-mini btn-mini--ghost" (click)="goToPanel()">Panel</button>
         }
         @if (auth.isCliente()) {
           <button class="btn-mini btn-mini--ghost" (click)="goToMisPedidos()">Mis pedidos</button>
@@ -53,6 +53,7 @@
       @for (src of photos; track src; let i = $index) {
         <div class="hero__photo"
              [class.is-active]="i === heroSlide()"
+             [style.background-position]="heroPosition(i)"
              [style.background-image]="'url(' + src + ')'"></div>
       }
       <div class="hero__tint"></div>
@@ -225,6 +226,31 @@
             </g>
           }
         </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========= OFICIO ========= -->
+  <section id="oficio" class="section oficio-section">
+    <div class="oficio__inner">
+      <div class="oficio__story">
+        <div class="eyebrow oficio__eyebrow">El oficio</div>
+        <h2 class="oficio__title">La materia tambien cuenta <em>su camino.</em></h2>
+        <p class="lead oficio__lead">
+          Cada pieza empieza antes del taller: en la fibra que se seca, el barro que espera,
+          la guadua que se corta con luna y el hilo que aprende el ritmo de las manos.
+        </p>
+      </div>
+
+      <div class="oficio__cards">
+        @for (item of oficioHighlights; track item.material) {
+          <article class="oficio-card">
+            <div class="oficio-card__material">{{ item.material }}</div>
+            <h3>{{ item.title }}</h3>
+            <p>{{ item.text }}</p>
+            <span>{{ item.meta }}</span>
+          </article>
+        }
       </div>
     </div>
   </section>
