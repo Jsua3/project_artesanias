@@ -532,10 +532,14 @@
   .footer { background: var(--coffee); color: var(--cream); padding: 80px 48px 32px; }
   .footer__inner {
     max-width: 1280px; margin: 0 auto;
-    display: grid; grid-template-columns: 1fr 2fr; gap: 64px;
+    display: grid; grid-template-columns: minmax(180px, 1fr) 2fr minmax(220px, 1fr); gap: 56px;
     padding-bottom: 48px; border-bottom: 1px solid rgba(245,240,232,0.08);
+    align-items: start;
   }
-  .footer__wordmark { color: var(--clay-light); font-size: 20px; }
+  .footer__wordmark {
+    color: var(--clay-light); font-size: 26px;
+    font-family: var(--font-display); font-weight: 600; letter-spacing: 0.06em;
+  }
   .footer__rule { display: block; margin: 12px 0; width: 40px; }
   .footer__tagline { color: var(--fg-2); font-style: italic; font-family: var(--font-serif); }
   .footer__cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
@@ -545,11 +549,37 @@
     padding: 6px 0; border-bottom: none !important;
   }
   .footer__cols a:hover { color: var(--clay-light); }
+
+  /* Bloque de fundadores */
+  .footer__founders { display: flex; flex-direction: column; gap: 0; }
+  .footer__founders-eyebrow { color: var(--gold); margin-bottom: 16px; }
+  .footer__founders-list {
+    list-style: none; margin: 0; padding: 0;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .footer__founder {
+    display: flex; flex-direction: column; gap: 2px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(245,240,232,0.07);
+    &:last-child { border-bottom: none; padding-bottom: 0; }
+  }
+  .footer__founder-name {
+    font-family: var(--font-serif); font-size: 15px;
+    font-style: italic; color: var(--clay-light);
+    font-weight: 500;
+  }
+  .footer__founder-role {
+    font-family: var(--font-body); font-size: 11px;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--fg-2);
+  }
+
   .footer__base {
     max-width: 1280px; margin: 24px auto 0;
-    display: flex; justify-content: space-between;
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;
     color: var(--text-subtle);
   }
+  .footer__copy { font-style: italic; }
 
   /* ============ MODAL ============ */
   .modal-backdrop {
@@ -628,6 +658,8 @@
     .footer { padding: 60px 24px 24px; }
     .footer__inner { grid-template-columns: 1fr; gap: 40px; }
     .footer__cols { grid-template-columns: repeat(2, 1fr); }
+    .footer__founders-list { flex-direction: row; flex-wrap: wrap; gap: 20px; }
+    .footer__founder { border-bottom: none; padding-bottom: 0; flex: 1 1 160px; }
     .modal { max-width: 95vw; }
     .modal__grid { grid-template-columns: 1fr; }
     .modal__img { min-height: 260px; padding: 24px; }
