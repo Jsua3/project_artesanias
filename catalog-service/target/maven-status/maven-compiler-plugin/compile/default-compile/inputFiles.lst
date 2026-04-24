@@ -1,6 +1,7 @@
 C:\Users\Predator\IdeaProjects\almacen-arle\catalog-service\src\main\java\com\inventory\catalog\CatalogServiceApplication.java
 C:\Users\Predator\IdeaProjects\almacen-arle\catalog-service\src\main\java\com\inventory\catalog\controller\ArtesanoController.java
 C:\Users\Predator\IdeaProjects\almacen-arle\catalog-service\src\main\java\com\inventory\catalog\controller\CategoryController.java
+C:\Users\Predator\IdeaProjects\almacen-arle\catalog-service\src\main\java\com\inventory\catalog\controller\InternalArtesanoController.java
 C:\Users\Predator\IdeaProjects\almacen-arle\catalog-service\src\main\java\com\inventory\catalog\controller\ProductController.java
 C:\Users\Predator\IdeaProjects\almacen-arle\catalog-service\src\main\java\com\inventory\catalog\dto\ArtesanoRequest.java
 C:\Users\Predator\IdeaProjects\almacen-arle\catalog-service\src\main\java\com\inventory\catalog\dto\ArtesanoResponse.java

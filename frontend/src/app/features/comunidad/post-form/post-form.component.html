@@ -1,0 +1,117 @@
+<div
+  class="post-card glass-card"
+  [class.dragging]="isDragging()"
+  (dragover)="onDragOver($event)"
+  (dragleave)="onDragLeave()"
+  (drop)="onDrop($event)"
+>
+  <!-- ── Encabezado: avatar + nombre ────────────────────────────────────── -->
+  <div class="post-card__header">
+    <div class="author-avatar">
+      @if (avatarUrl()) {
+        <img [src]="avatarUrl()!" [alt]="displayName()" class="avatar-img" />
+      } @else {
+        <mat-icon class="avatar-icon">person</mat-icon>
+      }
+    </div>
+    <div class="author-info">
+      <span class="author-name">{{ displayName() }}</span>
+      <span class="author-role">Artesano · Comunidad</span>
+    </div>
+  </div>
+
+  <!-- ── Área de texto ───────────────────────────────────────────────────── -->
+  <div class="post-card__body">
+    <textarea
+      class="post-textarea"
+      [class.has-error]="!!validationError() || hasBanned()"
+      placeholder="Comparte un logro, idea o reflexión con la comunidad artesana…"
+      [value]="content()"
+      (input)="onContentChange($any($event.target).value)"
+      rows="4"
+      aria-label="Contenido de la publicación"
+    ></textarea>
+
+    <!-- Advertencia de lenguaje en tiempo real -->
+    @if (hasBanned() && !validationError()) {
+      <p class="warn-inline">
+        <mat-icon>warning_amber</mat-icon>
+        Se detectaron palabras no permitidas. Revisa el texto antes de publicar.
+      </p>
+    }
+
+    <!-- Error de validación al intentar enviar -->
+    @if (validationError()) {
+      <p class="error-inline">
+        <mat-icon>error</mat-icon>
+        {{ validationError() }}
+      </p>
+    }
+  </div>
+
+  <!-- ── Previsualización de imagen ─────────────────────────────────────── -->
+  @if (imagePreview()) {
+    <div class="image-preview-wrap">
+      <img [src]="imagePreview()!" alt="Imagen adjunta" class="image-preview" />
+      <button
+        mat-icon-button
+        class="remove-img-btn"
+        (click)="removeImage()"
+        [matTooltip]="'Quitar imagen'"
+        aria-label="Quitar imagen"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  } @else {
+    <!-- Zona de drop visible solo si no hay imagen -->
+    <div class="drop-zone" (click)="onImageClick()">
+      <mat-icon>add_photo_alternate</mat-icon>
+      <span>Arrastra una imagen o haz clic aquí</span>
+      <span class="drop-hint">JPG / PNG · máx. 2 MB</span>
+    </div>
+  }
+
+  <!-- ── Footer: contador + acciones ───────────────────────────────────── -->
+  <div class="post-card__footer">
+    <div class="footer-left">
+      <!-- Adjuntar imagen (botón icono) -->
+      <button
+        mat-icon-button
+        class="action-icon-btn"
+        (click)="onImageClick()"
+        [matTooltip]="'Adjuntar imagen'"
+        [disabled]="!!imagePreview()"
+        aria-label="Adjuntar imagen"
+      >
+        <mat-icon>image</mat-icon>
+      </button>
+
+      <!-- Contador de caracteres -->
+      <span
+        class="char-count"
+        [class.warn]="remaining() < 100"
+        [class.over]="remaining() < 0"
+      >
+        {{ remaining() > 0 ? remaining() + ' restantes' : 'Límite superado' }}
+      </span>
+    </div>
+
+    <div class="footer-right">
+      <button
+        mat-raised-button
+        class="publish-btn"
+        [disabled]="!canSubmit()"
+        (click)="submit()"
+      >
+        @if (submitting) {
+          <mat-progress-spinner mode="indeterminate" diameter="18" />
+          Publicando…
+        } @else {
+          <mat-icon>send</mat-icon>
+          Publicar
+        }
+      </button>
+    </div>
+  </div>
+</div>

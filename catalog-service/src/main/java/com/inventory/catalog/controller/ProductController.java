@@ -79,6 +79,6 @@ public class ProductController {
     }
 
     private boolean canManageProducts(String userRole) {
-        return "ADMIN".equals(userRole) || "ARTESANO".equals(userRole);
+        return "ADMIN".equals(userRole) || "MAESTRO".equals(userRole);
     }
 }

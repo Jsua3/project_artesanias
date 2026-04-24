@@ -6,36 +6,79 @@ spring:
     name: api-gateway
   cloud:
     gateway:
+      globalcors:
+        add-to-simple-url-handler-mapping: true
+        cors-configurations:
+          '[/**]':
+            allowedOrigins:
+              - "http://127.0.0.1:4200"
+              - "http://localhost:4200"
+              - "http://localhost"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - PATCH
+              - DELETE
+              - OPTIONS
+            allowedHeaders:
+              - "*"
+            exposedHeaders:
+              - Authorization
+            allowCredentials: true
       routes:
         # Rutas públicas Auth
         - id: auth-service-public
           uri: ${AUTH_SERVICE_URL:http://localhost:8081}
           predicates:
-            - Path=/api/auth/login, /api/auth/register, /api/auth/refresh
+            - Path=/api/auth/login, /api/auth/register, /api/auth/register-cliente, /api/auth/refresh
 
         # Rutas privadas Auth
         - id: auth-service-private
           uri: ${AUTH_SERVICE_URL:http://localhost:8081}
           predicates:
-            - Path=/api/auth/me, /api/auth/users
+            - Path=/api/auth/me, /api/auth/users, /api/auth/profile, /api/auth/artisan-requests, /api/auth/artisan-requests/**, /api/auth/approval-requests, /api/auth/approval-requests/**
           filters:
             - JwtAuth
 
-        # Catalog Service (categorías, productos, artesanos)
-        - id: catalog-service
+        # Catálogo público (GET) — accesible sin login para la tienda pública.
+        # Excluye GET /api/artesanos/by-user/** (privacy: solo lo usa inventory
+        # via call directo, no debe salir por la ruta pública).
+        - id: catalog-service-public
+          uri: ${CATALOG_SERVICE_URL:http://localhost:8082}
+          predicates:
+            - Path=/api/categories, /api/categories/**, /api/products, /api/products/**, /api/artesanos, /api/artesanos/**
+            - Method=GET
+          filters:
+            # catalog-service tiene un InternalGatewayFilter que exige este header
+            - AddRequestHeader=X-Internal-Token, ${security.jwt.internal-token}
+
+        # Catálogo privado (POST/PUT/DELETE) — sólo ADMIN
+        - id: catalog-service-private
           uri: ${CATALOG_SERVICE_URL:http://localhost:8082}
           predicates:
             - Path=/api/categories, /api/categories/**, /api/products, /api/products/**, /api/artesanos, /api/artesanos/**
           filters:
             - JwtAuth
 
-        # Inventory Service (stock, entradas, salidas, clientes, ventas)
+        # Inventory Service (stock, entradas, salidas, clientes, ventas admin, maestro-ventas)
         - id: inventory-service
           uri: ${INVENTORY_SERVICE_URL:http://localhost:8083}
           predicates:
-            - Path=/api/stock/**, /api/entries/**, /api/exits/**, /api/clientes, /api/clientes/**, /api/ventas, /api/ventas/**
+            - Path=/api/stock/**, /api/entries/**, /api/exits/**, /api/clientes, /api/clientes/**, /api/ventas, /api/ventas/**, /api/cliente-ventas, /api/cliente-ventas/**, /api/maestro-ventas, /api/maestro-ventas/**
           filters:
             - JwtAuth
+
+        # Stripe Webhook (público — la autenticidad la da la firma HMAC del body)
+        # No lleva JwtAuth. Se inyecta X-Internal-Token para pasar el InternalGatewayFilter
+        # del inventory-service. NO modificamos el body para no romper la firma.
+        - id: inventory-service-stripe-webhook
+          uri: ${INVENTORY_SERVICE_URL:http://localhost:8083}
+          predicates:
+            - Path=/api/stripe/**
+            - Method=POST
+          filters:
+            - AddRequestHeader=X-Internal-Token, ${security.jwt.internal-token}
 
         # Report Service
         - id: report-service
@@ -55,3 +98,9 @@ eureka:
     enabled: false
     register-with-eureka: false
     fetch-registry: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics

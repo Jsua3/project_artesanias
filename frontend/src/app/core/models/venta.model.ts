@@ -1,3 +1,5 @@
+export type VentaEstado = 'PENDIENTE' | 'PAGADA' | 'COMPLETADA' | 'ANULADA';
+
 export interface DeliveryTracking {
   assignedCourierId?: string | null;
   packed: boolean;
@@ -22,7 +24,7 @@ export interface Venta {
   clienteId: string;
   vendedorId: string;
   total: number;
-  estado: 'COMPLETADA' | 'ANULADA';
+  estado: VentaEstado;
   createdAt: string;
   delivery: DeliveryTracking;
   detalles: VentaDetalle[];
@@ -31,6 +33,11 @@ export interface Venta {
 export interface VentaItemRequest {
   productId: string;
   cantidad: number;
+}
+
+export interface ClienteVentaRequest {
+  items: VentaItemRequest[];
+  displayName?: string;
 }
 
 export interface VentaRequest {

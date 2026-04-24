@@ -68,7 +68,11 @@ public class VentaService {
                     return ventaRepository.save(venta.withIsNew(true))
                             .flatMap(savedVenta ->
                                     Flux.fromIterable(detalles)
-                                        .flatMap(d -> ventaDetalleRepository.save(d.withIsNew(true)))
+                                        .flatMap(d -> ventaDetalleRepository.save(d.withIsNew(true))
+                                                .flatMap(savedD -> exitService.createExit(new ExitRequest(
+                                                        d.productId(), d.cantidad(), "Venta directa " + ventaId),
+                                                        vendedorId).thenReturn(savedD))
+                                        )
                                         .collectList()
                             )
                             .map(savedDetalles -> toResponse(venta, savedDetalles));

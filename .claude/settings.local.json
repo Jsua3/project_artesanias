@@ -18,7 +18,16 @@
       "Bash(do:*)",
       "Bash(docker:*)",
       "Bash(mvn clean:*)",
-      "Bash(az containerapp:*)"
+      "Bash(az containerapp:*)",
+      "Bash(New-Item -ItemType Directory -Force -Path \"C:\\\\Users\\\\Predator\\\\IdeaProjects\\\\almacen-arle\\\\frontend\\\\src\\\\app\\\\features\\\\domiciliario\\\\panel\")",
+      "Bash(Out-Null)",
+      "Bash(New-Item -ItemType Directory -Force -Path \"C:\\\\Users\\\\Predator\\\\IdeaProjects\\\\almacen-arle\\\\frontend\\\\src\\\\app\\\\features\\\\comunidad\\\\post-form\")",
+      "Bash(New-Item -ItemType Directory -Force -Path \"C:\\\\Users\\\\Predator\\\\IdeaProjects\\\\almacen-arle\\\\frontend\\\\src\\\\app\\\\features\\\\comunidad\\\\comunidad-feed\")",
+      "Bash(New-Item -ItemType Directory -Force -Path \"C:\\\\Users\\\\Predator\\\\IdeaProjects\\\\almacen-arle\\\\frontend\\\\src\\\\app\\\\features\\\\comunidad\\\\eventos\")",
+      "Bash(New-Item -ItemType Directory -Force -Path \"C:\\\\Users\\\\Predator\\\\IdeaProjects\\\\almacen-arle\\\\frontend\\\\src\\\\app\\\\features\\\\comunidad\\\\moderacion\")",
+      "PowerShell(New-Item *)",
+      "Bash(npx tsc *)",
+      "Bash(npx ng *)"
     ]
   }
 }

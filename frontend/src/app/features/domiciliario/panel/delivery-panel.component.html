@@ -1,0 +1,164 @@
+<div class="panel-shell">
+
+  <!-- ── Encabezado ─────────────────────────────────────────────────────── -->
+  <header class="panel-header">
+    <div class="panel-header__left">
+      <mat-icon class="header-icon">delivery_dining</mat-icon>
+      <div>
+        <h1>Panel de domiciliario</h1>
+        <p class="header-sub">Gestiona tus entregas activas</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── Vista dividida: lista izquierda + detalle derecha ──────────────── -->
+  <div class="panel-layout" [class.has-selected]="selected()">
+
+    <!-- ─ Lista de pedidos disponibles ──────────────────────────────────── -->
+    <section class="orders-list">
+      <h2 class="section-title">
+        <mat-icon>inbox</mat-icon>
+        Pedidos disponibles
+        @if (!loading()) {
+          <span class="badge">{{ availableDeliveries().length }}</span>
+        }
+      </h2>
+
+      @if (loading()) {
+        <div class="loading-wrap">
+          <mat-progress-spinner mode="indeterminate" diameter="36" />
+          <p>Cargando pedidos…</p>
+        </div>
+      } @else if (availableDeliveries().length === 0) {
+        <div class="empty-orders">
+          <mat-icon>inbox</mat-icon>
+          <p>No hay pedidos disponibles en este momento.</p>
+        </div>
+      } @else {
+        @for (venta of availableDeliveries(); track venta.id) {
+          <article
+            class="order-card"
+            [class.is-selected]="selected()?.id === venta.id"
+            [class.is-done]="venta.delivery.delivered"
+            (click)="selectDelivery(venta)"
+            role="button"
+            [attr.aria-label]="'Ver detalle del pedido ' + venta.id.slice(0,8)"
+          >
+            <div class="order-card__top">
+              <span class="order-id">#{{ venta.id.slice(0, 8).toUpperCase() }}</span>
+              <span class="order-chip" [class.chip-available]="!venta.delivery.assignedCourierId"
+                                       [class.chip-mine]="venta.delivery.assignedCourierId === auth.currentUser()?.id">
+                {{ assignmentLabel(venta) }}
+              </span>
+            </div>
+            <div class="order-card__row">
+              <mat-icon>event</mat-icon>
+              <span>{{ venta.createdAt | date:'d MMM, HH:mm' }}</span>
+            </div>
+            <div class="order-card__row">
+              <mat-icon>payments</mat-icon>
+              <span>{{ formatPrice(venta.total) }}</span>
+            </div>
+            <!-- Mini barra de progreso en la tarjeta -->
+            <mat-progress-bar
+              mode="determinate"
+              [value]="venta.delivery.progress"
+              class="mini-bar"
+            />
+          </article>
+        }
+      }
+    </section>
+
+    <!-- ─ Detalle del pedido activo ──────────────────────────────────────── -->
+    @if (selected()) {
+      <section class="order-detail">
+        <button mat-icon-button class="close-detail" (click)="deselectDelivery()" aria-label="cerrar detalle">
+          <mat-icon>close</mat-icon>
+        </button>
+
+        <!-- Barra de progreso principal (Signal computed) -->
+        <div class="progress-section">
+          <div class="progress-header">
+            <span class="progress-pct">{{ progress() }}%</span>
+            <span class="progress-label">{{ progressLabel() }}</span>
+          </div>
+          <mat-progress-bar
+            [mode]="savingId() === selected()!.id ? 'indeterminate' : 'determinate'"
+            [value]="progress()"
+            [color]="progressColor()"
+            class="main-progress-bar"
+          />
+        </div>
+
+        <!-- Info del pedido -->
+        <div class="detail-info-row">
+          <div class="detail-info-card">
+            <mat-icon>tag</mat-icon>
+            <div>
+              <p class="info-label">Pedido</p>
+              <p class="info-value">#{{ selected()!.id.slice(0, 8).toUpperCase() }}</p>
+            </div>
+          </div>
+          <div class="detail-info-card">
+            <mat-icon>payments</mat-icon>
+            <div>
+              <p class="info-label">Total</p>
+              <p class="info-value">{{ formatPrice(selected()!.total) }}</p>
+            </div>
+          </div>
+          <div class="detail-info-card">
+            <mat-icon>event</mat-icon>
+            <div>
+              <p class="info-label">Fecha</p>
+              <p class="info-value">{{ selected()!.createdAt | date:'d MMM yyyy' }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Checklist interactivo -->
+        <div class="checklist">
+          <h3 class="checklist-title">
+            <mat-icon>checklist</mat-icon>
+            Proceso de entrega
+          </h3>
+
+          @for (step of steps; track step.key; let i = $index) {
+            <div
+              class="checklist-step"
+              [class.step-done]="getStepValue(step)"
+              [class.step-saving]="savingId() === selected()!.id"
+            >
+              <div class="step-connector" [class.connector-filled]="getStepValue(step)"></div>
+
+              <div class="step-icon-wrap" [class.done]="getStepValue(step)">
+                <mat-icon>{{ getStepValue(step) ? 'check' : step.icon }}</mat-icon>
+              </div>
+
+              <div class="step-body">
+                <div class="step-top">
+                  <span class="step-label">{{ step.label }}</span>
+                  <mat-checkbox
+                    [checked]="getStepValue(step)"
+                    [disabled]="!canEdit() || savingId() !== null"
+                    (change)="updateStep(step, $event.checked)"
+                    color="primary"
+                  />
+                </div>
+                <p class="step-desc">{{ step.description }}</p>
+              </div>
+            </div>
+          }
+        </div>
+
+        @if (!canEdit()) {
+          <p class="no-edit-note">
+            <mat-icon>lock</mat-icon>
+            Este pedido está asignado a otro domiciliario.
+          </p>
+        }
+      </section>
+    }
+
+  </div>
+</div>
