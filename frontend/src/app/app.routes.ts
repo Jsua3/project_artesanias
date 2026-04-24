@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
 import { adminGuard } from './core/guards/admin.guard';
+import { notClienteGuard } from './core/guards/not-cliente.guard';
 import { roleGuard } from './core/guards/role.guard';
 import { ShellComponent } from './shared/layout/shell/shell.component';
 
@@ -10,6 +11,7 @@ import { ShellComponent } from './shared/layout/shell/shell.component';
 const PUBLIC_ROUTES: Routes = [
   {
     path: '',
+    pathMatch: 'full',
     loadComponent: () => import('./features/public/public-landing/public-landing.component').then(m => m.PublicLandingComponent)
   },
   {
@@ -194,7 +196,7 @@ export const routes: Routes = [
   {
     path: '',
     component: ShellComponent,
-    canActivate: [authGuard],
+    canActivate: [authGuard, notClienteGuard],
     children: SHELL_ROUTES
   },
   { path: '**', redirectTo: '' }
