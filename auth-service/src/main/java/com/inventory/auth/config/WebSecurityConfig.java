@@ -32,6 +32,7 @@ public class WebSecurityConfig {
         return http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(exchanges -> exchanges
+                        .pathMatchers("/actuator/health", "/actuator/health/**").permitAll()
                         .pathMatchers("/api/auth/register", "/api/auth/register-cliente",
                                 "/api/auth/login", "/api/auth/refresh").permitAll()
                         .anyExchange().authenticated()
