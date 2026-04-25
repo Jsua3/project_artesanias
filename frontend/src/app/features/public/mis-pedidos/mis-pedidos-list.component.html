@@ -43,6 +43,20 @@
               {{ (p.detalles || []).length }} pieza{{ (p.detalles || []).length === 1 ? '' : 's' }}
             </p>
           </div>
+          <div class="pedido-row__tracking">
+            <div class="tracking-head">
+              <span>{{ trackingLabel(p) }}</span>
+              <strong>{{ deliveryProgress(p) }}%</strong>
+            </div>
+            <div class="tracking-bar" aria-hidden="true">
+              <span [style.width.%]="deliveryProgress(p)"></span>
+            </div>
+            <div class="tracking-steps">
+              @for (step of trackingSteps; track step.label) {
+                <span [class.is-done]="isStepDone(p, step.value)">{{ step.label }}</span>
+              }
+            </div>
+          </div>
           <span [class]="badgeClass(p.estado)">{{ badgeLabel(p.estado) }}</span>
           <p class="pedido-row__total">{{ formatPrice(p.total) }}</p>
           <mat-icon class="chev">chevron_right</mat-icon>

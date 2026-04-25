@@ -20,6 +20,14 @@ import { Venta, VentaEstado } from '../../../core/models/venta.model';
 export class MisPedidosListComponent {
   private ventas = inject(ClienteVentaService);
 
+  readonly trackingSteps = [
+    { label: 'Pedido confirmado', value: 10 },
+    { label: 'En preparacion', value: 40 },
+    { label: 'Listo para recoger', value: 55 },
+    { label: 'En camino', value: 85 },
+    { label: 'Entregado', value: 100 }
+  ];
+
   readonly loading = signal(true);
   readonly error = signal<string | null>(null);
   readonly pedidos = signal<Venta[]>([]);
@@ -69,5 +77,34 @@ export class MisPedidosListComponent {
       case 'ANULADA':    return 'Anulada';
       default:           return estado;
     }
+  }
+
+  deliveryProgress(pedido: Venta): number {
+    if (pedido.estado === 'ANULADA') return 0;
+    if (pedido.estado === 'COMPLETADA') return 100;
+    if (pedido.delivery?.progress) return pedido.delivery.progress;
+    if (pedido.estado === 'PAGADA') return 10;
+    return 5;
+  }
+
+  trackingLabel(pedido: Venta): string {
+    if (pedido.estado === 'ANULADA') return 'Pedido anulado';
+    if (pedido.estado === 'PENDIENTE') return 'Pago pendiente';
+    switch (pedido.delivery?.stage) {
+      case 'EMPACADO':
+        return 'En preparacion';
+      case 'RECOGIDO':
+        return 'Listo para recoger';
+      case 'EN_RUTA':
+        return 'En camino';
+      case 'ENTREGADO':
+        return 'Entregado';
+      default:
+        return 'Pedido confirmado';
+    }
+  }
+
+  isStepDone(pedido: Venta, value: number): boolean {
+    return this.deliveryProgress(pedido) >= value;
   }
 }
