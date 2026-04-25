@@ -1,4 +1,4 @@
-import { CurrencyPipe, DatePipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import {
   Component,
   OnInit,
@@ -25,6 +25,14 @@ interface ChecklistStep {
   description: string;
 }
 
+interface VisualPhase {
+  title: string;
+  range: string;
+  owner: string;
+  labels: string[];
+  keys: (keyof DeliveryTrackingUpdateRequest)[];
+}
+
 const STEPS: ChecklistStep[] = [
   { key: 'packed',    label: 'Pedido empacado',          icon: 'inventory_2',     description: 'El artesano confirmó que el pedido está listo.' },
   { key: 'pickedUp',  label: 'Recogido en origen',       icon: 'storefront',      description: 'Domiciliario recogió el paquete donde el artesano.' },
@@ -36,7 +44,6 @@ const STEPS: ChecklistStep[] = [
   selector: 'app-delivery-panel',
   standalone: true,
   imports: [
-    CurrencyPipe,
     DatePipe,
     MatButtonModule,
     MatCardModule,
@@ -55,6 +62,43 @@ export class DeliveryPanelComponent implements OnInit {
   auth = inject(AuthService);
 
   readonly steps = STEPS;
+  readonly visualPhases: VisualPhase[] = [
+    {
+      title: 'Confirmacion',
+      range: '0% - 10%',
+      owner: 'Artesano',
+      labels: ['Pedido recibido', 'Pedido confirmado', 'Tiempo estimado definido'],
+      keys: []
+    },
+    {
+      title: 'Preparacion',
+      range: '10% - 40%',
+      owner: 'Artesano',
+      labels: ['Materiales verificados', 'Calidad realizada', 'Producto empacado'],
+      keys: ['packed']
+    },
+    {
+      title: 'Entrega al domiciliario',
+      range: '40% - 55%',
+      owner: 'Artesano / domiciliario',
+      labels: ['Producto listo', 'Pedido aceptado', 'Producto recibido'],
+      keys: ['packed', 'pickedUp']
+    },
+    {
+      title: 'Transporte',
+      range: '55% - 85%',
+      owner: 'Domiciliario',
+      labels: ['Ruta iniciada', 'Producto asegurado', 'Llegada a zona de entrega'],
+      keys: ['pickedUp', 'onTheWay']
+    },
+    {
+      title: 'Entrega final',
+      range: '85% - 100%',
+      owner: 'Domiciliario / cliente',
+      labels: ['Cliente contactado', 'Pedido entregado', 'Evidencia pendiente de backend'],
+      keys: ['delivered']
+    }
+  ];
 
   /* ── Estado de la lista de pedidos ──────────────────────────────────── */
   readonly allDeliveries = this.ventaService.deliveries;
@@ -66,6 +110,15 @@ export class DeliveryPanelComponent implements OnInit {
     return this.allDeliveries().filter(
       v => !v.delivery.assignedCourierId || v.delivery.assignedCourierId === myId
     );
+  });
+
+  readonly openDeliveries = computed(() =>
+    this.allDeliveries().filter(v => !v.delivery.assignedCourierId)
+  );
+
+  readonly mineDeliveries = computed(() => {
+    const myId = this.auth.currentUser()?.id;
+    return this.allDeliveries().filter(v => v.delivery.assignedCourierId === myId);
   });
 
   /** Pedido activo seleccionado para ver el detalle del checklist. */
@@ -140,6 +193,13 @@ export class DeliveryPanelComponent implements OnInit {
 
   getStepValue(step: ChecklistStep): boolean {
     return !!this.selected()?.delivery[step.key];
+  }
+
+  isPhaseComplete(phase: VisualPhase): boolean {
+    const v = this.selected();
+    if (!v) return false;
+    if (!phase.keys.length) return v.estado !== 'PENDIENTE';
+    return phase.keys.every(key => !!v.delivery[key]);
   }
 
   updateStep(step: ChecklistStep, checked: boolean): void {

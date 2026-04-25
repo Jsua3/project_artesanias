@@ -2,6 +2,7 @@ package com.inventory.catalog.controller;
 
 import com.inventory.catalog.dto.ProductRequest;
 import com.inventory.catalog.dto.ProductResponse;
+import com.inventory.catalog.dto.ProductStatusUpdateRequest;
 import com.inventory.catalog.service.ProductService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +27,15 @@ public class ProductController {
         return productService.getAllProducts();
     }
 
+    @GetMapping("/admin/all")
+    public Flux<ProductResponse> getAllProductsForManagement(
+            @RequestHeader(value = "X-User-Role", defaultValue = "") String userRole) {
+        if (!canManageProducts(userRole)) {
+            return Flux.empty();
+        }
+        return productService.getAllProductsForManagement();
+    }
+
     @GetMapping("/{id}")
     public Mono<ResponseEntity<ProductResponse>> getProduct(@PathVariable UUID id) {
         return productService.getProduct(id)
@@ -41,6 +51,16 @@ public class ProductController {
     @GetMapping("/artesano/{artesanoId}")
     public Flux<ProductResponse> getProductsByArtesano(@PathVariable UUID artesanoId) {
         return productService.getProductsByArtesano(artesanoId);
+    }
+
+    @GetMapping("/admin/artesano/{artesanoId}")
+    public Flux<ProductResponse> getProductsByArtesanoForManagement(
+            @PathVariable UUID artesanoId,
+            @RequestHeader(value = "X-User-Role", defaultValue = "") String userRole) {
+        if (!canManageProducts(userRole)) {
+            return Flux.empty();
+        }
+        return productService.getProductsByArtesanoForManagement(artesanoId);
     }
 
     @PostMapping
@@ -78,7 +98,23 @@ public class ProductController {
                 .then(Mono.just(ResponseEntity.<Void>noContent().build()));
     }
 
+    @PatchMapping("/{id}/active")
+    public Mono<ResponseEntity<ProductResponse>> updateProductStatus(
+            @PathVariable UUID id,
+            @RequestBody ProductStatusUpdateRequest request,
+            @RequestHeader(value = "X-User-Role", defaultValue = "") String userRole) {
+        if (!canManageProducts(userRole)) {
+            return Mono.just(ResponseEntity.status(HttpStatus.FORBIDDEN).build());
+        }
+        if (request.active() == null) {
+            return Mono.just(ResponseEntity.badRequest().build());
+        }
+        return productService.updateProductStatus(id, request.active())
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
+    }
+
     private boolean canManageProducts(String userRole) {
-        return "ADMIN".equals(userRole) || "MAESTRO".equals(userRole);
+        return "ADMIN".equals(userRole) || "MAESTRO".equals(userRole) || "ARTESANO".equals(userRole);
     }
 }

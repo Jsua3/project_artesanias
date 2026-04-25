@@ -42,8 +42,26 @@ export class ProductService {
     });
   }
 
+  loadForManagement(): void {
+    this._loading.set(true);
+    this.http.get<Product[]>(`${this.API}/admin/all`).pipe(
+      timeout(3000),
+      catchError(() => of([]))
+    ).subscribe({
+      next: data => {
+        this._products.set(data);
+        this._loading.set(false);
+      },
+      error: () => this._loading.set(false)
+    });
+  }
+
   getAll(): Observable<Product[]> {
     return this.http.get<Product[]>(this.API);
+  }
+
+  getAllForManagement(): Observable<Product[]> {
+    return this.http.get<Product[]>(`${this.API}/admin/all`);
   }
 
   getById(id: string): Observable<Product> {
@@ -65,6 +83,12 @@ export class ProductService {
   delete(id: string): Observable<void> {
     return this.http.delete<void>(`${this.API}/${id}`).pipe(
       tap(() => this.loadAll())
+    );
+  }
+
+  updateStatus(id: string, active: boolean): Observable<Product> {
+    return this.http.patch<Product>(`${this.API}/${id}/active`, { active }).pipe(
+      tap(() => this.loadForManagement())
     );
   }
 }

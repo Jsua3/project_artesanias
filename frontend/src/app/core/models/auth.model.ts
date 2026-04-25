@@ -11,6 +11,7 @@ export interface RegisterRequest {
   username: string;
   password: string;
   role: UserRole;
+  displayName?: string;
   courierMode?: CourierMode | null;
   courierCompany?: string | null;
 }
@@ -31,6 +32,15 @@ export interface UserProfile {
   courierCompany?: string | null;
   displayName?: string;
   avatarUrl?: string;
+  firstName?: string | null;
+  lastName?: string | null;
+  phone?: string | null;
+  bio?: string | null;
+  locality?: string | null;
+  craftType?: string | null;
+  address?: string | null;
+  profileCompletion?: number;
+  profileComplete?: boolean;
   createdAt?: string;
   approvedAt?: string;
 }
@@ -38,6 +48,13 @@ export interface UserProfile {
 export interface ProfileUpdateRequest {
   displayName?: string;
   avatarUrl?: string;
+  firstName?: string;
+  lastName?: string;
+  phone?: string;
+  bio?: string;
+  locality?: string;
+  craftType?: string;
+  address?: string;
 }
 
 export interface RegisterClienteRequest {

@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS artesanos (
     ubicacion    VARCHAR(200),
     image_url    TEXT,
     active       BOOLEAN NOT NULL DEFAULT TRUE,
+    user_account_id UUID,
     created_at   TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -35,3 +36,60 @@ CREATE TABLE IF NOT EXISTS products (
 -- Migration: widen image_url and add artesano image support for existing DBs
 ALTER TABLE products ALTER COLUMN image_url TYPE TEXT;
 ALTER TABLE artesanos ADD COLUMN IF NOT EXISTS image_url TEXT;
+ALTER TABLE artesanos ADD COLUMN IF NOT EXISTS user_account_id UUID;
+
+CREATE TABLE IF NOT EXISTS community_posts (
+    id                UUID PRIMARY KEY,
+    author_id         UUID NOT NULL,
+    author_name       VARCHAR(120) NOT NULL,
+    author_avatar_url TEXT,
+    content           TEXT NOT NULL,
+    image_url         TEXT,
+    likes_count       INTEGER NOT NULL DEFAULT 0,
+    comments_count    INTEGER NOT NULL DEFAULT 0,
+    estado            VARCHAR(20) NOT NULL DEFAULT 'ACTIVO'
+        CHECK (estado IN ('ACTIVO', 'REPORTADO', 'ELIMINADO')),
+    created_at        TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at        TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_community_posts_estado_created
+    ON community_posts (estado, created_at DESC);
+
+CREATE TABLE IF NOT EXISTS community_post_likes (
+    id         UUID PRIMARY KEY,
+    post_id    UUID NOT NULL REFERENCES community_posts(id) ON DELETE CASCADE,
+    user_id    UUID NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT uk_community_post_likes_user UNIQUE (post_id, user_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_community_post_likes_user
+    ON community_post_likes (user_id);
+
+CREATE TABLE IF NOT EXISTS community_events (
+    id                UUID PRIMARY KEY,
+    artesano_id       UUID NOT NULL,
+    artesano_nombre   VARCHAR(120),
+    organizacion      VARCHAR(160) NOT NULL,
+    nombre            VARCHAR(160) NOT NULL,
+    localidad         VARCHAR(160) NOT NULL,
+    direccion_exacta  VARCHAR(220),
+    fecha_inicio      DATE NOT NULL,
+    fecha_fin         DATE NOT NULL,
+    hora              VARCHAR(20) NOT NULL,
+    descripcion       TEXT,
+    estado            VARCHAR(20) NOT NULL DEFAULT 'PENDIENTE'
+        CHECK (estado IN ('PENDIENTE', 'APROBADO', 'RECHAZADO')),
+    review_comment    TEXT,
+    reviewed_by       UUID,
+    reviewed_at       TIMESTAMP,
+    created_at        TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at        TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_community_events_estado_created
+    ON community_events (estado, created_at DESC);
+
+CREATE INDEX IF NOT EXISTS idx_community_events_artesano_created
+    ON community_events (artesano_id, created_at DESC);

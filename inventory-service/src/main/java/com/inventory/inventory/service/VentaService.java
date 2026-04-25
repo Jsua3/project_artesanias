@@ -303,11 +303,28 @@ public class VentaService {
                     }
 
                     DeliveryState nextState = sanitizeDeliveryState(request);
+                    LocalDateTime now = LocalDateTime.now();
+                    syncTrackingTimestamps(venta, nextState, now);
+
                     venta.setPacked(nextState.packed());
                     venta.setPickedUp(nextState.pickedUp());
                     venta.setOnTheWay(nextState.onTheWay());
                     venta.setDelivered(nextState.delivered());
-                    venta.setDeliveryUpdatedAt(LocalDateTime.now());
+                    venta.setDeliveryUpdatedAt(now);
+                    venta.setDeliveryUpdatedBy(requesterId);
+
+                    if (request.evidenceUrl() != null) {
+                        venta.setDeliveryEvidenceUrl(normalizeOptional(request.evidenceUrl()));
+                    }
+                    if (request.notes() != null) {
+                        venta.setDeliveryNotes(normalizeOptional(request.notes()));
+                    }
+                    if (request.latitude() != null) {
+                        venta.setTrackingLatitude(request.latitude());
+                    }
+                    if (request.longitude() != null) {
+                        venta.setTrackingLongitude(request.longitude());
+                    }
 
                     if (!isAdmin && venta.getAssignedCourierId() == null && nextState.hasProgress()) {
                         venta.setAssignedCourierId(requesterId);
@@ -352,7 +369,16 @@ public class VentaService {
                 venta.isDelivered(),
                 calculateProgress(venta),
                 resolveStage(venta),
-                venta.getDeliveryUpdatedAt()
+                venta.getDeliveryUpdatedAt(),
+                venta.getDeliveryUpdatedBy(),
+                venta.getPackedAt(),
+                venta.getPickedUpAt(),
+                venta.getOnTheWayAt(),
+                venta.getDeliveredAt(),
+                venta.getTrackingLatitude(),
+                venta.getTrackingLongitude(),
+                venta.getDeliveryEvidenceUrl(),
+                venta.getDeliveryNotes()
         );
 
         return new VentaResponse(venta.id(), venta.clienteId(), venta.vendedorId(),
@@ -360,20 +386,22 @@ public class VentaService {
     }
 
     private int calculateProgress(Venta venta) {
-        int completedSteps = 0;
-        if (venta.isPacked()) {
-            completedSteps++;
-        }
-        if (venta.isPickedUp()) {
-            completedSteps++;
+        if (venta.isDelivered()) {
+            return 100;
         }
         if (venta.isOnTheWay()) {
-            completedSteps++;
+            return 85;
         }
-        if (venta.isDelivered()) {
-            completedSteps++;
+        if (venta.isPickedUp()) {
+            return 55;
         }
-        return completedSteps * 25;
+        if (venta.isPacked()) {
+            return 40;
+        }
+        if ("PAGADA".equalsIgnoreCase(venta.estado()) || "COMPLETADA".equalsIgnoreCase(venta.estado())) {
+            return 10;
+        }
+        return 0;
     }
 
     private String resolveStage(Venta venta) {
@@ -422,6 +450,44 @@ public class VentaService {
         }
 
         return new DeliveryState(packed, pickedUp, onTheWay, delivered);
+    }
+
+    private void syncTrackingTimestamps(Venta venta, DeliveryState nextState, LocalDateTime now) {
+        if (nextState.packed() && !venta.isPacked()) {
+            venta.setPackedAt(now);
+        }
+        if (!nextState.packed()) {
+            venta.setPackedAt(null);
+        }
+
+        if (nextState.pickedUp() && !venta.isPickedUp()) {
+            venta.setPickedUpAt(now);
+        }
+        if (!nextState.pickedUp()) {
+            venta.setPickedUpAt(null);
+        }
+
+        if (nextState.onTheWay() && !venta.isOnTheWay()) {
+            venta.setOnTheWayAt(now);
+        }
+        if (!nextState.onTheWay()) {
+            venta.setOnTheWayAt(null);
+        }
+
+        if (nextState.delivered() && !venta.isDelivered()) {
+            venta.setDeliveredAt(now);
+        }
+        if (!nextState.delivered()) {
+            venta.setDeliveredAt(null);
+        }
+    }
+
+    private String normalizeOptional(String value) {
+        if (value == null) {
+            return null;
+        }
+        String normalized = value.trim();
+        return normalized.isBlank() ? null : normalized;
     }
 
     private record DeliveryState(boolean packed, boolean pickedUp, boolean onTheWay, boolean delivered) {

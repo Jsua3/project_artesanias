@@ -10,4 +10,5 @@ public interface ProductRepository extends ReactiveCrudRepository<Product, UUID>
     Flux<Product> findByCategoryId(UUID categoryId);
     Flux<Product> findByArtesanoId(UUID artesanoId);
     Flux<Product> findByActiveTrue();
+    Flux<Product> findByArtesanoIdAndActive(UUID artesanoId, Boolean active);
 }

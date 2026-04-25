@@ -11,6 +11,15 @@ public record DeliveryTrackingResponse(
         boolean delivered,
         int progress,
         String stage,
-        LocalDateTime updatedAt
+        LocalDateTime updatedAt,
+        UUID updatedBy,
+        LocalDateTime packedAt,
+        LocalDateTime pickedUpAt,
+        LocalDateTime onTheWayAt,
+        LocalDateTime deliveredAt,
+        Double latitude,
+        Double longitude,
+        String evidenceUrl,
+        String notes
 ) {
 }

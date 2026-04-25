@@ -91,7 +91,16 @@ public class MaestroVentaService {
                 venta.isDelivered(),
                 calculateProgress(venta),
                 resolveStage(venta),
-                venta.getDeliveryUpdatedAt()
+                venta.getDeliveryUpdatedAt(),
+                venta.getDeliveryUpdatedBy(),
+                venta.getPackedAt(),
+                venta.getPickedUpAt(),
+                venta.getOnTheWayAt(),
+                venta.getDeliveredAt(),
+                venta.getTrackingLatitude(),
+                venta.getTrackingLongitude(),
+                venta.getDeliveryEvidenceUrl(),
+                venta.getDeliveryNotes()
         );
 
         return new VentaResponse(
@@ -100,20 +109,22 @@ public class MaestroVentaService {
     }
 
     private int calculateProgress(Venta venta) {
-        int completedSteps = 0;
-        if (venta.isPacked()) {
-            completedSteps++;
-        }
-        if (venta.isPickedUp()) {
-            completedSteps++;
+        if (venta.isDelivered()) {
+            return 100;
         }
         if (venta.isOnTheWay()) {
-            completedSteps++;
+            return 85;
         }
-        if (venta.isDelivered()) {
-            completedSteps++;
+        if (venta.isPickedUp()) {
+            return 55;
         }
-        return completedSteps * 25;
+        if (venta.isPacked()) {
+            return 40;
+        }
+        if ("PAGADA".equalsIgnoreCase(venta.estado()) || "COMPLETADA".equalsIgnoreCase(venta.estado())) {
+            return 10;
+        }
+        return 0;
     }
 
     private String resolveStage(Venta venta) {

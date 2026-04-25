@@ -92,6 +92,9 @@
                 <button mat-icon-button color="primary" (click)="openForm(p)" title="Editar artesania">
                   <mat-icon>edit</mat-icon>
                 </button>
+                <button mat-icon-button (click)="toggleStatus(p)" [title]="p.active ? 'Ocultar' : 'Publicar'">
+                  <mat-icon>{{ p.active ? 'visibility_off' : 'visibility' }}</mat-icon>
+                </button>
                 <button mat-icon-button color="warn" (click)="delete(p.id)" title="Eliminar">
                   <mat-icon>delete</mat-icon>
                 </button>

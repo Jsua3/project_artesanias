@@ -23,6 +23,10 @@
           <span class="badge">{{ availableDeliveries().length }}</span>
         }
       </h2>
+      <div class="order-tabs">
+        <span>{{ openDeliveries().length }} disponibles</span>
+        <span>{{ mineDeliveries().length }} asignados a mi</span>
+      </div>
 
       @if (loading()) {
         <div class="loading-wrap">
@@ -114,6 +118,41 @@
               <p class="info-value">{{ selected()!.createdAt | date:'d MMM yyyy' }}</p>
             </div>
           </div>
+        </div>
+
+        <div class="route-placeholder">
+          <div class="route-map">
+            <mat-icon>map</mat-icon>
+            <span class="route-pin route-pin--origin"></span>
+            <span class="route-pin route-pin--destination"></span>
+          </div>
+          <div class="route-copy">
+            <h3>Ruta preparada</h3>
+            <p><strong>Origen:</strong> Taller artesano asociado al pedido</p>
+            <p><strong>Destino:</strong> Direccion del cliente por confirmar</p>
+            <button mat-stroked-button disabled>
+              <mat-icon>route</mat-icon>
+              Abrir ruta
+            </button>
+          </div>
+        </div>
+
+        <div class="phase-flow">
+          @for (phase of visualPhases; track phase.title) {
+            <article class="phase-card" [class.phase-done]="isPhaseComplete(phase)">
+              <div class="phase-card__top">
+                <span>{{ phase.range }}</span>
+                <mat-icon>{{ isPhaseComplete(phase) ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+              </div>
+              <h4>{{ phase.title }}</h4>
+              <p>{{ phase.owner }}</p>
+              <ul>
+                @for (label of phase.labels; track label) {
+                  <li>{{ label }}</li>
+                }
+              </ul>
+            </article>
+          }
         </div>
 
         <!-- Checklist interactivo -->

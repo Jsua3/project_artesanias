@@ -18,6 +18,8 @@ export interface ComunidadPost {
 export interface CreatePostRequest {
   content: string;
   imageUrl?: string | null;
+  authorName?: string | null;
+  authorAvatarUrl?: string | null;
 }
 
 export interface ComunidadComment {
@@ -46,6 +48,7 @@ export interface EventoPropuesta {
 }
 
 export interface CreateEventoRequest {
+  artesanoNombre?: string;
   organizacion: string;
   nombre: string;
   localidad: string;

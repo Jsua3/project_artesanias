@@ -53,6 +53,11 @@ public class ProductService {
                 .map(this::toResponse);
     }
 
+    public Flux<ProductResponse> getAllProductsForManagement() {
+        return productRepository.findAll()
+                .map(this::toResponse);
+    }
+
     public Flux<ProductResponse> getProductsByCategory(UUID categoryId) {
         return productRepository.findByCategoryId(categoryId)
                 .filter(p -> Boolean.TRUE.equals(p.active()))
@@ -62,6 +67,11 @@ public class ProductService {
     public Flux<ProductResponse> getProductsByArtesano(UUID artesanoId) {
         return productRepository.findByArtesanoId(artesanoId)
                 .filter(p -> Boolean.TRUE.equals(p.active()))
+                .map(this::toResponse);
+    }
+
+    public Flux<ProductResponse> getProductsByArtesanoForManagement(UUID artesanoId) {
+        return productRepository.findByArtesanoId(artesanoId)
                 .map(this::toResponse);
     }
 
@@ -104,11 +114,34 @@ public class ProductService {
                             existing.artesanoId(),
                             false,
                             existing.createdAt(),
-                            existing.updatedAt()
+                            LocalDateTime.now()
                     );
                     return productRepository.save(softDeleted);
                 })
                 .then();
+    }
+
+    @Transactional
+    public Mono<ProductResponse> updateProductStatus(UUID id, boolean active) {
+        return productRepository.findById(id)
+                .flatMap(existing -> {
+                    Product updated = new Product(
+                            id,
+                            existing.name(),
+                            existing.description(),
+                            existing.sku(),
+                            existing.price(),
+                            existing.imageUrl(),
+                            existing.stockMinimo(),
+                            existing.categoryId(),
+                            existing.artesanoId(),
+                            active,
+                            existing.createdAt(),
+                            LocalDateTime.now()
+                    );
+                    return productRepository.save(updated);
+                })
+                .map(this::toResponse);
     }
 
     private ProductResponse toResponse(Product product) {
