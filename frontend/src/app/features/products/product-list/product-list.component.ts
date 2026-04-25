@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, computed } from '@angular/core';
+import { Component, OnInit, inject, computed, signal } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -36,6 +36,7 @@ export class ProductListComponent implements OnInit {
   readonly loading = this.productService.loading;
   readonly categoryMap = this.categoryService.categoryMap;
   readonly canManageProducts = computed(() => this.auth.canManageProducts());
+  readonly selectedFilter = signal<'todos' | 'publicados' | 'stock-bajo' | 'sin-stock'>('todos');
 
   readonly artesanoMap = computed(() => {
     const map = new Map<string, string>();
@@ -48,6 +49,29 @@ export class ProductListComponent implements OnInit {
     this.stockService.stock().forEach(s => map.set(s.productId, s.quantity));
     return map;
   });
+
+  readonly filteredProducts = computed(() => {
+    const filter = this.selectedFilter();
+    return this.products().filter(product => {
+      const stock = this.getStockQty(product.id);
+      if (filter === 'publicados') return product.active;
+      if (filter === 'stock-bajo') return stock > 0 && this.isLowStock(product.id, product.stockMinimo);
+      if (filter === 'sin-stock') return stock === 0;
+      return true;
+    });
+  });
+
+  readonly lowStockCount = computed(() =>
+    this.products().filter(product => this.getStockQty(product.id) > 0 && this.isLowStock(product.id, product.stockMinimo)).length
+  );
+
+  readonly noStockCount = computed(() =>
+    this.products().filter(product => this.getStockQty(product.id) === 0).length
+  );
+
+  setFilter(filter: 'todos' | 'publicados' | 'stock-bajo' | 'sin-stock'): void {
+    this.selectedFilter.set(filter);
+  }
 
   getCategoryName(categoryId: string): string {
     return this.categoryMap().get(categoryId) ?? 'Sin categoría';

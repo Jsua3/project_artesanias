@@ -1,6 +1,6 @@
 <!-- ========= HEADER ========= -->
 <header class="cliente-header" [class.is-glass]="scrolled()">
-  <div class="cliente-header__inner">
+  <div class="cliente-header__inner" appLiquidPointer [liquidTiltStrength]="1.5">
     <a href="#" class="cliente-header__brand">
       <svg width="32" height="32" viewBox="0 0 50 50" fill="none">
         <path d="M25 7C25 7 17 15 17 25C17 35 25 43 25 43C25 43 33 35 33 25C33 15 25 7 25 7Z"
@@ -114,8 +114,34 @@
     </div>
   </section>
 
+  <!-- ========= STORY RAIL ========= -->
+  <section class="story-strip story-reveal" aria-label="Recorrido de compra Rebecca">
+    <div class="story-strip__inner">
+      <article class="story-step">
+        <span>01</span>
+        <strong>Territorio</strong>
+        <p>La pieza nace en una vereda, con clima, fibra y memoria.</p>
+      </article>
+      <article class="story-step">
+        <span>02</span>
+        <strong>Maestros</strong>
+        <p>Conoces el oficio y la mano que firma cada detalle.</p>
+      </article>
+      <article class="story-step">
+        <span>03</span>
+        <strong>Artesanias</strong>
+        <p>Exploras piezas con stock, precio y procedencia clara.</p>
+      </article>
+      <article class="story-step">
+        <span>04</span>
+        <strong>Compra</strong>
+        <p>Tu bolsa conecta el pedido con el seguimiento de entrega.</p>
+      </article>
+    </div>
+  </section>
+
   <!-- ========= COLLECTION ========= -->
-  <section id="coleccion" class="section">
+  <section id="coleccion" class="section story-reveal">
     <div class="section__head">
       <div>
         <div class="eyebrow">La colección · abril 2026</div>
@@ -131,10 +157,10 @@
     </div>
     <div class="pieces">
       @for (p of filteredPiezas(); track p.id) {
-        <article class="piece" #card
-                 (click)="onOpenPiece(p)"
-                 (mousemove)="onPieceMouseMove($event, card)"
-                 (mouseleave)="onPieceMouseLeave(card)">
+        <article class="piece liquid-glass liquid-tilt"
+                 appLiquidPointer
+                 [liquidTiltStrength]="4"
+                 (click)="onOpenPiece(p)">
           <div class="piece__imgWrap">
             <img [src]="p.img" [alt]="p.name"/>
             <span class="piece__cat chip-cat" [ngClass]="categoryClass[p.category] || ''">{{ p.category }}</span>
@@ -146,6 +172,10 @@
             <h3 class="piece__title">{{ p.name }}</h3>
             <div class="piece__meta">
               <em>{{ p.maestro }}</em> <span class="piece__dot">·</span> {{ p.town }}
+            </div>
+            <div class="piece__reveal">
+              <p>{{ pieceDescription(p) }}</p>
+              <span>Detalles del taller</span>
             </div>
             <div class="piece__foot">
               <div class="price-cop">{{ formatPrice(p.price) }}</div>
@@ -163,7 +193,7 @@
   </section>
 
   <!-- ========= MAESTROS ========= -->
-  <section id="maestros" class="section section--bone">
+  <section id="maestros" class="section section--bone story-reveal">
     <div class="section__head section__head--centered">
       <div class="eyebrow">Los maestros</div>
       <h2 class="section__title">Detrás de cada pieza, <em>un oficio.</em></h2>
@@ -173,13 +203,22 @@
     </div>
     <div class="maestros__grid">
       @for (m of maestros(); track m.name) {
-        <article class="maestro">
+        <article class="maestro liquid-glass liquid-tilt" appLiquidPointer [liquidTiltStrength]="3">
           <div class="maestro__portrait">
-            <img src="/assets/placeholder-maestro.svg" [alt]="m.name"/>
+            <img [src]="m.image || '/assets/placeholder-maestro.svg'" [alt]="m.name"/>
             <div class="maestro__overlay"></div>
             <div class="maestro__years">
               <div class="display maestro__yearsNum">{{ m.years }}</div>
               <div class="eyebrow maestro__yearsLabel">años de oficio</div>
+            </div>
+            <div class="maestro__reveal">
+              <strong>{{ m.town }} · {{ m.vereda }}</strong>
+              <span>{{ m.craft }}</span>
+              @if (piezasForMaestro(m).length) {
+                <small>{{ piezasForMaestro(m).join(' · ') }}</small>
+              } @else {
+                <small>Catalogo en preparacion</small>
+              }
             </div>
           </div>
           <div class="maestro__body">
@@ -195,7 +234,7 @@
   </section>
 
   <!-- ========= TERRITORIO ========= -->
-  <section id="territorio" class="section section--dark">
+  <section id="territorio" class="section section--dark story-reveal">
     <div class="territorio">
       <div class="territorio__copy">
         <div class="eyebrow territorio__eyebrow">El territorio</div>
@@ -231,7 +270,7 @@
   </section>
 
   <!-- ========= OFICIO ========= -->
-  <section id="oficio" class="section oficio-section">
+  <section id="oficio" class="section oficio-section story-reveal">
     <div class="oficio__inner">
       <div class="oficio__story">
         <div class="eyebrow oficio__eyebrow">El oficio</div>

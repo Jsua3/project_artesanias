@@ -1,5 +1,7 @@
 import {
+  AfterViewInit,
   Component,
+  ElementRef,
   HostListener,
   OnDestroy,
   OnInit,
@@ -15,6 +17,7 @@ import { catchError } from 'rxjs/operators';
 import { AuthService } from '../../../core/services/auth.service';
 import { CatalogService } from '../../../core/services/catalog.service';
 import { CartService } from '../../../core/services/cart.service';
+import { LiquidPointerDirective } from '../../../core/directives/liquid-pointer.directive';
 import { Artesano, Category, Product } from '../../../core/models/catalog.model';
 
 export interface Pieza {
@@ -26,6 +29,7 @@ export interface Pieza {
   category: string;
   img: string;
   status: 'available' | 'lowstock' | 'sold';
+  description?: string;
 }
 
 export interface Maestro {
@@ -35,6 +39,7 @@ export interface Maestro {
   craft: string;
   years: number;
   quote: string;
+  image?: string;
 }
 
 interface HeroCaption {
@@ -58,17 +63,18 @@ interface OficioHighlight {
 @Component({
   selector: 'app-public-landing',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, LiquidPointerDirective],
   templateUrl: './public-landing.component.html',
   styleUrl: './public-landing.component.scss',
   encapsulation: ViewEncapsulation.None,
   host: { class: 'public-landing' }
 })
-export class PublicLandingComponent implements OnInit, OnDestroy {
+export class PublicLandingComponent implements OnInit, AfterViewInit, OnDestroy {
   auth = inject(AuthService);
   cart = inject(CartService);
   private router = inject(Router);
   private catalog = inject(CatalogService);
+  private host = inject<ElementRef<HTMLElement>>(ElementRef);
 
   readonly scrolled = signal(false);
   readonly heroSlide = signal(0);
@@ -125,18 +131,18 @@ export class PublicLandingComponent implements OnInit, OnDestroy {
 
   /** Piezas finalmente mostradas: empiezan como mock y se sustituyen por las del API si existen. */
   readonly piezas = signal<Pieza[]>([
-    { id: 'mock-1', name: 'Vasija de barro quemado', maestro: 'Doña Rosa Elvira', town: 'Pijao',    price: 180000, category: 'Alfarería', img: '/assets/placeholder-vasija.svg', status: 'available' },
-    { id: 'mock-2', name: 'Ruana de lana virgen',    maestro: 'Dña Carmen Tulia',  town: 'Salento',  price: 320000, category: 'Tejido',    img: '/assets/placeholder-tejido.svg', status: 'lowstock'  },
-    { id: 'mock-3', name: 'Cesto en fique y guadua', maestro: 'Don Hernán Ospina', town: 'Filandia', price: 145000, category: 'Guadua',    img: '/assets/placeholder-vasija.svg', status: 'available' },
-    { id: 'mock-4', name: 'Camino de mesa tejido',   maestro: 'Doña Ana Lucía',    town: 'Circasia', price:  95000, category: 'Textil',    img: '/assets/placeholder-tejido.svg', status: 'available' },
-    { id: 'mock-5', name: 'Cuenco torneado',         maestro: 'Don Javier Correa', town: 'Calarcá',  price:  72000, category: 'Madera',    img: '/assets/placeholder-vasija.svg', status: 'available' },
-    { id: 'mock-6', name: 'Tapete urdido a mano',    maestro: 'Doña Gloria Mejía', town: 'Armenia',  price: 420000, category: 'Textil',    img: '/assets/placeholder-tejido.svg', status: 'sold'      }
+    { id: 'mock-1', name: 'Vasija de barro quemado', maestro: 'Doña Rosa Elvira', town: 'Pijao',    price: 180000, category: 'Alfarería', img: '/assets/placeholder-vasija.svg', status: 'available', description: 'Barro local trabajado a torno y terminado con fuego lento.' },
+    { id: 'mock-2', name: 'Ruana de lana virgen',    maestro: 'Dña Carmen Tulia',  town: 'Salento',  price: 320000, category: 'Tejido',    img: '/assets/placeholder-tejido.svg', status: 'lowstock', description: 'Lana tejida en telar familiar, pensada para clima de montana.' },
+    { id: 'mock-3', name: 'Cesto en fique y guadua', maestro: 'Don Hernán Ospina', town: 'Filandia', price: 145000, category: 'Guadua',    img: '/assets/placeholder-vasija.svg', status: 'available', description: 'Fibras firmes de uso diario con ensambles hechos a mano.' },
+    { id: 'mock-4', name: 'Camino de mesa tejido',   maestro: 'Doña Ana Lucía',    town: 'Circasia', price:  95000, category: 'Textil',    img: '/assets/placeholder-tejido.svg', status: 'available', description: 'Trama textil para vestir la mesa con color cafetero.' },
+    { id: 'mock-5', name: 'Cuenco torneado',         maestro: 'Don Javier Correa', town: 'Calarcá',  price:  72000, category: 'Madera',    img: '/assets/placeholder-vasija.svg', status: 'available', description: 'Madera pulida y sellada para conservar su veta natural.' },
+    { id: 'mock-6', name: 'Tapete urdido a mano',    maestro: 'Doña Gloria Mejía', town: 'Armenia',  price: 420000, category: 'Textil',    img: '/assets/placeholder-tejido.svg', status: 'sold', description: 'Pieza de telar con urdimbre densa y patron unico.' }
   ]);
 
   readonly maestros = signal<Maestro[]>([
-    { name: 'Doña Rosa Elvira Gómez', town: 'Pijao',    vereda: 'El Crucero',     craft: 'Alfarería · torno a pedal', years: 42, quote: 'El barro se deja enseñar si uno lo escucha despacio.' },
-    { name: 'Don Hernán Ospina',      town: 'Filandia', vereda: 'La Cristalina', craft: 'Guadua y fique',             years: 35, quote: 'La guadua nace recta porque busca la luz. Nosotros le ayudamos.' },
-    { name: 'Doña Carmen Tulia',      town: 'Salento',  vereda: 'Boquía',        craft: 'Tejido en lana virgen',      years: 28, quote: 'Mi telar lo heredé de mi mamá, el mismo que me quiere ver en el hilo.' }
+    { name: 'Doña Rosa Elvira Gómez', town: 'Pijao',    vereda: 'El Crucero',     craft: 'Alfarería · torno a pedal', years: 42, quote: 'El barro se deja enseñar si uno lo escucha despacio.', image: '/assets/placeholder-maestro.svg' },
+    { name: 'Don Hernán Ospina',      town: 'Filandia', vereda: 'La Cristalina', craft: 'Guadua y fique',             years: 35, quote: 'La guadua nace recta porque busca la luz. Nosotros le ayudamos.', image: '/assets/placeholder-maestro.svg' },
+    { name: 'Doña Carmen Tulia',      town: 'Salento',  vereda: 'Boquía',        craft: 'Tejido en lana virgen',      years: 28, quote: 'Mi telar lo heredé de mi mamá, el mismo que me quiere ver en el hilo.', image: '/assets/placeholder-maestro.svg' }
   ]);
 
   readonly categories = signal<string[]>(['Todas', 'Alfarería', 'Tejido', 'Guadua', 'Textil', 'Madera']);
@@ -198,6 +204,7 @@ export class PublicLandingComponent implements OnInit, OnDestroy {
   readonly currentUsername = computed(() => this.auth.currentUser()?.username ?? null);
 
   private slideInterval: ReturnType<typeof setInterval> | null = null;
+  private revealObserver: IntersectionObserver | null = null;
   private reducedMotion = false;
 
   ngOnInit(): void {
@@ -218,6 +225,31 @@ export class PublicLandingComponent implements OnInit, OnDestroy {
       clearInterval(this.slideInterval);
       this.slideInterval = null;
     }
+    this.revealObserver?.disconnect();
+    this.revealObserver = null;
+  }
+
+  ngAfterViewInit(): void {
+    if (typeof window === 'undefined') return;
+
+    const items = Array.from(this.host.nativeElement.querySelectorAll<HTMLElement>('.story-reveal'));
+    if (!('IntersectionObserver' in window) || this.reducedMotion) {
+      items.forEach(el => el.classList.add('is-visible'));
+      return;
+    }
+
+    this.revealObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('is-visible');
+        this.revealObserver?.unobserve(entry.target);
+      });
+    }, { threshold: 0.16, rootMargin: '0px 0px -8% 0px' });
+
+    items.forEach((el, index) => {
+      el.style.setProperty('--reveal-delay', `${Math.min(index * 55, 330)}ms`);
+      this.revealObserver?.observe(el);
+    });
   }
 
   /**
@@ -254,7 +286,8 @@ export class PublicLandingComponent implements OnInit, OnDestroy {
             price: p.price ?? 0,
             category,
             img: p.imageUrl || '/assets/placeholder-vasija.svg',
-            status: 'available' as const
+            status: 'available' as const,
+            description: p.description ?? undefined
           };
         });
 
@@ -276,7 +309,8 @@ export class PublicLandingComponent implements OnInit, OnDestroy {
             vereda: a.vereda ?? '',
             craft: a.oficio ?? '',
             years: a.anosExperiencia ?? 0,
-            quote: a.bio ?? ''
+            quote: a.bio ?? '',
+            image: a.fotoUrl || '/assets/placeholder-maestro.svg'
           }))
         );
       }
@@ -286,6 +320,8 @@ export class PublicLandingComponent implements OnInit, OnDestroy {
   @HostListener('window:scroll')
   onScroll(): void {
     this.scrolled.set(window.scrollY > 30);
+    const progress = Math.min(1, window.scrollY / 1200);
+    this.host.nativeElement.style.setProperty('--scroll-progress', progress.toFixed(3));
   }
 
   formatPrice(n: number): string {
@@ -302,6 +338,23 @@ export class PublicLandingComponent implements OnInit, OnDestroy {
 
   currentCaption(): HeroCaption {
     return this.captions[this.heroSlide()];
+  }
+
+  pieceDescription(p: Pieza): string {
+    return p.description
+      || 'Pieza artesanal seleccionada por su oficio, material y trazos propios del taller.';
+  }
+
+  piezasForMaestro(m: Maestro): string[] {
+    const normalizedName = this.normalizeText(m.name);
+    const lastNames = normalizedName.split(' ').slice(-2).join(' ');
+    return this.piezas()
+      .filter(p => {
+        const maestro = this.normalizeText(p.maestro);
+        return maestro.includes(lastNames) || normalizedName.includes(maestro);
+      })
+      .map(p => p.name)
+      .slice(0, 3);
   }
 
   heroPosition(index: number): string {
@@ -383,6 +436,13 @@ export class PublicLandingComponent implements OnInit, OnDestroy {
 
   onPieceMouseLeave(card: HTMLElement): void {
     card.style.transform = '';
+  }
+
+  private normalizeText(value: string): string {
+    return value
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '');
   }
 
   private showToast(message: string): void {

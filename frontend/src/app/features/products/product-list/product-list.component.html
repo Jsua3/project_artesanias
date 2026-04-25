@@ -24,8 +24,21 @@
       }
     </div>
   } @else {
+    <section class="catalog-toolbar">
+      <div class="catalog-toolbar__copy">
+        <span>Mi catalogo</span>
+        <strong>{{ products().length }} piezas</strong>
+      </div>
+      <div class="catalog-filters" aria-label="Filtros de catalogo">
+        <button type="button" [class.is-active]="selectedFilter() === 'todos'" (click)="setFilter('todos')">Todas</button>
+        <button type="button" [class.is-active]="selectedFilter() === 'publicados'" (click)="setFilter('publicados')">Publicadas</button>
+        <button type="button" [class.is-active]="selectedFilter() === 'stock-bajo'" (click)="setFilter('stock-bajo')">Stock bajo · {{ lowStockCount() }}</button>
+        <button type="button" [class.is-active]="selectedFilter() === 'sin-stock'" (click)="setFilter('sin-stock')">Sin stock · {{ noStockCount() }}</button>
+      </div>
+    </section>
+
     <div class="gallery-grid">
-      @for (p of products(); track p.id) {
+      @for (p of filteredProducts(); track p.id) {
         <div class="product-card" [class.low-stock-card]="isLowStock(p.id, p.stockMinimo)">
           <div class="card-image" (click)="canManageProducts() && openForm(p)">
             @if (p.imageUrl) {
@@ -37,6 +50,7 @@
             }
 
             <span class="category-badge">{{ getCategoryName(p.categoryId) }}</span>
+            <span class="publish-badge" [class.inactive]="!p.active">{{ p.active ? 'Publicado' : 'Oculto' }}</span>
 
             @if (isLowStock(p.id, p.stockMinimo)) {
               <span class="stock-alert-badge">
@@ -75,7 +89,7 @@
 
             @if (canManageProducts()) {
               <div class="card-actions">
-                <button mat-icon-button color="primary" (click)="openForm(p)" title="Editar">
+                <button mat-icon-button color="primary" (click)="openForm(p)" title="Editar artesania">
                   <mat-icon>edit</mat-icon>
                 </button>
                 <button mat-icon-button color="warn" (click)="delete(p.id)" title="Eliminar">
