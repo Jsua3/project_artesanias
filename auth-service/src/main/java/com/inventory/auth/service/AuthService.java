@@ -84,12 +84,19 @@ public class AuthService {
     }
 
     public Mono<AuthResponse> login(LoginRequest request) {
-        return userRepository.findByUsername(request.username())
+        final String username = request.username() == null ? "" : request.username().trim();
+        final String password = request.password() == null ? "" : request.password();
+
+        if (username.isBlank() || password.isBlank()) {
+            return Mono.error(new RuntimeException("Invalid credentials"));
+        }
+
+        return userRepository.findByUsername(username)
                 .map(user -> {
                     user.setNew(false);
                     return user;
                 })
-                .filter(user -> passwordEncoder.matches(request.password(), user.getPasswordHash()))
+                .filter(user -> passwordMatches(password, user.getPasswordHash()))
                 .flatMap(this::ensureLoginAllowed)
                 .flatMap(user -> {
                     UserRole effectiveRole = normalizeRole(user.getRole());
@@ -110,6 +117,14 @@ public class AuthService {
                             });
                 })
                 .switchIfEmpty(Mono.error(new RuntimeException("Invalid credentials")));
+    }
+
+    private boolean passwordMatches(String rawPassword, String encodedPassword) {
+        try {
+            return encodedPassword != null && passwordEncoder.matches(rawPassword, encodedPassword);
+        } catch (RuntimeException ex) {
+            return false;
+        }
     }
 
     public Mono<AuthResponse> refresh(RefreshRequest request) {
