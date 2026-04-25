@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { LiquidPointerDirective } from '../../../core/directives/liquid-pointer.directive';
 import { ClienteVentaService } from '../../../core/services/cliente-venta.service';
 import { Venta, VentaEstado } from '../../../core/models/venta.model';
 
@@ -12,7 +13,8 @@ import { Venta, VentaEstado } from '../../../core/models/venta.model';
   standalone: true,
   imports: [
     CommonModule, RouterLink, DatePipe,
-    MatIconModule, MatButtonModule, MatProgressSpinnerModule
+    MatIconModule, MatButtonModule, MatProgressSpinnerModule,
+    LiquidPointerDirective
   ],
   templateUrl: './mis-pedidos-list.component.html',
   styleUrl: './mis-pedidos.component.scss'

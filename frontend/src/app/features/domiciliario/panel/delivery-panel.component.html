@@ -1,7 +1,7 @@
 <div class="panel-shell">
 
   <!-- ── Encabezado ─────────────────────────────────────────────────────── -->
-  <header class="panel-header">
+  <header class="panel-header liquid-glass liquid-glass--solid">
     <div class="panel-header__left">
       <mat-icon class="header-icon">delivery_dining</mat-icon>
       <div>
@@ -29,19 +29,19 @@
       </div>
 
       @if (loading()) {
-        <div class="loading-wrap">
+        <div class="loading-wrap liquid-glass liquid-glass--solid">
           <mat-progress-spinner mode="indeterminate" diameter="36" />
           <p>Cargando pedidos…</p>
         </div>
       } @else if (availableDeliveries().length === 0) {
-        <div class="empty-orders">
+        <div class="empty-orders liquid-glass liquid-glass--solid">
           <mat-icon>inbox</mat-icon>
           <p>No hay pedidos disponibles en este momento.</p>
         </div>
       } @else {
         @for (venta of availableDeliveries(); track venta.id) {
           <article
-            class="order-card"
+            class="order-card liquid-glass liquid-glass--solid"
             [class.is-selected]="selected()?.id === venta.id"
             [class.is-done]="venta.delivery.delivered"
             (click)="selectDelivery(venta)"
@@ -76,7 +76,7 @@
 
     <!-- ─ Detalle del pedido activo ──────────────────────────────────────── -->
     @if (selected()) {
-      <section class="order-detail">
+      <section class="order-detail liquid-glass liquid-glass--solid">
         <button mat-icon-button class="close-detail" (click)="deselectDelivery()" aria-label="cerrar detalle">
           <mat-icon>close</mat-icon>
         </button>
@@ -97,21 +97,21 @@
 
         <!-- Info del pedido -->
         <div class="detail-info-row">
-          <div class="detail-info-card">
+          <div class="detail-info-card liquid-glass liquid-glass--clear">
             <mat-icon>tag</mat-icon>
             <div>
               <p class="info-label">Pedido</p>
               <p class="info-value">#{{ selected()!.id.slice(0, 8).toUpperCase() }}</p>
             </div>
           </div>
-          <div class="detail-info-card">
+          <div class="detail-info-card liquid-glass liquid-glass--clear">
             <mat-icon>payments</mat-icon>
             <div>
               <p class="info-label">Total</p>
               <p class="info-value">{{ formatPrice(selected()!.total) }}</p>
             </div>
           </div>
-          <div class="detail-info-card">
+          <div class="detail-info-card liquid-glass liquid-glass--clear">
             <mat-icon>event</mat-icon>
             <div>
               <p class="info-label">Fecha</p>
@@ -120,7 +120,7 @@
           </div>
         </div>
 
-        <div class="route-placeholder">
+        <div class="route-placeholder liquid-glass liquid-glass--clear">
           <div class="route-map">
             <mat-icon>map</mat-icon>
             <span class="route-pin route-pin--origin"></span>
@@ -139,7 +139,7 @@
 
         <div class="phase-flow">
           @for (phase of visualPhases; track phase.title) {
-            <article class="phase-card" [class.phase-done]="isPhaseComplete(phase)">
+            <article class="phase-card liquid-glass liquid-glass--clear" [class.phase-done]="isPhaseComplete(phase)">
               <div class="phase-card__top">
                 <span>{{ phase.range }}</span>
                 <mat-icon>{{ isPhaseComplete(phase) ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>

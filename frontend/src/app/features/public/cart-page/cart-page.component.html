@@ -11,7 +11,7 @@
   </header>
 
   @if (isEmpty()) {
-    <div class="cart-empty">
+    <div class="cart-empty liquid-glass liquid-glass--solid">
       <div class="empty-icon-wrap">
         <mat-icon>shopping_bag</mat-icon>
       </div>
@@ -28,7 +28,7 @@
       <!-- Lista de ítems con Scrollytelling -->
       <section class="cart-items">
         @for (l of lines(); track l.productId) {
-          <article class="cart-item" #cartItem>
+          <article class="cart-item liquid-glass liquid-glass--solid" #cartItem appLiquidPointer [liquidTiltStrength]="1.8">
             <div class="cart-item__img">
               @if (l.imageUrl) {
                 <img [src]="l.imageUrl" [alt]="l.name" loading="lazy" />
@@ -64,7 +64,7 @@
       </section>
 
       <!-- Panel de resumen con Glassmorphism -->
-      <aside class="cart-summary glass-panel">
+      <aside class="cart-summary glass-panel liquid-glass liquid-glass--solid liquid-tilt" appLiquidPointer [liquidTiltStrength]="1.4">
         <div class="summary-header">
           <mat-icon class="summary-icon">receipt_long</mat-icon>
           <h2>Resumen</h2>

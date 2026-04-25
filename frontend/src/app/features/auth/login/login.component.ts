@@ -9,6 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { UserRole } from '../../../core/models/auth.model';
+import { LiquidPointerDirective } from '../../../core/directives/liquid-pointer.directive';
 import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
@@ -22,7 +23,8 @@ import { AuthService } from '../../../core/services/auth.service';
     MatButtonModule,
     MatIconModule,
     MatMenuModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    LiquidPointerDirective
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'

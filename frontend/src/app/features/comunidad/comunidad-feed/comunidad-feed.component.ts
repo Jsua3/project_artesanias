@@ -23,7 +23,7 @@ import { PostFormComponent } from '../post-form/post-form.component';
   ],
   template: `
     <div class="feed-shell">
-      <header class="feed-header">
+      <header class="feed-header liquid-glass liquid-glass--solid">
         <div>
           <span class="feed-kicker">Gremio Rebecca</span>
           <h1>Comunidad Artesana</h1>
@@ -43,17 +43,17 @@ import { PostFormComponent } from '../post-form/post-form.component';
       }
 
       @if (loading()) {
-        <div class="loading-wrap">
+        <div class="loading-wrap liquid-glass liquid-glass--solid">
           <mat-progress-spinner mode="indeterminate" diameter="40" />
         </div>
       } @else if (posts().length === 0) {
-        <div class="empty-feed">
+        <div class="empty-feed liquid-glass liquid-glass--solid">
           <mat-icon>groups</mat-icon>
           <p>Se el primero en publicar algo en la comunidad.</p>
         </div>
       } @else {
         @for (post of posts(); track post.id) {
-          <article class="post-item">
+          <article class="post-item liquid-glass liquid-glass--solid">
             <div class="post-item__author">
               @if (post.authorAvatarUrl) {
                 <img [src]="post.authorAvatarUrl" [alt]="post.authorName" class="post-avatar" />
