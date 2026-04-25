@@ -19,6 +19,11 @@ public class InternalGatewayFilter implements WebFilter {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
+        String path = exchange.getRequest().getPath().pathWithinApplication().value();
+        if (path.equals("/actuator/health") || path.startsWith("/actuator/health/")) {
+            return chain.filter(exchange);
+        }
+
         String tokenHeader = exchange.getRequest().getHeaders().getFirst("X-Internal-Token");
 
         if (tokenHeader == null || !tokenHeader.equals(internalToken)) {
