@@ -9,6 +9,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { Venta } from '../../../core/models/venta.model';
+import { LiquidPointerDirective } from '../../../core/directives/liquid-pointer.directive';
 import { AuthService } from '../../../core/services/auth.service';
 import { ClienteService } from '../../../core/services/cliente.service';
 import { VentaService } from '../../../core/services/venta.service';
@@ -25,7 +26,8 @@ import { VentaFormComponent } from '../venta-form/venta-form.component';
     MatIconModule,
     MatCardModule,
     MatProgressBarModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    LiquidPointerDirective
   ],
   templateUrl: './venta-list.component.html',
   styleUrl: './venta-list.component.scss'

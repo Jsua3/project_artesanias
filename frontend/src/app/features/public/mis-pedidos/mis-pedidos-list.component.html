@@ -12,18 +12,18 @@
   </header>
 
   @if (loading()) {
-    <div class="pedidos-state">
+    <div class="pedidos-state liquid-glass liquid-glass--solid">
       <mat-progress-spinner diameter="32" mode="indeterminate"></mat-progress-spinner>
       <p>Cargando tus pedidos…</p>
     </div>
   } @else if (error()) {
-    <div class="pedidos-state">
+    <div class="pedidos-state liquid-glass liquid-glass--solid">
       <mat-icon>error_outline</mat-icon>
       <p>{{ error() }}</p>
       <button mat-stroked-button (click)="load()">Reintentar</button>
     </div>
   } @else if (!pedidos().length) {
-    <div class="pedidos-state">
+    <div class="pedidos-state liquid-glass liquid-glass--solid">
       <mat-icon>receipt_long</mat-icon>
       <p>Aún no tienes pedidos.</p>
       <a mat-stroked-button routerLink="/">Explorar piezas</a>
@@ -31,7 +31,7 @@
   } @else {
     <div class="pedidos-list">
       @for (p of pedidos(); track p.id) {
-        <a class="pedido-row" [routerLink]="['/mis-pedidos', p.id]">
+        <a class="pedido-row liquid-glass liquid-glass--solid" [routerLink]="['/mis-pedidos', p.id]" appLiquidPointer [liquidTiltStrength]="1.4">
           <div class="pedido-row__id">
             <span class="pedido-row__hash">#</span>{{ p.id.slice(0, 8) }}
           </div>

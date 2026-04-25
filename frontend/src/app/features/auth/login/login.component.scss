@@ -1,203 +1,279 @@
+:host {
+  display: block;
+}
+
 .auth-container {
-  min-height: 100vh;
-  display: flex;
+  min-height: 100svh;
+  display: grid;
+  grid-template-columns: minmax(320px, 1.05fr) minmax(360px, 520px);
   align-items: center;
-  justify-content: center;
-  background: linear-gradient(160deg, var(--cream) 0%, var(--cream-dark) 40%, #e8dfd0 100%);
+  gap: 48px;
   position: relative;
   overflow: hidden;
-  padding: 20px;
+  padding: 48px clamp(24px, 5vw, 80px);
+  background: var(--rb-crema-100);
 }
 
-.organic {
+.auth-bg {
   position: absolute;
-  border-radius: 50%;
-  opacity: 0.15;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(43, 39, 36, 0.58), rgba(43, 39, 36, 0.18) 45%, rgba(245, 240, 232, 0.72)),
+    linear-gradient(180deg, rgba(245, 240, 232, 0.16), rgba(245, 240, 232, 0.56)),
+    url('/assets/hero-filandia-iglesia.jpg') center / cover no-repeat;
+  transform: scale(1.02);
 }
 
-.organic-1 {
-  top: -100px;
-  right: -100px;
-  width: 450px;
-  height: 450px;
-  background: radial-gradient(ellipse, var(--mauve-light) 0%, transparent 70%);
-  animation: float1 12s ease-in-out infinite;
+.auth-noise {
+  position: absolute;
+  inset: 0;
+  opacity: 0.12;
+  pointer-events: none;
+  background-image: url('/assets/noise.svg');
+  background-size: 180px;
+  mix-blend-mode: multiply;
 }
 
-.organic-2 {
-  bottom: -80px;
-  left: -80px;
-  width: 350px;
-  height: 350px;
-  background: radial-gradient(ellipse, var(--sage-light) 0%, transparent 70%);
-  animation: float2 15s ease-in-out infinite;
+.auth-visual,
+.auth-card {
+  position: relative;
+  z-index: 1;
 }
 
-.organic-3 {
-  top: 25%;
-  left: 10%;
-  width: 200px;
-  height: 200px;
-  background: radial-gradient(ellipse, var(--terracotta-light) 0%, transparent 70%);
-  animation: float3 18s ease-in-out infinite;
+.auth-visual {
+  min-height: 620px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  color: var(--rb-crema-50);
 }
 
-@keyframes float1 {
-  0%,
-  100% {
-    transform: translate(0, 0) scale(1);
-  }
-
-  50% {
-    transform: translate(-20px, 15px) scale(1.05);
-  }
+.auth-brand {
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  color: var(--rb-crema-50);
+  text-decoration: none;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.82rem;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  text-shadow: 0 8px 28px rgba(0, 0, 0, 0.28);
 }
 
-@keyframes float2 {
-  0%,
-  100% {
-    transform: translate(0, 0) scale(1);
-  }
-
-  50% {
-    transform: translate(15px, -20px) scale(1.08);
-  }
+.auth-brand svg {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 auto;
 }
 
-@keyframes float3 {
-  0%,
-  100% {
-    transform: translate(0, 0);
-  }
+.auth-story {
+  max-width: 560px;
+  padding: 36px;
+  color: var(--rb-crema-50);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.08)),
+    rgba(58, 53, 48, 0.34);
+  border-color: rgba(255, 255, 255, 0.34);
+}
 
-  50% {
-    transform: translate(10px, 10px);
-  }
+.auth-eyebrow {
+  display: inline-flex;
+  margin-bottom: 18px;
+  color: var(--rb-oro-100);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+}
+
+.auth-story h2 {
+  max-width: 480px;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 3.1rem;
+  line-height: 1.02;
+  font-weight: 600;
+  color: var(--rb-crema-50);
+}
+
+.auth-story p {
+  max-width: 440px;
+  margin: 20px 0 0;
+  color: rgba(253, 251, 247, 0.82);
+  font-size: 1rem;
+  line-height: 1.8;
 }
 
 .auth-card {
+  justify-self: end;
   width: 100%;
-  max-width: 420px;
-  background: rgba(253, 251, 247, 0.85);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(166, 124, 82, 0.12);
-  border-radius: 24px;
-  padding: 40px 36px;
-  box-shadow: 0 20px 60px rgba(58, 53, 48, 0.08);
-  position: relative;
-  z-index: 2;
-  animation: cardIn 0.6s ease-out;
-
-  @media (max-width: 480px) {
-    padding: 32px 24px;
-    border-radius: 20px;
-  }
-}
-
-@keyframes cardIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  max-width: 520px;
+  min-height: 620px;
+  padding: 42px;
+  animation: rb-glass-in 640ms var(--ease-glass);
 }
 
 .auth-header {
   text-align: center;
   margin-bottom: 28px;
+}
 
-  .auth-logo {
-    width: 60px;
-    height: 60px;
-    margin: 0 auto 16px;
-    color: var(--terracotta);
+.auth-logo {
+  width: 70px;
+  height: 70px;
+  margin: 0 auto 18px;
+  display: grid;
+  place-items: center;
+  color: var(--rb-terracota-500);
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.34);
+  border: 1px solid rgba(166, 124, 82, 0.18);
+  box-shadow:
+    0 16px 36px rgba(166, 124, 82, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.74);
+}
 
-    svg {
-      width: 100%;
-      height: 100%;
-    }
-  }
+.auth-logo svg {
+  width: 56px;
+  height: 56px;
+}
 
-  .auth-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 2rem;
-    font-weight: 600;
-    color: var(--terracotta-deep);
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    margin: 0;
-  }
+.auth-title {
+  font-family: var(--font-display);
+  font-size: 2.15rem;
+  font-weight: 600;
+  color: var(--rb-terracota-700);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin: 0;
+}
 
-  .auth-subtitle {
-    font-size: 0.88rem;
-    color: var(--text-light);
-    margin: 6px 0 0;
-    font-weight: 300;
-  }
+.auth-subtitle {
+  margin: 8px 0 0;
+  font-size: 0.95rem;
+  color: var(--rb-muted);
+  font-weight: 400;
+}
+
+.auth-body form {
+  display: grid;
+  gap: 4px;
 }
 
 .full-width {
   width: 100%;
 }
 
-.submit-btn {
-  height: 48px;
-  margin-top: 8px;
-  font-size: 0.9rem !important;
-  letter-spacing: 2px !important;
-  text-transform: uppercase !important;
+.auth-options {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: -2px 0 12px;
+  color: var(--rb-muted);
+  font-size: 0.82rem;
+}
 
-  mat-spinner {
-    margin: auto;
-  }
+.text-action {
+  border: 0;
+  background: transparent;
+  color: var(--rb-terracota-700);
+  font: 700 0.78rem var(--font-body);
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+.submit-btn {
+  height: 54px;
+  margin-top: 4px;
+  font-size: 0.9rem !important;
+  letter-spacing: 0.18em !important;
+  text-transform: uppercase !important;
+  box-shadow:
+    0 18px 34px rgba(166, 124, 82, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22) !important;
+}
+
+.submit-btn mat-spinner {
+  margin: auto;
 }
 
 .error-msg {
   display: flex;
   align-items: center;
-  gap: 8px;
-  color: var(--danger);
-  background: var(--danger-light);
-  padding: 12px 16px;
-  border-radius: 12px;
-  margin-bottom: 16px;
-  font-size: 0.85rem;
+  gap: 10px;
+  color: #B83D32;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.38), rgba(255, 255, 255, 0.12)),
+    rgba(232, 213, 211, 0.78);
+  padding: 13px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(184, 61, 50, 0.12);
+  margin-bottom: 18px;
+  font-size: 0.9rem;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55);
+}
 
-  mat-icon {
-    font-size: 20px;
-    width: 20px;
-    height: 20px;
-    flex-shrink: 0;
-  }
+.error-msg mat-icon {
+  font-size: 21px;
+  width: 21px;
+  height: 21px;
+  flex-shrink: 0;
+}
+
+.auth-separator {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 24px 0 14px;
+  color: var(--rb-muted);
+  font-size: 0.78rem;
+}
+
+.auth-separator::before,
+.auth-separator::after {
+  content: '';
+  height: 1px;
+  flex: 1;
+  background: rgba(166, 124, 82, 0.13);
+}
+
+.google-button {
+  width: 100%;
+  height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border-radius: var(--radius-pill);
+  border: 1px solid rgba(166, 124, 82, 0.18);
+  background: rgba(255, 255, 255, 0.34);
+  color: var(--rb-carbon-700);
+  font: 700 0.88rem var(--font-body);
+  cursor: not-allowed;
+  opacity: 0.78;
+}
+
+.google-mark {
+  width: 24px;
+  height: 24px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--rb-crema-50);
+  color: #4285F4;
+  font-weight: 900;
+  box-shadow: 0 4px 14px rgba(58, 53, 48, 0.08);
 }
 
 .auth-footer {
   text-align: center;
   margin-top: 24px;
-  padding-top: 20px;
-  border-top: 1px solid rgba(166, 124, 82, 0.1);
-
-  p {
-    margin: 0;
-    color: var(--text-light);
-    font-size: 0.875rem;
-  }
-
-  a {
-    color: var(--terracotta-deep);
-    font-weight: 500;
-    text-decoration: none;
-    transition: color 0.3s;
-
-    &:hover {
-      color: var(--terracotta);
-      text-decoration: underline;
-    }
-  }
+  padding-top: 22px;
+  border-top: 1px solid rgba(166, 124, 82, 0.12);
 }
 
 .register-cta {
@@ -206,23 +282,24 @@
   justify-content: center;
   gap: 10px;
   flex-wrap: wrap;
+}
 
-  span {
-    color: var(--text-light);
-    font-size: 0.875rem;
-  }
+.register-cta span {
+  color: var(--rb-muted);
+  font-size: 0.9rem;
 }
 
 .register-menu-button {
-  border-radius: 999px;
-  border-color: rgba(166, 124, 82, 0.24) !important;
-  color: var(--terracotta-deep) !important;
-  font-weight: 600;
+  border-radius: var(--radius-pill) !important;
+  border-color: rgba(166, 124, 82, 0.26) !important;
+  color: var(--rb-terracota-700) !important;
+  font-weight: 700;
   padding-inline: 18px;
+  background: rgba(255, 255, 255, 0.34);
+}
 
-  mat-icon {
-    margin-left: 4px;
-  }
+.register-menu-button mat-icon {
+  margin-left: 4px;
 }
 
 .menu-option {
@@ -234,14 +311,100 @@
 
 .menu-option-title {
   font-size: 0.92rem;
-  font-weight: 600;
-  color: var(--terracotta-deep);
+  font-weight: 700;
+  color: var(--rb-terracota-700);
 }
 
 .menu-option-description {
   font-size: 0.78rem;
   line-height: 1.4;
-  color: var(--text-light);
+  color: var(--rb-muted);
   white-space: normal;
   max-width: 260px;
+}
+
+:host ::ng-deep .mat-mdc-form-field {
+  --mdc-outlined-text-field-container-shape: 16px;
+}
+
+:host ::ng-deep .mat-mdc-text-field-wrapper {
+  background: rgba(255, 255, 255, 0.34);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.46);
+}
+
+:host ::ng-deep .mat-mdc-form-field-icon-prefix {
+  color: var(--rb-terracota-700);
+  padding-left: 12px;
+}
+
+@media (max-width: 980px) {
+  .auth-container {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    padding: 28px 18px;
+  }
+
+  .auth-visual {
+    min-height: auto;
+    gap: 22px;
+  }
+
+  .auth-story {
+    display: none;
+  }
+
+  .auth-card {
+    justify-self: center;
+    min-height: auto;
+    padding: 34px 24px;
+  }
+
+  .auth-brand {
+    color: var(--rb-carbon-900);
+    text-shadow: 0 1px 12px rgba(255, 255, 255, 0.8);
+  }
+
+  .auth-bg {
+    background:
+      linear-gradient(180deg, rgba(245, 240, 232, 0.86), rgba(245, 240, 232, 0.68)),
+      url('/assets/hero-filandia-iglesia.jpg') center / cover no-repeat;
+  }
+}
+
+@media (max-width: 520px) {
+  .auth-container {
+    padding: 20px 14px;
+  }
+
+  .auth-brand {
+    font-size: 0.74rem;
+    gap: 12px;
+  }
+
+  .auth-card {
+    padding: 30px 18px;
+    border-radius: 24px;
+  }
+
+  .auth-title {
+    font-size: 1.82rem;
+    letter-spacing: 0.16em;
+  }
+
+  .auth-logo {
+    width: 62px;
+    height: 62px;
+  }
+
+  .auth-options {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 6px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-card {
+    animation: none;
+  }
 }

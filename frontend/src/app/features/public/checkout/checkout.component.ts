@@ -5,6 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { HttpErrorResponse } from '@angular/common/http';
+import { LiquidPointerDirective } from '../../../core/directives/liquid-pointer.directive';
 import { CartService } from '../../../core/services/cart.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ClienteVentaService } from '../../../core/services/cliente-venta.service';
@@ -20,7 +21,8 @@ import { ClienteVentaRequest, VentaItemRequest } from '../../../core/models/vent
   standalone: true,
   imports: [
     CommonModule, RouterLink,
-    MatIconModule, MatButtonModule, MatProgressSpinnerModule
+    MatIconModule, MatButtonModule, MatProgressSpinnerModule,
+    LiquidPointerDirective
   ],
   templateUrl: './checkout.component.html',
   styleUrl: './checkout.component.scss'

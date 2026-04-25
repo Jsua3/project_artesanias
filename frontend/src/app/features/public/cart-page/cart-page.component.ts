@@ -3,12 +3,13 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { LiquidPointerDirective } from '../../../core/directives/liquid-pointer.directive';
 import { CartService } from '../../../core/services/cart.service';
 
 @Component({
   selector: 'app-cart-page',
   standalone: true,
-  imports: [CommonModule, RouterLink, MatIconModule, MatButtonModule],
+  imports: [CommonModule, RouterLink, MatIconModule, MatButtonModule, LiquidPointerDirective],
   templateUrl: './cart-page.component.html',
   styleUrl: './cart-page.component.scss'
 })

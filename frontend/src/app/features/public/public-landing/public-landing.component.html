@@ -1,6 +1,6 @@
 <!-- ========= HEADER ========= -->
 <header class="cliente-header" [class.is-glass]="scrolled()">
-  <div class="cliente-header__inner" appLiquidPointer [liquidTiltStrength]="1.5">
+  <div class="cliente-header__inner liquid-glass liquid-glass--frosted liquid-glass--pill" appLiquidPointer [liquidTiltStrength]="1.5">
     <a href="#" class="cliente-header__brand">
       <svg width="32" height="32" viewBox="0 0 50 50" fill="none">
         <path d="M25 7C25 7 17 15 17 25C17 35 25 43 25 43C25 43 33 35 33 25C33 15 25 7 25 7Z"
@@ -45,6 +45,45 @@
     </div>
   </div>
 </header>
+
+<nav class="rb-floating-bar cliente-bottom-bar" aria-label="Navegacion rapida">
+  <div class="rb-floating-bar__main">
+    <a class="rb-floating-bar__item" href="#coleccion">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+        <path d="M4 7h16M6 7l1 13h10l1-13M9 7a3 3 0 0 1 6 0"/>
+      </svg>
+      <span>Piezas</span>
+    </a>
+    <a class="rb-floating-bar__item" href="#maestros">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+        <circle cx="12" cy="8" r="4"/><path d="M5 21c1.2-4 4-6 7-6s5.8 2 7 6"/>
+      </svg>
+      <span>Maestros</span>
+    </a>
+    <a class="rb-floating-bar__item" href="#territorio">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+        <path d="M12 21s7-5.2 7-12a7 7 0 1 0-14 0c0 6.8 7 12 7 12z"/>
+        <circle cx="12" cy="9" r="2.5"/>
+      </svg>
+      <span>Ruta</span>
+    </a>
+    <button class="rb-floating-bar__item" type="button" (click)="auth.isLoggedIn() ? (auth.isCliente() ? goToMisPedidos() : goToPanel()) : goToLogin()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+        <path d="M4 5h16v14H4z"/><path d="M8 9h8M8 13h5"/>
+      </svg>
+      <span>Cuenta</span>
+    </button>
+  </div>
+  <button class="rb-floating-bar__action" type="button" aria-label="Abrir bolsa" (click)="goToCart()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+      <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+      <path d="M3 6h18M16 10a4 4 0 0 1-8 0"/>
+    </svg>
+    @if (cartCount() > 0) {
+      <span class="rb-floating-bar__badge">{{ cartCount() }}</span>
+    }
+  </button>
+</nav>
 
 <main>
   <!-- ========= HERO ========= -->

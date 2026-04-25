@@ -1,5 +1,5 @@
 <div class="page-container animate-in">
-  <div class="page-header">
+  <div class="page-header liquid-glass liquid-glass--solid" appLiquidPointer [liquidTiltStrength]="1">
     <h2 class="page-title">Ventas</h2>
     @if (auth.canAccessOperations()) {
       <button mat-raised-button color="primary" (click)="openForm()">
@@ -12,7 +12,7 @@
     <div class="loading-center"><mat-spinner /></div>
   } @else {
     <div class="desktop-table">
-      <mat-card>
+      <mat-card class="ventas-table-card liquid-glass liquid-glass--solid">
         <table mat-table [dataSource]="ventas()" class="full-width">
           <ng-container matColumnDef="fecha">
             <th mat-header-cell *matHeaderCellDef>Fecha</th>
@@ -78,7 +78,7 @@
       } @else {
         <div class="cards-grid">
           @for (v of ventas(); track v.id) {
-            <div class="data-card">
+            <div class="data-card liquid-glass liquid-glass--solid" appLiquidPointer [liquidTiltStrength]="1.5">
               <div class="data-card-header">
                 <div>
                   <p class="data-card-title">{{ v.total | currency:'COP':'symbol':'1.0-0' }}</p>
