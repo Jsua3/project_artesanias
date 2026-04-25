@@ -77,9 +77,10 @@ export class DashboardComponent implements OnInit {
 
     if (this.isArtesano()) {
       return [
-        { value: this.productService.productCount(), label: 'Artesanias', icon: 'palette', tone: 'terracotta' },
-        { value: this.stockService.stockCount(), label: 'En stock', icon: 'warehouse', tone: 'sage' },
-        { value: this.reportService.alerts().length, label: 'Alertas', icon: 'warning_amber', tone: 'danger' }
+        { value: this.productService.productCount(), label: 'Publicadas', icon: 'palette', tone: 'terracotta' },
+        { value: this.reportService.alerts().length, label: 'Stock bajo', icon: 'warning_amber', tone: 'danger' },
+        { value: this.topSoldProducts().length, label: 'Con ventas', icon: 'trending_up', tone: 'sage' },
+        { value: this.recentVentas().length, label: 'Ventas recientes', icon: 'receipt_long', tone: 'mauve' }
       ];
     }
 
@@ -131,6 +132,75 @@ export class DashboardComponent implements OnInit {
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
       .slice(0, 4)
   );
+
+  recentVentas = computed(() =>
+    this.ventaService.ventas()
+      .slice()
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .slice(0, 5)
+  );
+
+  lowStockProducts = computed(() => {
+    const stockById = new Map(this.stockService.stock().map(s => [s.productId, s.quantity]));
+    return this.productService.products()
+      .map(product => ({ name: product.name, stock: stockById.get(product.id) ?? 0, min: product.stockMinimo ?? 5 }))
+      .filter(item => item.stock <= item.min)
+      .slice(0, 4);
+  });
+
+  productSalesRows = computed(() => {
+    const sales = new Map<string, number>();
+    this.ventaService.ventas().forEach(venta => {
+      venta.detalles?.forEach(detalle => {
+        sales.set(detalle.productId, (sales.get(detalle.productId) ?? 0) + detalle.cantidad);
+      });
+    });
+
+    return this.productService.products()
+      .map(product => ({
+        id: product.id,
+        name: product.name,
+        sold: sales.get(product.id) ?? 0
+      }));
+  });
+
+  topSoldProducts = computed(() =>
+    this.productSalesRows()
+      .filter(item => item.sold > 0)
+      .sort((a, b) => b.sold - a.sold)
+      .slice(0, 4)
+  );
+
+  slowSoldProducts = computed(() =>
+    this.productSalesRows()
+      .sort((a, b) => a.sold - b.sold)
+      .slice(0, 4)
+  );
+
+  profileCompletion = computed(() => {
+    const user = this.auth.currentUser();
+    if (typeof user?.profileCompletion === 'number') {
+      return user.profileCompletion;
+    }
+    const checks = [
+      !!user?.displayName,
+      !!user?.avatarUrl,
+      !!user?.username,
+      !!user?.bio,
+      !!user?.locality,
+      !!user?.craftType,
+      user?.approvalStatus === 'APPROVED'
+    ];
+    return Math.round((checks.filter(Boolean).length / checks.length) * 100);
+  });
+
+  profileNote = computed(() => {
+    const user = this.auth.currentUser();
+    if (user?.profileComplete) {
+      return 'Perfil completo. Tu catálogo ya tiene una ficha sólida para compradores.';
+    }
+    return 'Completa foto, bio, localidad y oficio para desbloquear una ficha más confiable.';
+  });
 
   barChartData = computed<ChartData<'bar'>>(() => {
     const top10 = this.stockService.top10ByQuantity();
@@ -185,9 +255,16 @@ export class DashboardComponent implements OnInit {
     if (this.auth.canAccessReports()) {
       this.reportService.loadAll();
     }
+    if (this.auth.canAccessOperations()) {
+      this.ventaService.loadAll();
+    }
     if (this.isAdmin()) {
       this.ventaService.loadDeliveries();
     }
+  }
+
+  formatPrice(n: number): string {
+    return '$ ' + (n ?? 0).toLocaleString('es-CO');
   }
 
   deliveryTitle(venta: Venta): string {

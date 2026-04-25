@@ -8,6 +8,13 @@ CREATE TABLE IF NOT EXISTS user_accounts (
     courier_company VARCHAR(150),
     display_name VARCHAR(100),
     avatar_url TEXT,
+    first_name VARCHAR(100),
+    last_name VARCHAR(100),
+    phone VARCHAR(30),
+    bio TEXT,
+    locality VARCHAR(160),
+    craft_type VARCHAR(160),
+    address VARCHAR(300),
     created_at TIMESTAMP NOT NULL,
     approved_at TIMESTAMP,
     approved_by UUID
@@ -27,6 +34,13 @@ ALTER TABLE user_accounts ADD COLUMN IF NOT EXISTS courier_mode VARCHAR(30);
 ALTER TABLE user_accounts ADD COLUMN IF NOT EXISTS courier_company VARCHAR(150);
 ALTER TABLE user_accounts ADD COLUMN IF NOT EXISTS display_name VARCHAR(100);
 ALTER TABLE user_accounts ADD COLUMN IF NOT EXISTS avatar_url TEXT;
+ALTER TABLE user_accounts ADD COLUMN IF NOT EXISTS first_name VARCHAR(100);
+ALTER TABLE user_accounts ADD COLUMN IF NOT EXISTS last_name VARCHAR(100);
+ALTER TABLE user_accounts ADD COLUMN IF NOT EXISTS phone VARCHAR(30);
+ALTER TABLE user_accounts ADD COLUMN IF NOT EXISTS bio TEXT;
+ALTER TABLE user_accounts ADD COLUMN IF NOT EXISTS locality VARCHAR(160);
+ALTER TABLE user_accounts ADD COLUMN IF NOT EXISTS craft_type VARCHAR(160);
+ALTER TABLE user_accounts ADD COLUMN IF NOT EXISTS address VARCHAR(300);
 ALTER TABLE user_accounts ADD COLUMN IF NOT EXISTS approved_at TIMESTAMP;
 ALTER TABLE user_accounts ADD COLUMN IF NOT EXISTS approved_by UUID;
 

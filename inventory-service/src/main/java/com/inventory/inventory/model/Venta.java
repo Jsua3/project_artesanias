@@ -25,6 +25,15 @@ public class Venta implements Persistable<UUID> {
     private boolean onTheWay;
     private boolean delivered;
     private LocalDateTime deliveryUpdatedAt;
+    private UUID deliveryUpdatedBy;
+    private LocalDateTime packedAt;
+    private LocalDateTime pickedUpAt;
+    private LocalDateTime onTheWayAt;
+    private LocalDateTime deliveredAt;
+    private Double trackingLatitude;
+    private Double trackingLongitude;
+    private String deliveryEvidenceUrl;
+    private String deliveryNotes;
     private LocalDateTime createdAt;
 
     /** Stripe Checkout Session ID (cs_...). Null hasta que se genere la sesion de pago. */
@@ -102,6 +111,42 @@ public class Venta implements Persistable<UUID> {
 
     public LocalDateTime deliveryUpdatedAt() {
         return deliveryUpdatedAt;
+    }
+
+    public UUID deliveryUpdatedBy() {
+        return deliveryUpdatedBy;
+    }
+
+    public LocalDateTime packedAt() {
+        return packedAt;
+    }
+
+    public LocalDateTime pickedUpAt() {
+        return pickedUpAt;
+    }
+
+    public LocalDateTime onTheWayAt() {
+        return onTheWayAt;
+    }
+
+    public LocalDateTime deliveredAt() {
+        return deliveredAt;
+    }
+
+    public Double trackingLatitude() {
+        return trackingLatitude;
+    }
+
+    public Double trackingLongitude() {
+        return trackingLongitude;
+    }
+
+    public String deliveryEvidenceUrl() {
+        return deliveryEvidenceUrl;
+    }
+
+    public String deliveryNotes() {
+        return deliveryNotes;
     }
 
     public LocalDateTime createdAt() {
@@ -199,6 +244,78 @@ public class Venta implements Persistable<UUID> {
 
     public void setDeliveryUpdatedAt(LocalDateTime deliveryUpdatedAt) {
         this.deliveryUpdatedAt = deliveryUpdatedAt;
+    }
+
+    public UUID getDeliveryUpdatedBy() {
+        return deliveryUpdatedBy;
+    }
+
+    public void setDeliveryUpdatedBy(UUID deliveryUpdatedBy) {
+        this.deliveryUpdatedBy = deliveryUpdatedBy;
+    }
+
+    public LocalDateTime getPackedAt() {
+        return packedAt;
+    }
+
+    public void setPackedAt(LocalDateTime packedAt) {
+        this.packedAt = packedAt;
+    }
+
+    public LocalDateTime getPickedUpAt() {
+        return pickedUpAt;
+    }
+
+    public void setPickedUpAt(LocalDateTime pickedUpAt) {
+        this.pickedUpAt = pickedUpAt;
+    }
+
+    public LocalDateTime getOnTheWayAt() {
+        return onTheWayAt;
+    }
+
+    public void setOnTheWayAt(LocalDateTime onTheWayAt) {
+        this.onTheWayAt = onTheWayAt;
+    }
+
+    public LocalDateTime getDeliveredAt() {
+        return deliveredAt;
+    }
+
+    public void setDeliveredAt(LocalDateTime deliveredAt) {
+        this.deliveredAt = deliveredAt;
+    }
+
+    public Double getTrackingLatitude() {
+        return trackingLatitude;
+    }
+
+    public void setTrackingLatitude(Double trackingLatitude) {
+        this.trackingLatitude = trackingLatitude;
+    }
+
+    public Double getTrackingLongitude() {
+        return trackingLongitude;
+    }
+
+    public void setTrackingLongitude(Double trackingLongitude) {
+        this.trackingLongitude = trackingLongitude;
+    }
+
+    public String getDeliveryEvidenceUrl() {
+        return deliveryEvidenceUrl;
+    }
+
+    public void setDeliveryEvidenceUrl(String deliveryEvidenceUrl) {
+        this.deliveryEvidenceUrl = deliveryEvidenceUrl;
+    }
+
+    public String getDeliveryNotes() {
+        return deliveryNotes;
+    }
+
+    public void setDeliveryNotes(String deliveryNotes) {
+        this.deliveryNotes = deliveryNotes;
     }
 
     public LocalDateTime getCreatedAt() {

@@ -9,6 +9,15 @@ export interface DeliveryTracking {
   progress: number;
   stage: 'PENDIENTE' | 'EMPACADO' | 'RECOGIDO' | 'EN_RUTA' | 'ENTREGADO';
   updatedAt?: string | null;
+  updatedBy?: string | null;
+  packedAt?: string | null;
+  pickedUpAt?: string | null;
+  onTheWayAt?: string | null;
+  deliveredAt?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
+  evidenceUrl?: string | null;
+  notes?: string | null;
 }
 
 export interface VentaDetalle {
@@ -50,4 +59,8 @@ export interface DeliveryTrackingUpdateRequest {
   pickedUp: boolean;
   onTheWay: boolean;
   delivered: boolean;
+  evidenceUrl?: string | null;
+  notes?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
 }

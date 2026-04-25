@@ -3,7 +3,10 @@
 :host {
   display: block;
   min-height: 100vh;
-  background: #faf7f2;
+  background:
+    radial-gradient(circle at 14% 8%, rgba(166, 124, 82, 0.12), transparent 28%),
+    radial-gradient(circle at 82% 16%, rgba(138, 154, 123, 0.12), transparent 30%),
+    #faf7f2;
   color: #2d2a26;
 }
 
@@ -60,9 +63,13 @@
   gap: 18px;
   padding: 80px 20px;
   text-align: center;
-  background: #fff;
-  border: 1px solid #ece5db;
-  border-radius: 8px;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,0.72), rgba(255,255,255,0.34)),
+    rgba(255,255,255,0.42);
+  border: 1px solid rgba(255,255,255,0.48);
+  border-radius: 20px;
+  backdrop-filter: blur(14px) saturate(1.12);
+  -webkit-backdrop-filter: blur(14px) saturate(1.12);
 
   mat-icon {
     font-size: 56px;
@@ -97,9 +104,16 @@
 }
 
 .checkout-card {
-  background: #fff;
-  border: 1px solid #ece5db;
-  border-radius: 8px;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,0.72), rgba(255,255,255,0.34)),
+    rgba(255,255,255,0.42);
+  border: 1px solid rgba(255,255,255,0.48);
+  border-radius: 20px;
+  backdrop-filter: blur(14px) saturate(1.12);
+  -webkit-backdrop-filter: blur(14px) saturate(1.12);
+  box-shadow:
+    0 12px 30px rgba(45,42,38,0.07),
+    inset 0 1px 0 rgba(255,255,255,0.72);
   padding: 24px;
 
   h2 {
@@ -232,9 +246,17 @@
 
 /* Resumen lateral */
 .checkout-summary {
-  background: #fff;
-  border: 1px solid #ece5db;
-  border-radius: 8px;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,0.74), rgba(255,255,255,0.34)),
+    rgba(255,255,255,0.44);
+  border: 1px solid rgba(255,255,255,0.50);
+  border-radius: 20px;
+  backdrop-filter: blur(16px) saturate(1.14);
+  -webkit-backdrop-filter: blur(16px) saturate(1.14);
+  box-shadow:
+    0 16px 38px rgba(45,42,38,0.09),
+    inset 0 1px 0 rgba(255,255,255,0.76),
+    inset 0 -1px 0 rgba(255,255,255,0.14);
   padding: 24px;
   display: flex;
   flex-direction: column;
@@ -305,8 +327,8 @@
   font-size: 13px;
   line-height: 1.5;
   color: #6b6259;
-  background: #f5efe5;
-  border-radius: 6px;
+  background: rgba(166, 124, 82, 0.08);
+  border-radius: 14px;
   padding: 10px 12px;
 
   strong {

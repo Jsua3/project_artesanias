@@ -92,7 +92,7 @@ export class ProductListComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.productService.loadAll();
+    this.loadProducts();
     this.categoryService.loadAll();
     this.artesanoService.loadAll();
     this.stockService.loadAll();
@@ -107,7 +107,7 @@ export class ProductListComponent implements OnInit {
       data: product ?? null
     });
     ref.afterClosed().subscribe(result => {
-      if (result) this.productService.loadAll();
+      if (result) this.loadProducts();
     });
   }
 
@@ -118,9 +118,29 @@ export class ProductListComponent implements OnInit {
     this.productService.delete(id).subscribe({
       next: () => {
         this.snackBar.open('Artesanía eliminada', 'OK', { duration: 3000 });
-        this.productService.loadAll();
+        this.loadProducts();
       },
       error: () => this.snackBar.open('Error al eliminar', 'OK', { duration: 3000 })
     });
+  }
+
+  toggleStatus(product: Product): void {
+    if (!this.canManageProducts()) return;
+    const nextState = !product.active;
+    this.productService.updateStatus(product.id, nextState).subscribe({
+      next: () => {
+        this.snackBar.open(nextState ? 'Artesania publicada' : 'Artesania ocultada', 'OK', { duration: 2500 });
+        this.loadProducts();
+      },
+      error: () => this.snackBar.open('No se pudo actualizar el estado', 'OK', { duration: 3000 })
+    });
+  }
+
+  private loadProducts(): void {
+    if (this.canManageProducts()) {
+      this.productService.loadForManagement();
+      return;
+    }
+    this.productService.loadAll();
   }
 }

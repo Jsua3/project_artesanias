@@ -72,6 +72,7 @@ public class AuthService {
                     user.setApprovalStatus(approvalStatus);
                     user.setCourierMode(courierMode);
                     user.setCourierCompany(courierCompany);
+                    user.setDisplayName(defaultDisplayName(username, request.displayName()));
                     user.setCreatedAt(now);
                     user.setApprovedAt(approvalStatus == ApprovalStatus.APPROVED ? now : null);
                     return userRepository.save(user)
@@ -195,10 +196,31 @@ public class AuthService {
                 .flatMap(user -> {
                     user.setNew(false);
                     if (request.displayName() != null) {
-                        user.setDisplayName(request.displayName());
+                        user.setDisplayName(normalizeOptional(request.displayName()));
                     }
                     if (request.avatarUrl() != null) {
-                        user.setAvatarUrl(request.avatarUrl());
+                        user.setAvatarUrl(normalizeOptional(request.avatarUrl()));
+                    }
+                    if (request.firstName() != null) {
+                        user.setFirstName(normalizeOptional(request.firstName()));
+                    }
+                    if (request.lastName() != null) {
+                        user.setLastName(normalizeOptional(request.lastName()));
+                    }
+                    if (request.phone() != null) {
+                        user.setPhone(normalizeOptional(request.phone()));
+                    }
+                    if (request.bio() != null) {
+                        user.setBio(normalizeOptional(request.bio()));
+                    }
+                    if (request.locality() != null) {
+                        user.setLocality(normalizeOptional(request.locality()));
+                    }
+                    if (request.craftType() != null) {
+                        user.setCraftType(normalizeOptional(request.craftType()));
+                    }
+                    if (request.address() != null) {
+                        user.setAddress(normalizeOptional(request.address()));
                     }
                     return userRepository.save(user);
                 })
@@ -290,6 +312,15 @@ public class AuthService {
                 user.getCourierCompany(),
                 user.getDisplayName(),
                 user.getAvatarUrl(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getPhone(),
+                user.getBio(),
+                user.getLocality(),
+                user.getCraftType(),
+                user.getAddress(),
+                profileCompletion(user),
+                profileComplete(user),
                 user.getCreatedAt(),
                 user.getApprovedAt()
         );
@@ -297,5 +328,67 @@ public class AuthService {
 
     private UserRole normalizeRole(UserRole role) {
         return role == UserRole.OPERATOR ? UserRole.MAESTRO : role;
+    }
+
+    private String defaultDisplayName(String username, String displayName) {
+        String normalized = normalizeOptional(displayName);
+        return normalized != null ? normalized : username;
+    }
+
+    private String normalizeOptional(String value) {
+        if (value == null) {
+            return null;
+        }
+        String normalized = value.trim();
+        return normalized.isBlank() ? null : normalized;
+    }
+
+    private int profileCompletion(UserAccount user) {
+        UserRole role = normalizeRole(user.getRole());
+        int total = 4;
+        int done = 0;
+
+        if (hasText(user.getDisplayName())) done++;
+        if (hasText(user.getAvatarUrl())) done++;
+        if (hasText(user.getFirstName()) || hasText(user.getLastName())) done++;
+        if (hasText(user.getPhone())) done++;
+
+        if (role == UserRole.MAESTRO) {
+            total += 3;
+            if (hasText(user.getLocality())) done++;
+            if (hasText(user.getCraftType())) done++;
+            if (hasText(user.getBio())) done++;
+        } else if (role == UserRole.DOMICILIARIO) {
+            total += 2;
+            if (hasText(user.getAddress()) || hasText(user.getLocality())) done++;
+            if (user.getCourierMode() != null) done++;
+        } else if (role == UserRole.CLIENTE) {
+            total += 1;
+            if (hasText(user.getAddress()) || hasText(user.getLocality())) done++;
+        }
+
+        return Math.round(done * 100f / total);
+    }
+
+    private boolean profileComplete(UserAccount user) {
+        UserRole role = normalizeRole(user.getRole());
+        boolean baseComplete = hasText(user.getDisplayName())
+                && (hasText(user.getFirstName()) || hasText(user.getLastName()))
+                && hasText(user.getPhone());
+
+        if (role == UserRole.MAESTRO) {
+            return baseComplete && hasText(user.getLocality()) && hasText(user.getCraftType()) && hasText(user.getBio());
+        }
+        if (role == UserRole.DOMICILIARIO) {
+            return baseComplete && (hasText(user.getAddress()) || hasText(user.getLocality())) && user.getCourierMode() != null;
+        }
+        if (role == UserRole.CLIENTE) {
+            return baseComplete && (hasText(user.getAddress()) || hasText(user.getLocality()));
+        }
+        return baseComplete;
+    }
+
+    private boolean hasText(String value) {
+        return value != null && !value.isBlank();
     }
 }

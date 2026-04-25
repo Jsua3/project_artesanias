@@ -1,13 +1,15 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { finalize } from 'rxjs/operators';
 import { CreateEventoRequest, EventoPropuesta } from '../../../core/models/comunidad.model';
 import { AuthService } from '../../../core/services/auth.service';
+import { ComunidadService } from '../../../core/services/comunidad.service';
 
 const EMPTY_FORM: CreateEventoRequest = {
   organizacion: '',
@@ -31,24 +33,23 @@ const EMPTY_FORM: CreateEventoRequest = {
         <p>Propón un evento artesanal para que el administrador lo apruebe.</p>
       </header>
 
-      <!-- Formulario de propuesta -->
       <section class="evento-form-card">
         <h2><mat-icon>event</mat-icon> Nueva propuesta</h2>
         <div class="form-grid">
           <mat-form-field appearance="outline">
-            <mat-label>Organización</mat-label>
-            <input matInput [(ngModel)]="form().organizacion" placeholder="Ej: Alcaldía de Salento" />
+            <mat-label>Organizacion</mat-label>
+            <input matInput [(ngModel)]="form().organizacion" placeholder="Ej: Alcaldia de Salento" />
           </mat-form-field>
           <mat-form-field appearance="outline">
             <mat-label>Nombre del evento</mat-label>
-            <input matInput [(ngModel)]="form().nombre" placeholder="Ej: Feria Nacional de Artesanías" />
+            <input matInput [(ngModel)]="form().nombre" placeholder="Ej: Feria Nacional de Artesanias" />
           </mat-form-field>
           <mat-form-field appearance="outline">
             <mat-label>Localidad / Municipio</mat-label>
-            <input matInput [(ngModel)]="form().localidad" placeholder="Ej: Salento, Quindío" />
+            <input matInput [(ngModel)]="form().localidad" placeholder="Ej: Salento, Quindio" />
           </mat-form-field>
           <mat-form-field appearance="outline">
-            <mat-label>Dirección exacta</mat-label>
+            <mat-label>Direccion exacta</mat-label>
             <input matInput [(ngModel)]="form().direccionExacta" placeholder="Ej: Parque principal, calle 6 #4-18" />
           </mat-form-field>
           <mat-form-field appearance="outline">
@@ -64,8 +65,8 @@ const EMPTY_FORM: CreateEventoRequest = {
             <input matInput type="time" [(ngModel)]="form().hora" />
           </mat-form-field>
           <mat-form-field appearance="outline" class="full-col">
-            <mat-label>Descripción (opcional)</mat-label>
-            <textarea matInput rows="3" [(ngModel)]="form().descripcion" placeholder="Detalles adicionales…"></textarea>
+            <mat-label>Descripcion (opcional)</mat-label>
+            <textarea matInput rows="3" [(ngModel)]="form().descripcion" placeholder="Detalles adicionales"></textarea>
           </mat-form-field>
         </div>
         <button mat-raised-button class="submit-btn" [disabled]="submitting()" (click)="submitEvento()">
@@ -74,7 +75,6 @@ const EMPTY_FORM: CreateEventoRequest = {
         </button>
       </section>
 
-      <!-- Mis propuestas -->
       @if (eventos().length > 0) {
         <section class="mis-eventos">
           <h2>Mis propuestas</h2>
@@ -117,13 +117,17 @@ const EMPTY_FORM: CreateEventoRequest = {
 export class EventosComponent implements OnInit {
   auth = inject(AuthService);
   private snackBar = inject(MatSnackBar);
+  private comunidadService = inject(ComunidadService);
 
   readonly form = signal<CreateEventoRequest>({ ...EMPTY_FORM });
   readonly eventos = signal<EventoPropuesta[]>([]);
   readonly submitting = signal(false);
 
   ngOnInit(): void {
-    // TODO: cargar propuestas del artesano desde backend
+    this.comunidadService.getMyEventos().subscribe({
+      next: eventos => this.eventos.set(eventos),
+      error: () => this.snackBar.open('No se pudieron cargar tus propuestas', 'OK', { duration: 2500 })
+    });
   }
 
   submitEvento(): void {
@@ -133,23 +137,18 @@ export class EventosComponent implements OnInit {
       return;
     }
 
-    this.submitting.set(true);
-    // TODO: llamar al backend
     const user = this.auth.currentUser();
-    const nuevo: EventoPropuesta = {
-      id: crypto.randomUUID(),
-      artesanoId: user?.id ?? '',
-      artesanoNombre: user?.displayName || user?.username,
+    this.submitting.set(true);
+    this.comunidadService.createEvento({
       ...f,
-      estado: 'PENDIENTE',
-      createdAt: new Date().toISOString()
-    };
-
-    setTimeout(() => {
-      this.eventos.update(ev => [nuevo, ...ev]);
-      this.form.set({ ...EMPTY_FORM });
-      this.submitting.set(false);
-      this.snackBar.open('Propuesta enviada. Pendiente de aprobación.', 'OK', { duration: 3000 });
-    }, 500);
+      artesanoNombre: user?.displayName || user?.username
+    }).pipe(finalize(() => this.submitting.set(false))).subscribe({
+      next: nuevo => {
+        this.eventos.update(ev => [nuevo, ...ev]);
+        this.form.set({ ...EMPTY_FORM });
+        this.snackBar.open('Propuesta enviada. Pendiente de aprobacion.', 'OK', { duration: 3000 });
+      },
+      error: err => this.snackBar.open(err.error?.message ?? 'No se pudo enviar la propuesta', 'OK', { duration: 3500 })
+    });
   }
 }

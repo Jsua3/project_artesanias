@@ -89,6 +89,23 @@ $success:   #4caf8a;
   mat-icon { font-size: 16px; width: 16px; height: 16px; }
 }
 
+.order-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 4px;
+
+  span {
+    padding: 8px 10px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.62);
+    border: 1px solid rgba(166,124,82,0.12);
+    color: $muted;
+    font-size: 12px;
+    text-align: center;
+  }
+}
+
 .badge {
   display: inline-flex;
   align-items: center;
@@ -203,14 +220,20 @@ $success:   #4caf8a;
 /* ─── Detalle del pedido ─────────────────────────────────────────────────── */
 .order-detail {
   position: relative;
-  background: #fff;
-  border: 1px solid $border;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,0.74), rgba(255,255,255,0.40)),
+    rgba(255,255,255,0.46);
+  border: 1px solid rgba(255,255,255,0.50);
   border-radius: 20px;
   padding: 28px;
   display: flex;
   flex-direction: column;
   gap: 24px;
-  box-shadow: 0 4px 24px rgba(45, 42, 38, 0.06);
+  backdrop-filter: blur(10px) saturate(1.08);
+  -webkit-backdrop-filter: blur(10px) saturate(1.08);
+  box-shadow:
+    0 4px 24px rgba(45, 42, 38, 0.06),
+    inset 0 1px 0 rgba(255,255,255,0.72);
 }
 
 .close-detail {
@@ -273,6 +296,154 @@ $success:   #4caf8a;
   border-radius: 12px;
 
   mat-icon { color: $terracota; font-size: 20px; width: 20px; height: 20px; flex-shrink: 0; }
+}
+
+.route-placeholder {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.8fr) minmax(0, 1fr);
+  gap: 16px;
+  padding: 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(166,124,82,0.12);
+  background: rgba(245,240,232,0.70);
+
+  @media (max-width: 720px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.route-map {
+  position: relative;
+  min-height: 168px;
+  border-radius: 16px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background:
+    linear-gradient(90deg, rgba(166,124,82,0.08) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(166,124,82,0.08) 1px, transparent 1px),
+    radial-gradient(circle at 24% 32%, rgba(138,158,141,0.26), transparent 20%),
+    radial-gradient(circle at 72% 72%, rgba(166,124,82,0.24), transparent 20%),
+    #f4eee5;
+  background-size: 28px 28px, 28px 28px, auto, auto, auto;
+
+  mat-icon {
+    color: rgba(166,124,82,0.34);
+    font-size: 44px;
+    width: 44px;
+    height: 44px;
+  }
+}
+
+.route-pin {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 3px solid #fff;
+  box-shadow: 0 8px 20px rgba(45,42,38,0.18);
+}
+
+.route-pin--origin {
+  left: 26%;
+  top: 30%;
+  background: $sage;
+}
+
+.route-pin--destination {
+  right: 24%;
+  bottom: 24%;
+  background: $terracota;
+}
+
+.route-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  h3 {
+    margin: 0;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 24px;
+  }
+
+  p {
+    margin: 0;
+    color: $muted;
+    font-size: 13px;
+  }
+
+  button {
+    width: fit-content;
+    margin-top: 8px;
+    border-radius: 999px;
+  }
+}
+
+.phase-flow {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+
+  @media (max-width: 920px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @media (max-width: 520px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.phase-card {
+  min-height: 178px;
+  padding: 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(166,124,82,0.12);
+  background: rgba(255,255,255,0.58);
+
+  &.phase-done {
+    border-color: rgba(138,158,141,0.32);
+    background: rgba(138,158,141,0.10);
+  }
+
+  h4 {
+    margin: 8px 0 2px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 19px;
+  }
+
+  p {
+    margin: 0 0 8px;
+    color: $muted;
+    font-size: 12px;
+  }
+
+  ul {
+    margin: 0;
+    padding-left: 16px;
+    color: $muted;
+    font-size: 11.5px;
+    line-height: 1.45;
+  }
+}
+
+.phase-card__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  span {
+    color: $terracota;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  mat-icon {
+    color: $sage;
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
 }
 
 .info-label {

@@ -1,11 +1,12 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTabsModule } from '@angular/material/tabs';
 import { ComunidadPost, EventoPropuesta } from '../../../core/models/comunidad.model';
+import { ComunidadService } from '../../../core/services/comunidad.service';
 
 @Component({
   selector: 'app-moderacion',
@@ -16,13 +17,12 @@ import { ComunidadPost, EventoPropuesta } from '../../../core/models/comunidad.m
       <header class="mod-header">
         <mat-icon class="header-icon">shield</mat-icon>
         <div>
-          <h1>Moderación</h1>
+          <h1>Moderacion</h1>
           <p>Revisa publicaciones de la comunidad y solicitudes de eventos</p>
         </div>
       </header>
 
       <mat-tab-group animationDuration="200ms">
-        <!-- Tab: Feed de la comunidad -->
         <mat-tab label="Feed comunidad">
           @if (posts().length === 0) {
             <div class="empty-mod"><mat-icon>check_circle</mat-icon><p>No hay publicaciones para moderar.</p></div>
@@ -49,10 +49,9 @@ import { ComunidadPost, EventoPropuesta } from '../../../core/models/comunidad.m
           }
         </mat-tab>
 
-        <!-- Tab: Eventos pendientes -->
         <mat-tab label="Propuestas de eventos">
           @if (pendingEventos().length === 0) {
-            <div class="empty-mod"><mat-icon>event_available</mat-icon><p>No hay eventos pendientes de aprobación.</p></div>
+            <div class="empty-mod"><mat-icon>event_available</mat-icon><p>No hay eventos pendientes de aprobacion.</p></div>
           } @else {
             <div class="post-list">
               @for (ev of pendingEventos(); track ev.id) {
@@ -101,29 +100,51 @@ import { ComunidadPost, EventoPropuesta } from '../../../core/models/comunidad.m
 })
 export class ModeracionComponent implements OnInit {
   private snackBar = inject(MatSnackBar);
+  private comunidadService = inject(ComunidadService);
 
   readonly posts = signal<ComunidadPost[]>([]);
   readonly pendingEventos = signal<EventoPropuesta[]>([]);
 
   ngOnInit(): void {
-    // TODO: cargar desde backend (posts con estado REPORTADO o todos, eventos PENDIENTES)
+    this.loadModeration();
   }
 
   removePost(id: string): void {
-    // TODO: llamar al backend
-    this.posts.update(p => p.filter(x => x.id !== id));
-    this.snackBar.open('Publicación eliminada', 'OK', { duration: 2000 });
+    this.comunidadService.deletePost(id).subscribe({
+      next: () => {
+        this.posts.update(p => p.filter(x => x.id !== id));
+        this.snackBar.open('Publicacion eliminada', 'OK', { duration: 2000 });
+      },
+      error: () => this.snackBar.open('No se pudo eliminar la publicacion', 'OK', { duration: 2500 })
+    });
   }
 
   approveEvento(id: string): void {
-    // TODO: llamar al backend
-    this.pendingEventos.update(ev => ev.filter(x => x.id !== id));
-    this.snackBar.open('Evento aprobado', 'OK', { duration: 2000 });
+    this.comunidadService.reviewEvento(id, { decision: 'APROBADO' }).subscribe({
+      next: () => {
+        this.pendingEventos.update(ev => ev.filter(x => x.id !== id));
+        this.snackBar.open('Evento aprobado', 'OK', { duration: 2000 });
+      },
+      error: () => this.snackBar.open('No se pudo aprobar el evento', 'OK', { duration: 2500 })
+    });
   }
 
   rejectEvento(id: string): void {
-    // TODO: llamar al backend
-    this.pendingEventos.update(ev => ev.filter(x => x.id !== id));
-    this.snackBar.open('Evento rechazado', 'OK', { duration: 2000 });
+    this.comunidadService.reviewEvento(id, { decision: 'RECHAZADO' }).subscribe({
+      next: () => {
+        this.pendingEventos.update(ev => ev.filter(x => x.id !== id));
+        this.snackBar.open('Evento rechazado', 'OK', { duration: 2000 });
+      },
+      error: () => this.snackBar.open('No se pudo rechazar el evento', 'OK', { duration: 2500 })
+    });
+  }
+
+  private loadModeration(): void {
+    this.comunidadService.getPostsForModeration().subscribe({
+      next: posts => this.posts.set(posts)
+    });
+    this.comunidadService.getPendingEventos().subscribe({
+      next: eventos => this.pendingEventos.set(eventos)
+    });
   }
 }

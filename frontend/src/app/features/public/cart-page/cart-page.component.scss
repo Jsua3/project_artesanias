@@ -73,11 +73,16 @@ $sage: #8a9e8d;
   gap: 16px;
   padding: 80px 24px;
   text-align: center;
-  background: rgba(255, 255, 255, 0.55);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(166, 124, 82, 0.15);
+  background:
+    linear-gradient(145deg, rgba(255,255,255,0.72), rgba(255,255,255,0.34)),
+    rgba(255,255,255,0.42);
+  backdrop-filter: blur(14px) saturate(1.12);
+  -webkit-backdrop-filter: blur(14px) saturate(1.12);
+  border: 1px solid rgba(255,255,255,0.48);
   border-radius: 20px;
+  box-shadow:
+    0 12px 30px rgba(45,42,38,0.07),
+    inset 0 1px 0 rgba(255,255,255,0.72);
 }
 
 .empty-icon-wrap {
@@ -144,12 +149,16 @@ $sage: #8a9e8d;
   grid-template-columns: 100px minmax(0, 1fr) auto;
   gap: 20px;
   padding: 20px;
-  background: rgba(255, 255, 255, 0.60);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(166, 124, 82, 0.12);
-  border-radius: 16px;
-  box-shadow: 0 2px 16px rgba(45, 42, 38, 0.04);
+  background:
+    linear-gradient(145deg, rgba(255,255,255,0.70), rgba(255,255,255,0.34)),
+    rgba(255,255,255,0.42);
+  backdrop-filter: blur(14px) saturate(1.12);
+  -webkit-backdrop-filter: blur(14px) saturate(1.12);
+  border: 1px solid rgba(255,255,255,0.48);
+  border-radius: 20px;
+  box-shadow:
+    0 12px 30px rgba(45,42,38,0.07),
+    inset 0 1px 0 rgba(255,255,255,0.72);
   transition: box-shadow 0.3s ease, transform 0.3s ease;
 
   /* Scrollytelling: empieza invisible y desplazado */
@@ -284,14 +293,17 @@ $sage: #8a9e8d;
 
 /* ─── Panel de resumen (Glassmorphism) ───────────────────────────────────── */
 .glass-panel {
-  background: rgba(255, 255, 255, 0.65);
-  backdrop-filter: blur(20px) saturate(1.6);
-  -webkit-backdrop-filter: blur(20px) saturate(1.6);
-  border: 1px solid rgba(166, 124, 82, 0.18);
+  background:
+    linear-gradient(145deg, rgba(255,255,255,0.74), rgba(255,255,255,0.34)),
+    rgba(255,255,255,0.44);
+  backdrop-filter: blur(16px) saturate(1.14);
+  -webkit-backdrop-filter: blur(16px) saturate(1.14);
+  border: 1px solid rgba(255,255,255,0.50);
   border-radius: 20px;
   box-shadow:
-    0 8px 32px rgba(45, 42, 38, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    0 16px 38px rgba(45,42,38,0.09),
+    inset 0 1px 0 rgba(255,255,255,0.76),
+    inset 0 -1px 0 rgba(255,255,255,0.14);
 }
 
 .cart-summary {

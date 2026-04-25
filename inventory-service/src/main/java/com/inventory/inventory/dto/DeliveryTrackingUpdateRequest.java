@@ -4,6 +4,10 @@ public record DeliveryTrackingUpdateRequest(
         Boolean packed,
         Boolean pickedUp,
         Boolean onTheWay,
-        Boolean delivered
+        Boolean delivered,
+        String evidenceUrl,
+        String notes,
+        Double latitude,
+        Double longitude
 ) {
 }

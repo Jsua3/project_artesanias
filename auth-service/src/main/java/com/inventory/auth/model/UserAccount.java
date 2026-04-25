@@ -20,6 +20,13 @@ public class UserAccount implements Persistable<UUID> {
     private String courierCompany;
     private String displayName;
     private String avatarUrl;
+    private String firstName;
+    private String lastName;
+    private String phone;
+    private String bio;
+    private String locality;
+    private String craftType;
+    private String address;
     private LocalDateTime createdAt;
     private LocalDateTime approvedAt;
     private UUID approvedBy;
@@ -62,6 +69,62 @@ public class UserAccount implements Persistable<UUID> {
 
     public void setAvatarUrl(String avatarUrl) {
         this.avatarUrl = avatarUrl;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getBio() {
+        return bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
+
+    public String getLocality() {
+        return locality;
+    }
+
+    public void setLocality(String locality) {
+        this.locality = locality;
+    }
+
+    public String getCraftType() {
+        return craftType;
+    }
+
+    public void setCraftType(String craftType) {
+        this.craftType = craftType;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public UUID getId() {

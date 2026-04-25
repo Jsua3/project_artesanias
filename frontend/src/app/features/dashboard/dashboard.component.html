@@ -45,6 +45,98 @@
       </div>
     }
 
+    @if (isArtesano()) {
+      <section class="artisan-workspace">
+        <article class="artisan-panel profile-panel">
+          <div class="artisan-panel__head">
+            <mat-icon>account_circle</mat-icon>
+            <div>
+              <h3>Perfil del artesano</h3>
+              <p>{{ auth.currentUser()?.displayName || auth.currentUser()?.username }}</p>
+            </div>
+          </div>
+          <mat-progress-bar mode="determinate" [value]="profileCompletion()"></mat-progress-bar>
+          <p class="panel-note">{{ profileCompletion() }}% completo. {{ profileNote() }}</p>
+        </article>
+
+        <article class="artisan-panel">
+          <div class="artisan-panel__head">
+            <mat-icon>warning_amber</mat-icon>
+            <div>
+              <h3>Stock bajo</h3>
+              <p>Piezas que necesitan atencion</p>
+            </div>
+          </div>
+          @if (lowStockProducts().length) {
+            @for (item of lowStockProducts(); track item.name) {
+              <div class="compact-row">
+                <span>{{ item.name }}</span>
+                <strong>{{ item.stock }} uds</strong>
+              </div>
+            }
+          } @else {
+            <p class="panel-note">No hay alertas de stock bajo.</p>
+          }
+        </article>
+
+        <article class="artisan-panel">
+          <div class="artisan-panel__head">
+            <mat-icon>trending_up</mat-icon>
+            <div>
+              <h3>Mas vendidas</h3>
+              <p>Segun detalles de ventas disponibles</p>
+            </div>
+          </div>
+          @if (topSoldProducts().length) {
+            @for (item of topSoldProducts(); track item.id) {
+              <div class="compact-row">
+                <span>{{ item.name }}</span>
+                <strong>{{ item.sold }} uds</strong>
+              </div>
+            }
+          } @else {
+            <p class="panel-note">Aun no hay ventas suficientes para ranking.</p>
+          }
+        </article>
+
+        <article class="artisan-panel">
+          <div class="artisan-panel__head">
+            <mat-icon>slow_motion_video</mat-icon>
+            <div>
+              <h3>Menos vendidas</h3>
+              <p>Para revisar precio, foto o descripcion</p>
+            </div>
+          </div>
+          @for (item of slowSoldProducts(); track item.id) {
+            <div class="compact-row">
+              <span>{{ item.name }}</span>
+              <strong>{{ item.sold }} uds</strong>
+            </div>
+          }
+        </article>
+
+        <article class="artisan-panel recent-sales">
+          <div class="artisan-panel__head">
+            <mat-icon>receipt_long</mat-icon>
+            <div>
+              <h3>Ventas recientes</h3>
+              <p>Ultimos pedidos registrados</p>
+            </div>
+          </div>
+          @if (recentVentas().length) {
+            @for (venta of recentVentas(); track venta.id) {
+              <div class="compact-row">
+                <span>#{{ venta.id.slice(0, 8).toUpperCase() }}</span>
+                <strong>{{ formatPrice(venta.total) }}</strong>
+              </div>
+            }
+          } @else {
+            <p class="panel-note">Todavia no hay ventas recientes.</p>
+          }
+        </article>
+      </section>
+    }
+
     @if (isDomiciliario()) {
       <div class="delivery-board">
         <div class="chart-header">

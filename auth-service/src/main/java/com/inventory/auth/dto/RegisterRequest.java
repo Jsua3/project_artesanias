@@ -5,6 +5,7 @@ public record RegisterRequest(
         String password,
         String role,
         String courierMode,
-        String courierCompany
+        String courierCompany,
+        String displayName
 ) {
 }
