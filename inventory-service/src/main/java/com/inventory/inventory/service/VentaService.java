@@ -201,9 +201,8 @@ public class VentaService {
                         return Mono.error(new IllegalStateException(
                                 "No se puede marcar como PAGADA una venta en estado " + venta.estado()));
                     }
-                    Venta pagada = new Venta(venta.id(), venta.clienteId(), venta.vendedorId(),
-                            venta.total(), "PAGADA", venta.createdAt(), venta.stripeSessionId());
-                    return ventaRepository.save(pagada)
+                    venta.setEstado("PAGADA");
+                    return ventaRepository.save(venta)
                             .then(ventaDetalleRepository.findByVentaId(venta.id()).collectList())
                             .flatMap(detalles ->
                                     Flux.fromIterable(detalles)
@@ -216,7 +215,7 @@ public class VentaService {
                                                     venta.vendedorId()
                                             ))
                                             .then(Mono.just(detalles))
-                                            .map(list -> toResponse(pagada, list))
+                                            .map(list -> toResponse(venta, list))
                             );
                 });
     }

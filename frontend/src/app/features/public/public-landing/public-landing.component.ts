@@ -270,7 +270,7 @@ export class PublicLandingComponent implements OnInit, AfterViewInit, OnDestroy 
 
       const catName = new Map(categories.map(c => [c.id, c.name]));
       const artName = new Map(artesanos.map(a => [a.id, a.nombre]));
-      const artTown = new Map(artesanos.map(a => [a.id, a.municipio ?? '']));
+      const artTown = new Map(artesanos.map(a => [a.id, a.ubicacion ?? '']));
 
       const mapped: Pieza[] = products
         .filter(p => p.active)
@@ -305,12 +305,12 @@ export class PublicLandingComponent implements OnInit, AfterViewInit, OnDestroy 
         this.maestros.set(
           artesanos.slice(0, 3).map(a => ({
             name: a.nombre,
-            town: a.municipio ?? '',
-            vereda: a.vereda ?? '',
-            craft: a.oficio ?? '',
-            years: a.anosExperiencia ?? 0,
-            quote: a.bio ?? '',
-            image: a.fotoUrl || '/assets/placeholder-maestro.svg'
+            town: a.ubicacion ?? '',
+            vereda: a.ubicacion ?? '',
+            craft: a.especialidad ?? '',
+            years: 0,
+            quote: '',
+            image: a.imageUrl || '/assets/placeholder-maestro.svg'
           }))
         );
       }

@@ -21,6 +21,7 @@ export interface AuthResponse {
   refreshToken: string;
   username: string;
   role: UserRole;
+  id: string;
 }
 
 export interface UserProfile {

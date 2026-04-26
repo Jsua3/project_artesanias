@@ -113,7 +113,7 @@ public class AuthService {
                             .then(refreshTokenRepository.save(refreshToken))
                             .map(token -> {
                                 token.setNew(false);
-                                return new AuthResponse(accessToken, refreshTokenStr, user.getUsername(), effectiveRole.name());
+                                return new AuthResponse(accessToken, refreshTokenStr, user.getUsername(), effectiveRole.name(), user.getId());
                             });
                 })
                 .switchIfEmpty(Mono.error(new RuntimeException("Invalid credentials")));
@@ -135,7 +135,7 @@ public class AuthService {
                             user.setNew(false);
                             UserRole effectiveRole = normalizeRole(user.getRole());
                             String accessToken = jwtService.generateToken(user.getId().toString(), effectiveRole.name());
-                            return new AuthResponse(accessToken, token.getToken(), user.getUsername(), effectiveRole.name());
+                            return new AuthResponse(accessToken, token.getToken(), user.getUsername(), effectiveRole.name(), user.getId());
                         }))
                 .switchIfEmpty(Mono.error(new RuntimeException("Invalid or expired refresh token")));
     }
@@ -150,7 +150,7 @@ public class AuthService {
 
     public Mono<UserAccount> registerCliente(RegisterClienteRequest request) {
         return userRepository.findByUsername(request.username())
-                .flatMap(u -> Mono.<UserAccount>error(new RuntimeException("El nombre de usuario ya esta registrado")))
+                .flatMap(u -> Mono.<UserAccount>error(new RuntimeException("El usuario ya existe")))
                 .switchIfEmpty(Mono.defer(() -> {
                     UserAccount user = new UserAccount();
                     user.setId(UUID.randomUUID());
@@ -177,7 +177,7 @@ public class AuthService {
         return userRepository.findAllByApprovalStatus(ApprovalStatus.PENDING)
                 .filter(user -> {
                     UserRole role = normalizeRole(user.getRole());
-                    return role == UserRole.MAESTRO || role == UserRole.DOMICILIARIO;
+                    return role == UserRole.ARTESANO || role == UserRole.DOMICILIARIO;
                 })
                 .sort(Comparator.comparing(UserAccount::getCreatedAt))
                 .map(user -> {
@@ -193,7 +193,7 @@ public class AuthService {
                 .flatMap(user -> {
                     user.setNew(false);
                     UserRole normalizedRole = normalizeRole(user.getRole());
-                    if (normalizedRole != UserRole.MAESTRO && normalizedRole != UserRole.DOMICILIARIO) {
+                    if (normalizedRole != UserRole.ARTESANO && normalizedRole != UserRole.DOMICILIARIO) {
                         return Mono.error(new RuntimeException("La solicitud indicada no requiere aprobacion administrativa"));
                     }
 
@@ -254,8 +254,9 @@ public class AuthService {
                 throw new RuntimeException("Las cuentas de administrador no se crean desde el registro publico");
             }
 
-            if (requestedRole == UserRole.OPERATOR) {
-                return UserRole.MAESTRO;
+            // OPERATOR y MAESTRO son alias históricos de ARTESANO
+            if (requestedRole == UserRole.OPERATOR || requestedRole == UserRole.MAESTRO) {
+                return UserRole.ARTESANO;
             }
 
             return requestedRole;
@@ -303,18 +304,18 @@ public class AuthService {
     private Mono<UserAccount> ensureLoginAllowed(UserAccount user) {
         UserRole effectiveRole = normalizeRole(user.getRole());
         if (user.getApprovalStatus() == ApprovalStatus.PENDING && requiresAdminApproval(effectiveRole)) {
-            String profileLabel = effectiveRole == UserRole.DOMICILIARIO ? "domiciliario" : "maestro";
+            String profileLabel = effectiveRole == UserRole.DOMICILIARIO ? "domiciliario" : "artesano";
             return Mono.error(new RuntimeException("Tu solicitud de " + profileLabel + " esta pendiente de aprobacion por un administrador"));
         }
         if (user.getApprovalStatus() == ApprovalStatus.REJECTED && requiresAdminApproval(effectiveRole)) {
-            String profileLabel = effectiveRole == UserRole.DOMICILIARIO ? "domiciliario" : "maestro";
+            String profileLabel = effectiveRole == UserRole.DOMICILIARIO ? "domiciliario" : "artesano";
             return Mono.error(new RuntimeException("Tu solicitud de " + profileLabel + " fue rechazada por un administrador"));
         }
         return Mono.just(user);
     }
 
     private boolean requiresAdminApproval(UserRole role) {
-        return role == UserRole.MAESTRO || role == UserRole.DOMICILIARIO;
+        return role == UserRole.ARTESANO || role == UserRole.MAESTRO || role == UserRole.DOMICILIARIO;
     }
 
     public UserProfileResponse toUserProfileResponse(UserAccount user) {
@@ -342,7 +343,11 @@ public class AuthService {
     }
 
     private UserRole normalizeRole(UserRole role) {
-        return role == UserRole.OPERATOR ? UserRole.MAESTRO : role;
+        // OPERATOR y MAESTRO son alias históricos — el rol canónico es ARTESANO
+        if (role == UserRole.OPERATOR || role == UserRole.MAESTRO) {
+            return UserRole.ARTESANO;
+        }
+        return role;
     }
 
     private String defaultDisplayName(String username, String displayName) {
@@ -368,7 +373,7 @@ public class AuthService {
         if (hasText(user.getFirstName()) || hasText(user.getLastName())) done++;
         if (hasText(user.getPhone())) done++;
 
-        if (role == UserRole.MAESTRO) {
+        if (role == UserRole.ARTESANO) {
             total += 3;
             if (hasText(user.getLocality())) done++;
             if (hasText(user.getCraftType())) done++;
@@ -391,7 +396,7 @@ public class AuthService {
                 && (hasText(user.getFirstName()) || hasText(user.getLastName()))
                 && hasText(user.getPhone());
 
-        if (role == UserRole.MAESTRO) {
+        if (role == UserRole.ARTESANO) {
             return baseComplete && hasText(user.getLocality()) && hasText(user.getCraftType()) && hasText(user.getBio());
         }
         if (role == UserRole.DOMICILIARIO) {
