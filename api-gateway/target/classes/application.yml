@@ -44,6 +44,20 @@ spring:
         # Catálogo público (GET) — accesible sin login para la tienda pública.
         # Excluye GET /api/artesanos/by-user/** (privacy: solo lo usa inventory
         # via call directo, no debe salir por la ruta pública).
+        - id: catalog-service-management
+          uri: ${CATALOG_SERVICE_URL:http://localhost:8082}
+          predicates:
+            - Path=/api/products/admin/**
+          filters:
+            - JwtAuth
+
+        - id: catalog-service-community
+          uri: ${CATALOG_SERVICE_URL:http://localhost:8082}
+          predicates:
+            - Path=/api/comunidad/**
+          filters:
+            - JwtAuth
+
         - id: catalog-service-public
           uri: ${CATALOG_SERVICE_URL:http://localhost:8082}
           predicates:
