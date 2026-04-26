@@ -26,12 +26,12 @@ export interface Category {
 export interface Artesano {
   id: string;
   nombre: string;
-  oficio?: string | null;
-  vereda?: string | null;
-  municipio?: string | null;
-  anosExperiencia?: number | null;
-  bio?: string | null;
-  fotoUrl?: string | null;
+  telefono?: string | null;
+  email?: string | null;
+  especialidad?: string | null;
+  ubicacion?: string | null;
+  imageUrl?: string | null;
+  active?: boolean;
   createdAt?: string;
 }
 

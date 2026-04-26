@@ -25,7 +25,7 @@ public class VentaController {
     @GetMapping
     public Flux<VentaResponse> getAllVentas(
             @RequestHeader(value = "X-User-Role", defaultValue = "") String userRole) {
-        if (!hasAnyRole(userRole, "ADMIN", "MAESTRO")) {
+        if (!hasAnyRole(userRole, "ADMIN", "ARTESANO")) {
             return Flux.empty();
         }
         return ventaService.getAllVentas();
@@ -64,7 +64,7 @@ public class VentaController {
         if (userId.isEmpty()) {
             return Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
         }
-        if (!hasAnyRole(userRole, "ADMIN", "MAESTRO")) {
+        if (!hasAnyRole(userRole, "ADMIN", "ARTESANO")) {
             return Mono.just(ResponseEntity.status(HttpStatus.FORBIDDEN).build());
         }
         return ventaService.createVenta(request, UUID.fromString(userId))

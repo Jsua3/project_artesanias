@@ -38,7 +38,7 @@ public class MaestroVentaController {
         if (userId.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
-        if (!"MAESTRO".equals(userRole) && !"ADMIN".equals(userRole)) {
+        if (!"ARTESANO".equals(userRole) && !"ADMIN".equals(userRole)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
         UUID uid;

@@ -34,7 +34,9 @@ export class AuthService {
   }
 
   private normalizeRole(role: UserRole): UserRole {
-    return role === 'OPERATOR' ? 'ARTESANO' : role;
+    // OPERATOR y MAESTRO son alias históricos — el rol canónico es ARTESANO
+    if (role === 'OPERATOR' || (role as string) === 'MAESTRO') return 'ARTESANO';
+    return role;
   }
 
   private normalizeProfile(profile: UserProfile): UserProfile {
@@ -50,7 +52,7 @@ export class AuthService {
         localStorage.setItem('accessToken', res.accessToken);
         localStorage.setItem('refreshToken', res.refreshToken);
         const user = this.normalizeProfile({
-          id: '',
+          id: res.id,
           username: res.username,
           role: res.role,
           approvalStatus: 'APPROVED'
@@ -67,13 +69,7 @@ export class AuthService {
   }
 
   registerCliente(req: RegisterClienteRequest): Observable<UserProfile> {
-    const payload: RegisterRequest = {
-      username: req.username,
-      password: req.password,
-      role: 'CLIENTE',
-      displayName: req.displayName
-    } as unknown as RegisterRequest;
-    return this.http.post<UserProfile>(`${this.API}/register`, payload);
+    return this.http.post<UserProfile>(`${this.API}/register-cliente`, req);
   }
 
   logout(): void {
