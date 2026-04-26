@@ -2,6 +2,9 @@ package com.inventory.auth.controller;
 
 import com.inventory.auth.dto.*;
 import com.inventory.auth.service.AuthService;
+import com.inventory.auth.service.GoogleAuthService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -15,9 +18,27 @@ import java.util.UUID;
 public class AuthController {
 
     private final AuthService authService;
+    private final GoogleAuthService googleAuthService;
 
-    public AuthController(AuthService authService) {
+    public AuthController(AuthService authService, GoogleAuthService googleAuthService) {
         this.authService = authService;
+        this.googleAuthService = googleAuthService;
+    }
+
+    /** Configuración pública del sistema (no requiere auth). */
+    @GetMapping("/config")
+    public PublicConfigResponse getPublicConfig() {
+        return new PublicConfigResponse(googleAuthService.getClientId());
+    }
+
+    /** Login con Google Identity Services — valida el ID token y emite JWT propio. */
+    @PostMapping("/google")
+    public Mono<ResponseEntity<AuthResponse>> googleLogin(@RequestBody GoogleTokenRequest request) {
+        return googleAuthService.authenticate(request.credential())
+                .map(ResponseEntity::ok)
+                .onErrorResume(e -> Mono.just(
+                        ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                                .<AuthResponse>build()));
     }
 
     @PostMapping("/register")

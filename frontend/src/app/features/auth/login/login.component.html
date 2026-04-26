@@ -82,10 +82,19 @@
 
       <div class="auth-separator"><span>o continua con</span></div>
 
-      <button type="button" class="google-button" disabled>
-        <span class="google-mark">G</span>
-        Google proximamente
-      </button>
+      @if (googleLoading()) {
+        <div class="google-loading">
+          <mat-spinner diameter="22" />
+          <span>Verificando con Google...</span>
+        </div>
+      } @else if (googleReady()) {
+        <div id="google-signin-btn" class="google-btn-container"></div>
+      } @else {
+        <button type="button" class="google-button" disabled>
+          <span class="google-mark">G</span>
+          Google proximamente
+        </button>
+      }
     </div>
 
     <div class="auth-footer">

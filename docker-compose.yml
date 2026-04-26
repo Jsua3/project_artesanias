@@ -131,6 +131,7 @@ services:
       - EUREKA_HOST=discovery-server
       - JWT_SECRET=${JWT_SECRET:-32-character-long-secret-key-for-jwt-generation-and-validation}
       - INTERNAL_TOKEN=${INTERNAL_TOKEN:-my-super-secret-internal-token}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
       - JAVA_TOOL_OPTIONS=-Xmx128m -Xms64m
     networks:
       - inventory-network

@@ -34,7 +34,8 @@ public class WebSecurityConfig {
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers("/actuator/health", "/actuator/health/**").permitAll()
                         .pathMatchers("/api/auth/register", "/api/auth/register-cliente",
-                                "/api/auth/login", "/api/auth/refresh").permitAll()
+                                "/api/auth/login", "/api/auth/refresh",
+                                "/api/auth/google", "/api/auth/config").permitAll()
                         .anyExchange().authenticated()
                 )
                 .addFilterAt(gatewayAuthFilter(), SecurityWebFiltersOrder.AUTHENTICATION)
