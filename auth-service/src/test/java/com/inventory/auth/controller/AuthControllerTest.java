@@ -1,6 +1,9 @@
 package com.inventory.auth.controller;
 
+import com.inventory.auth.dto.AuthResponse;
+import com.inventory.auth.dto.LoginRequest;
 import com.inventory.auth.dto.RegisterRequest;
+import com.inventory.auth.dto.UserProfileResponse;
 import com.inventory.auth.model.UserAccount;
 import com.inventory.auth.model.UserRole;
 import com.inventory.auth.service.AuthService;
@@ -11,6 +14,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
+
+import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -48,6 +53,28 @@ class AuthControllerTest {
         user.setRole(UserRole.OPERATOR);
 
         when(authService.register(any(RegisterRequest.class))).thenReturn(Mono.just(user));
+        when(authService.toUserProfileResponse(any(UserAccount.class)))
+                .thenReturn(new UserProfileResponse(
+                        UUID.randomUUID(),
+                        "admin",
+                        "OPERATOR",
+                        "APPROVED",
+                        null,
+                        null,
+                        "admin",
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        100,
+                        true,
+                        null,
+                        null
+                ));
 
         String json = """
                 {
@@ -63,6 +90,29 @@ class AuthControllerTest {
                 .bodyValue(json)
                 .exchange()
                 .expectStatus().isOk();
+    }
+
+    @Test
+    void loginShouldDeserializeJsonBody() {
+        when(authService.login(any(LoginRequest.class)))
+                .thenReturn(Mono.just(new AuthResponse("access", "refresh", "admin", "ADMIN")));
+
+        String json = """
+                {
+                    "username": "admin",
+                    "password": "admin123"
+                }
+                """;
+
+        webTestClient.post()
+                .uri("/api/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(json)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.username").isEqualTo("admin")
+                .jsonPath("$.role").isEqualTo("ADMIN");
     }
 
     @Test

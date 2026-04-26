@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.server.ServerWebInputException;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
@@ -14,6 +15,20 @@ import java.util.Map;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(ServerWebInputException.class)
+    public Mono<ResponseEntity<Map<String, Object>>> handleServerWebInputException(
+            ServerWebInputException ex, ServerWebExchange exchange) {
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("path", exchange.getRequest().getPath().value());
+        body.put("status", HttpStatus.BAD_REQUEST.value());
+        body.put("error", "Bad Request");
+        body.put("message", "Invalid request body");
+
+        return Mono.just(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body));
+    }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public Mono<ResponseEntity<Map<String, Object>>> handleDataIntegrityViolation(
