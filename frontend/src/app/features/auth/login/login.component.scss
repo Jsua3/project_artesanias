@@ -269,6 +269,35 @@
   box-shadow: 0 4px 14px rgba(58, 53, 48, 0.08);
 }
 
+.google-btn-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  min-height: 44px;
+
+  // Hace que el iframe de Google ocupe todo el ancho disponible
+  :deep(div) {
+    width: 100% !important;
+  }
+  :deep(iframe) {
+    width: 100% !important;
+  }
+}
+
+.google-loading {
+  width: 100%;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: var(--rb-carbon-500);
+  font: 500 0.88rem var(--font-body);
+  border-radius: var(--radius-pill);
+  border: 1px solid rgba(166, 124, 82, 0.18);
+  background: rgba(255, 255, 255, 0.34);
+}
+
 .auth-footer {
   text-align: center;
   margin-top: 24px;

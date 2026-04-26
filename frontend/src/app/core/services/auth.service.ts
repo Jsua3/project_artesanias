@@ -72,6 +72,28 @@ export class AuthService {
     return this.http.post<UserProfile>(`${this.API}/register-cliente`, req);
   }
 
+  getPublicConfig(): Observable<{ googleClientId: string }> {
+    return this.http.get<{ googleClientId: string }>(`${this.API}/config`);
+  }
+
+  loginWithGoogle(credential: string): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.API}/google`, { credential }).pipe(
+      tap(res => {
+        localStorage.setItem('accessToken', res.accessToken);
+        localStorage.setItem('refreshToken', res.refreshToken);
+        const user = this.normalizeProfile({
+          id: res.id,
+          username: res.username,
+          role: res.role,
+          approvalStatus: 'APPROVED'
+        });
+        localStorage.setItem('user', JSON.stringify(user));
+        this.currentUser.set(user);
+        this.loadProfile();
+      })
+    );
+  }
+
   logout(): void {
     localStorage.clear();
     this.currentUser.set(null);

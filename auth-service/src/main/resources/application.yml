@@ -20,6 +20,9 @@ security:
     refresh-expiration: 86400000
     internal-token: ${INTERNAL_TOKEN:my-super-secret-internal-token}
 
+google:
+  client-id: ${GOOGLE_CLIENT_ID:}
+
 eureka:
   client:
     service-url:
