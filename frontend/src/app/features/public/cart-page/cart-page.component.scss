@@ -18,6 +18,10 @@ $sage: #8a9e8d;
   max-width: 1100px;
   margin: 0 auto;
   padding: 40px 24px 80px;
+
+  @media (max-width: 640px) {
+    padding: 24px 16px 60px;
+  }
 }
 
 /* ─── Header ────────────────────────────────────────────────────────────── */
@@ -313,6 +317,15 @@ $sage: #8a9e8d;
   gap: 14px;
   position: sticky;
   top: 24px;
+
+  @media (max-width: 900px) {
+    position: static;
+    padding: 22px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 18px;
+  }
 }
 
 .summary-header {

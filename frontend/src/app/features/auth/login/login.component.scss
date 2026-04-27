@@ -400,14 +400,20 @@
   }
 }
 
+@media (max-width: 640px) {
+  .auth-visual {
+    display: none;
+  }
+
+  .auth-card {
+    max-width: 100%;
+    justify-self: stretch;
+  }
+}
+
 @media (max-width: 520px) {
   .auth-container {
     padding: 20px 14px;
-  }
-
-  .auth-brand {
-    font-size: 0.74rem;
-    gap: 12px;
   }
 
   .auth-card {
@@ -429,6 +435,10 @@
     align-items: flex-start;
     flex-direction: column;
     gap: 6px;
+  }
+
+  .submit-btn {
+    height: 48px !important;
   }
 }
 

@@ -14,6 +14,10 @@
   max-width: 1000px;
   margin: 0 auto;
   padding: 40px 24px 80px;
+
+  @media (max-width: 640px) {
+    padding: 24px 16px 60px;
+  }
 }
 
 .pedidos-top {
@@ -25,7 +29,7 @@
   h1 {
     margin: 0;
     font-family: 'Fraunces', 'Playfair Display', serif;
-    font-size: 34px;
+    font-size: clamp(26px, 5vw, 34px);
     font-weight: 500;
     letter-spacing: -0.01em;
   }
@@ -36,6 +40,10 @@
     color: #6b6259;
     font-size: 15px;
     line-height: 1.55;
+
+    @media (max-width: 640px) {
+      font-size: 14px;
+    }
   }
 }
 
@@ -132,19 +140,41 @@
       inset 0 1px 0 rgba(255,255,255,0.80);
   }
 
-  @media (max-width: 680px) {
-    grid-template-columns: 1fr auto;
+  // Tablet: reducir columna id y gap
+  @media (max-width: 860px) {
+    grid-template-columns: 90px minmax(0, 1fr) auto auto 20px;
+    gap: 12px;
+    padding: 16px;
+  }
 
-    .pedido-row__meta { grid-column: 1 / -1; }
-    .pedido-row__tracking { grid-column: 1 / -1; }
-    .pedido-row__total { grid-column: 1; }
-    .chev { display: none; }
+  // Mobile: layout de areas para reordenar limpiamente
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto auto auto;
+    grid-template-areas:
+      "id     badge"
+      "meta   chev"
+      "track  track"
+      "total  total";
+    gap: 6px 10px;
+    padding: 14px 16px;
+
+    .pedido-row__id    { grid-area: id; font-size: 12px; }
+    .pedido-row__meta  { grid-area: meta; }
+    .pedido-row__tracking { grid-area: track; }
+    .badge             { grid-area: badge; font-size: 10px; padding: 2px 8px; justify-self: end; align-self: center; }
+    .pedido-row__total { grid-area: total; font-size: 15px; }
+    .chev              { grid-area: chev; align-self: center; justify-self: end; }
   }
 }
 
 .pedido-row__tracking {
   grid-column: 2 / -2;
   min-width: 0;
+
+  @media (max-width: 640px) {
+    grid-column: unset; // reset — el area lo posiciona
+  }
 }
 
 .tracking-head {
@@ -201,8 +231,20 @@
     font-weight: 700;
   }
 
-  @media (max-width: 680px) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  @media (max-width: 760px) {
+    font-size: 9.5px;
+    gap: 4px;
+  }
+
+  @media (max-width: 640px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    font-size: 9px;
+    gap: 4px;
+    margin-top: 6px;
+  }
+
+  @media (max-width: 400px) {
+    display: none; // En pantallas muy pequeñas ocultar labels del tracking
   }
 }
 
