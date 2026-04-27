@@ -2,6 +2,7 @@ package com.inventory.catalog.service;
 
 import com.inventory.catalog.dto.ArtesanoRequest;
 import com.inventory.catalog.dto.ArtesanoResponse;
+import com.inventory.catalog.dto.SyncArtesanoRequest;
 import com.inventory.catalog.model.Artesano;
 import com.inventory.catalog.repository.ArtesanoRepository;
 import org.springframework.stereotype.Service;
@@ -111,6 +112,37 @@ public class ArtesanoService {
     /** Fase 2c: lookup para /api/maestro-ventas/mias. */
     public Mono<ArtesanoResponse> findByUserAccountId(UUID userAccountId) {
         return artesanoRepository.findByUserAccountId(userAccountId)
+                .map(this::toResponse);
+    }
+
+    /**
+     * Crea un artesano para el usuario ARTESANO recién aprobado si todavía no existe.
+     * Si ya existe (por un aprobación previa o creación manual), lo devuelve sin modificar.
+     * Llamado desde auth-service vía API interna al aprobar un usuario.
+     */
+    @Transactional
+    public Mono<ArtesanoResponse> findOrCreateForUser(SyncArtesanoRequest request) {
+        return artesanoRepository.findByUserAccountId(request.userAccountId())
+                .switchIfEmpty(Mono.defer(() -> {
+                    String nombre = (request.nombre() != null && !request.nombre().isBlank())
+                            ? request.nombre()
+                            : request.email();
+                    Artesano artesano = new Artesano(
+                            UUID.randomUUID(),
+                            nombre,
+                            null,
+                            request.email(),
+                            request.especialidad(),
+                            request.ubicacion(),
+                            true,
+                            LocalDateTime.now()
+                    );
+                    artesano.setUserAccountId(request.userAccountId());
+                    if (request.avatarUrl() != null && !request.avatarUrl().isBlank()) {
+                        artesano.setImageUrl(request.avatarUrl());
+                    }
+                    return artesanoRepository.save(artesano.withIsNew(true));
+                }))
                 .map(this::toResponse);
     }
 
