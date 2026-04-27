@@ -1,26 +1,5 @@
 @use '../login/login.component' as login;
 
-// El register-cliente no tiene auth-visual — centrar la tarjeta
-.auth-container {
-  grid-template-columns: 1fr;
-  justify-items: center;
-  align-items: flex-start;
-  padding-top: clamp(40px, 8vh, 80px);
-}
-
-.auth-card {
-  justify-self: center;
-  min-height: auto;
-  width: 100%;
-  max-width: 480px;
-}
-
-@media (max-width: 520px) {
-  .auth-card {
-    max-width: 100%;
-  }
-}
-
 .auth-footer__sub {
   margin-top: 4px;
   font-size: 13px;
