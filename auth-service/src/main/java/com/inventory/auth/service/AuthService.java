@@ -2,6 +2,7 @@ package com.inventory.auth.service;
 
 import com.inventory.auth.dto.ArtisanApprovalRequest;
 import com.inventory.auth.dto.AuthResponse;
+import com.inventory.auth.dto.SyncArtesanoRequest;
 import com.inventory.auth.dto.LoginRequest;
 import com.inventory.auth.dto.ProfileUpdateRequest;
 import com.inventory.auth.dto.RefreshRequest;
@@ -15,8 +16,10 @@ import com.inventory.auth.model.UserAccount;
 import com.inventory.auth.model.UserRole;
 import com.inventory.auth.repository.RefreshTokenRepository;
 import com.inventory.auth.repository.UserAccountRepository;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -32,15 +35,18 @@ public class AuthService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
+    private final WebClient catalogWebClient;
 
     public AuthService(UserAccountRepository userRepository,
                        RefreshTokenRepository refreshTokenRepository,
                        JwtService jwtService,
-                       PasswordEncoder passwordEncoder) {
+                       PasswordEncoder passwordEncoder,
+                       @Qualifier("catalogWebClient") WebClient catalogWebClient) {
         this.userRepository = userRepository;
         this.refreshTokenRepository = refreshTokenRepository;
         this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
+        this.catalogWebClient = catalogWebClient;
     }
 
     public Mono<UserAccount> register(RegisterRequest request) {
@@ -203,7 +209,35 @@ public class AuthService {
                     user.setApprovedBy(adminUserId);
                     return userRepository.save(user);
                 })
+                .flatMap(savedUser -> {
+                    // Al aprobar un ARTESANO, crea automaticamente su entrada en catalog-service
+                    UserRole normalizedRole = normalizeRole(savedUser.getRole());
+                    if (nextStatus == ApprovalStatus.APPROVED && normalizedRole == UserRole.ARTESANO) {
+                        return syncArtesanoInCatalog(savedUser).thenReturn(savedUser);
+                    }
+                    return Mono.just(savedUser);
+                })
                 .map(this::toUserProfileResponse);
+    }
+
+    private Mono<Void> syncArtesanoInCatalog(UserAccount user) {
+        SyncArtesanoRequest req = new SyncArtesanoRequest(
+                user.getId(),
+                hasText(user.getDisplayName()) ? user.getDisplayName() : user.getUsername(),
+                user.getUsername(),
+                user.getCraftType(),
+                user.getLocality(),
+                user.getAvatarUrl()
+        );
+        return catalogWebClient.post()
+                .uri("/internal/artesanos/sync-user")
+                .bodyValue(req)
+                .retrieve()
+                .bodyToMono(Void.class)
+                .onErrorResume(e -> {
+                    System.err.println("[AuthService] No se pudo sincronizar artesano en catalog-service: " + e.getMessage());
+                    return Mono.empty();
+                });
     }
 
     public Mono<UserProfileResponse> updateProfile(UUID userId, ProfileUpdateRequest request) {

@@ -23,6 +23,10 @@ security:
 google:
   client-id: ${GOOGLE_CLIENT_ID:}
 
+catalog:
+  service:
+    url: ${CATALOG_SERVICE_URL:http://catalog-service:8082}
+
 eureka:
   client:
     service-url:
