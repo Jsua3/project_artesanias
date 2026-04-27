@@ -10,8 +10,9 @@ Repositorio:
 
 - GitHub: `Jsua3/project_artesanias`
 - Rama principal: `master`
-- Commit desplegado validado: `ae6c4f3`
+- Ultimo commit desplegado: `a978557`
 - URL publica actual: `http://56.126.102.113`
+- URL alternativa con dominio (para Google OAuth): `http://56.126.102.113.nip.io`
 
 Importante: este documento no contiene secretos reales. Los valores sensibles viven en `.env` del servidor o en variables de entorno, y no deben copiarse en chats, commits ni documentacion publica.
 
@@ -40,7 +41,7 @@ Contenedores principales:
 - `frontend`: nginx que sirve Angular precompilado.
 - `api-gateway`: Spring Cloud Gateway, entrada unica para `/api/**`.
 - `discovery-server`: Eureka, servicio de descubrimiento.
-- `auth-service`: autenticacion, usuarios, roles, perfiles y aprobaciones.
+- `auth-service`: autenticacion, usuarios, roles, perfiles, aprobaciones y Google OAuth.
 - `catalog-service`: categorias, productos, artesanos, comunidad y eventos.
 - `inventory-service`: stock, entradas, salidas, clientes, ventas, pedidos, tracking y Stripe.
 - `report-service`: reportes y alertas alimentadas por eventos.
@@ -60,6 +61,7 @@ Frontend:
 - Chart.js y ng2-charts.
 - RxJS.
 - TypeScript 5.9.
+- Google Identity Services SDK (cargado dinamicamente en login).
 - Build productivo con Angular CLI.
 
 Backend:
@@ -100,9 +102,9 @@ Servidor:
 ssh -i ~/Downloads/almacen-key.pem ubuntu@56.126.102.113
 ```
 
-Estado validado tras despliegue:
+Estado validado tras ultimo despliegue:
 
-- `frontend`: arriba.
+- `frontend`: arriba (bundle `main-MWJNWTOV.js`).
 - `api-gateway`: healthy.
 - `auth-service`: healthy.
 - `catalog-service`: healthy.
@@ -112,13 +114,13 @@ Estado validado tras despliegue:
 - `postgres-db`: healthy.
 - `kafka-broker`: healthy.
 
-Pruebas realizadas:
+Pruebas de humo validadas:
 
 - `http://56.126.102.113/` responde `200`.
 - `/api/products` responde `200`.
-- `/api/comunidad/posts` sin token responde `401`, correcto porque es ruta protegida.
+- `/api/auth/config` responde `200` con `{"googleClientId":"762114194584-..."}`.
 - `/api/auth/login` con credenciales falsas responde `401`, correcto.
-- Bundle frontend desplegado: `main-E6WTEPJQ.js`.
+- `/api/auth/google` sin credential responde `401`, correcto.
 
 ## 5. Restricciones de memoria y despliegue
 
@@ -126,18 +128,19 @@ La instancia actual es `t3.small`. Funciona, pero esta ajustada porque se ejecut
 
 - Memoria total Linux: ~1.9 GiB.
 - Memoria usada: ~1.4 GiB.
-- Disponible: ~284 MiB.
+- Disponible: ~80-284 MiB.
 - Swap usado: ~1.3 GiB de 4 GiB.
 
 Reglas importantes:
 
 - No compilar Angular dentro del contenedor en EC2.
 - El frontend debe compilarse localmente y subir `frontend/dist/frontend/browser/`.
+- El frontend SIEMPRE necesita `docker compose build frontend` antes de `up --force-recreate`. No basta con force-recreate si la imagen no se reconstruyo.
 - No levantar o reconstruir todos los servicios Java al mismo tiempo si no es necesario.
 - Para frontend, usar despliegue aislado.
 - Para backend, reconstruir servicios por etapas.
 - No borrar ni sobrescribir `.env`.
-- No exponer valores reales de `JWT_SECRET`, `INTERNAL_TOKEN`, `DB_PASSWORD`, `STRIPE_SECRET_KEY` ni webhooks.
+- No exponer valores reales de `JWT_SECRET`, `INTERNAL_TOKEN`, `DB_PASSWORD`, `STRIPE_SECRET_KEY`, `GOOGLE_CLIENT_ID` (solo el Client ID es semi-publico, el Client Secret nunca).
 
 ## 6. Comandos clave de despliegue
 
@@ -155,27 +158,30 @@ Build backend local:
 mvn -pl api-gateway,auth-service,catalog-service,inventory-service,report-service -am -DskipTests compile
 ```
 
-Actualizar solo frontend en servidor:
+Actualizar solo frontend en servidor (IMPORTANTE: siempre build antes de recreate):
 
 ```bash
 cd ~/project_artesanias
-git pull origin master
-docker compose up -d --build --no-deps frontend
+git pull --ff-only origin master
+docker compose build frontend
+docker compose up -d --no-deps --force-recreate frontend
+curl -s http://localhost/ | grep -o 'main-[A-Z0-9]*.js'  # verificar bundle nuevo
 ```
 
 Despliegue cuidadoso de backend:
 
 ```bash
 cd ~/project_artesanias
-docker compose stop api-gateway auth-service catalog-service inventory-service report-service
 git pull --ff-only origin master
 docker compose build auth-service
-docker compose build catalog-service
+docker compose up -d --no-deps auth-service
+sleep 20
 docker compose build inventory-service
-docker compose build report-service
-docker compose up -d --no-deps auth-service catalog-service inventory-service report-service
-sleep 60
+docker compose up -d --no-deps inventory-service
+sleep 20
+docker compose build api-gateway
 docker compose up -d --no-deps api-gateway
+sleep 20
 docker compose ps
 free -h
 ```
@@ -202,6 +208,7 @@ free -h
 docker stats
 curl http://localhost/
 curl http://localhost/api/products
+curl http://localhost/api/auth/config
 curl http://localhost:8080/actuator/health
 docker compose logs --tail=120 api-gateway
 docker compose logs --tail=120 auth-service
@@ -228,7 +235,7 @@ Estructura por capas:
 
 Features existentes:
 
-- `auth`: login, registro, registro cliente, aprobaciones.
+- `auth`: login (con Google), registro, registro cliente, aprobaciones.
 - `public`: landing, carrito, checkout, mis pedidos.
 - `dashboard`: panel general por rol.
 - `products`: administracion de productos/artesanias.
@@ -246,7 +253,7 @@ Features existentes:
 
 Servicios frontend principales:
 
-- `auth.service.ts`: login, registro, sesion, perfil, roles.
+- `auth.service.ts`: login, registro, Google OAuth, sesion, perfil, roles, config publica.
 - `cart.service.ts`: carrito local del cliente.
 - `catalog.service.ts`: lectura de catalogo publico.
 - `product.service.ts`: CRUD y estado activo/inactivo de productos.
@@ -272,7 +279,7 @@ Rutas publicas:
 
 Autenticacion:
 
-- `/login`
+- `/login` (incluye boton de Google Sign-In)
 - `/register`
 - `/registro-cliente`
 
@@ -304,13 +311,27 @@ Guardias:
 - `adminGuard`: restringe a ADMIN.
 - `roleGuard`: restringe por lista de roles.
 
-Roles frontend:
+Roles del sistema:
 
-- `ADMIN`
-- `ARTESANO`
-- `DOMICILIARIO`
-- `CLIENTE`
-- `OPERATOR` se normaliza como `ARTESANO`.
+- `ADMIN`: acceso total.
+- `ARTESANO`: rol canonico del artesano. OPERATOR y MAESTRO se normalizan a ARTESANO en toda la cadena.
+- `DOMICILIARIO`: solo panel de entregas y pedidos.
+- `CLIENTE`: solo tienda publica. Bloqueado del backoffice.
+
+Normalizacion de roles (critico):
+
+- El enum backend `UserRole` tiene: `ADMIN, OPERATOR, CLIENTE, MAESTRO, ARTESANO, DOMICILIARIO`.
+- `normalizeRole` en backend convierte `OPERATOR` y `MAESTRO` → `ARTESANO`.
+- El JWT siempre lleva el rol normalizado (`ARTESANO`), nunca `MAESTRO` ni `OPERATOR`.
+- Frontend `normalizeRole` convierte `OPERATOR` y `MAESTRO` → `ARTESANO` como salvaguarda para datos antiguos en BD.
+- Todos los checks de rol en inventory-service usan `"ARTESANO"`, no `"MAESTRO"`.
+
+Redireccion post-login por rol:
+
+- `ADMIN` → `/dashboard`
+- `ARTESANO` → `/dashboard`
+- `DOMICILIARIO` → `/domiciliario/panel` (directo, sin pasar por dashboard)
+- `CLIENTE` → `/` (landing publica)
 
 ## 9. Experiencia cliente
 
@@ -324,7 +345,7 @@ El cliente o visitante entra por la landing publica. La experiencia actual inclu
 - Tarjetas de artesanias con glassmorphism premium.
 - `LiquidPointerDirective` para brillo radial y tilt segun cursor en desktop.
 - Reduccion de animaciones cuando aplica `prefers-reduced-motion` o dispositivos tactiles.
-- Artesanos destacados con informacion expandible.
+- Artesanos destacados usando campos reales del backend: `nombre`, `especialidad`, `ubicacion`, `imageUrl`.
 - Productos reales desde backend y fallback mock si no hay datos.
 - Botones para agregar al carrito sin login.
 - Login obligatorio al confirmar checkout.
@@ -385,6 +406,8 @@ Datos de seguimiento backend:
 - evidencia URL.
 - notas de entrega.
 
+Nota importante sobre `markAsPaid`: cuando Stripe confirma el pago via webhook, el backend muta la entidad Venta existente (`venta.setEstado("PAGADA")`) en lugar de crear una instancia nueva. Esto preserva todos los campos de delivery tracking.
+
 ## 11. Experiencia artesano
 
 El rol ARTESANO tiene una interfaz mas sobria que la del cliente, con menos animacion y mas enfoque operativo.
@@ -419,7 +442,7 @@ Perfil artesano:
 
 ## 12. Experiencia domiciliario
 
-El rol DOMICILIARIO tiene una interfaz rapida y funcional.
+El rol DOMICILIARIO tiene una interfaz rapida y funcional. Post-login va directo a `/domiciliario/panel`.
 
 Funcionalidades actuales:
 
@@ -525,6 +548,8 @@ Rutas publicas:
 - `/api/auth/register`
 - `/api/auth/register-cliente`
 - `/api/auth/refresh`
+- `/api/auth/google` (Google OAuth)
+- `/api/auth/config` (Client ID publico para frontend)
 - GET de catalogo publico.
 - Stripe webhook.
 
@@ -540,14 +565,15 @@ Rutas protegidas:
 
 Responsabilidades:
 
-- Registro.
-- Login.
+- Registro (usuario/contrasena y Google OAuth).
+- Login (usuario/contrasena y Google OAuth).
 - Refresh token.
 - Perfil.
 - Roles.
 - Aprobaciones de artesano/domiciliario.
 - Hash BCrypt.
 - JWT.
+- Configuracion publica del sistema.
 
 Endpoints:
 
@@ -555,6 +581,8 @@ Endpoints:
 - `POST /api/auth/register-cliente`
 - `POST /api/auth/login`
 - `POST /api/auth/refresh`
+- `POST /api/auth/google` — valida ID token de Google, crea/encuentra usuario CLIENTE, emite JWT
+- `GET /api/auth/config` — retorna `{ googleClientId }` sin autenticacion
 - `GET /api/auth/me`
 - `PUT /api/auth/profile`
 - `GET /api/auth/users`
@@ -563,10 +591,26 @@ Endpoints:
 - `PATCH /api/auth/approval-requests/{userId}`
 - `PATCH /api/auth/artisan-requests/{userId}`
 
+Clases nuevas para Google OAuth:
+
+- `GoogleAuthService`: valida ID token via `https://oauth2.googleapis.com/tokeninfo`, crea usuario si no existe.
+- `GoogleTokenRequest`: DTO `{ credential }`.
+- `GoogleUserInfo`: DTO del tokeninfo de Google `{ sub, email, name, picture, aud, emailVerified }`.
+- `PublicConfigResponse`: DTO `{ googleClientId }`.
+- `GoogleWebClientConfig`: bean WebClient apuntando a `https://oauth2.googleapis.com`.
+
 Tablas:
 
 - `user_accounts`
 - `refresh_tokens`
+
+Variable de entorno requerida para Google OAuth:
+
+- `GOOGLE_CLIENT_ID`: ID de cliente OAuth de Google Cloud Console. Dejar vacio desactiva el boton (muestra "Google proximamente").
+
+AuthResponse incluye:
+
+- `accessToken`, `refreshToken`, `username`, `role`, `id` (UUID del usuario).
 
 ### catalog-service
 
@@ -603,6 +647,12 @@ Endpoints principales:
 - `DELETE /api/products/{id}`
 - `PATCH /api/products/{id}/active`
 
+Campos del modelo Artesano (backend y frontend deben coincidir):
+
+- `id`, `nombre`, `telefono`, `email`, `especialidad`, `ubicacion`, `imageUrl`, `active`, `userAccountId`, `createdAt`
+- En el frontend (`catalog.model.ts`), los campos publicos son: `id`, `nombre`, `especialidad`, `ubicacion`, `imageUrl`.
+- NO usar `oficio`, `municipio`, `vereda`, `fotoUrl`, `anosExperiencia`, `bio` — esos campos no existen en el backend.
+
 Tablas:
 
 - `categories`
@@ -621,7 +671,7 @@ Responsabilidades:
 - Clientes.
 - Ventas.
 - Pedidos del cliente.
-- Pedidos del maestro.
+- Pedidos del maestro (ARTESANO).
 - Panel de entregas.
 - Tracking.
 - Stripe Checkout.
@@ -642,12 +692,12 @@ Endpoints:
 - `GET /api/cliente-ventas/mias`
 - `GET /api/cliente-ventas/{id}`
 - `POST /api/cliente-ventas/{id}/checkout-session`
-- `GET /api/maestro-ventas/mias`
+- `GET /api/maestro-ventas/mias` (requiere rol ARTESANO o ADMIN)
 - `GET /api/ventas`
 - `GET /api/ventas/entregas`
 - `GET /api/ventas/{id}`
 - `GET /api/ventas/cliente/{clienteId}`
-- `POST /api/ventas`
+- `POST /api/ventas` (requiere ARTESANO o ADMIN)
 - `PUT /api/ventas/{id}/anular`
 - `PATCH /api/ventas/{id}/seguimiento`
 - `POST /api/stripe/webhook`
@@ -703,26 +753,77 @@ Credenciales:
 Mecanismos actuales:
 
 - JWT para rutas protegidas.
-- `JwtAuthGatewayFilterFactory` en gateway.
+- `JwtAuthGatewayFilterFactory` en gateway: valida token, inyecta `X-User-Id` y `X-User-Role`.
 - Headers `X-User-Id`, `X-User-Role` hacia servicios.
-- Header interno `X-Internal-Token` para servicios internos.
+- Header interno `X-Internal-Token` para servicios internos (catalog, inventory).
 - BCrypt para passwords.
+- Google OAuth: ID token validado contra `https://oauth2.googleapis.com/tokeninfo`. Se verifica `aud == GOOGLE_CLIENT_ID` y `email_verified == true`.
 - Aprobacion administrativa para ARTESANO y DOMICILIARIO.
 - `CLIENTE` no entra al backoffice.
 - `ADMIN` no se crea por registro publico.
 - `/actuator/health` abierto solo para healthcheck.
+- Usuarios Google OAuth creados siempre como CLIENTE con contrasena BCrypt aleatoria inutilizable.
 
 Puntos a reforzar:
 
 - No publicar PostgreSQL al mundo.
-- Usar HTTPS con dominio.
+- Usar HTTPS con dominio (Google OAuth en produccion requiere HTTPS para publicar la app).
 - Rotar secretos si fueron compartidos.
 - Usar AWS Secrets Manager o SSM Parameter Store.
 - Configurar CORS para dominio real.
 - Limitar login con rate limiting.
 - Agregar validacion fuerte de payloads y tamanos.
 
-## 18. Assets e imagenes
+## 18. Google OAuth — configuracion y flujo
+
+### Flujo tecnico
+
+```text
+1. Frontend carga /api/auth/config → obtiene googleClientId
+2. Si no vacio, carga script GSI: https://accounts.google.com/gsi/client
+3. google.accounts.id.initialize({ client_id, callback })
+4. google.accounts.id.renderButton(container, opciones)
+5. Usuario hace clic → Google muestra selector de cuenta
+6. Google retorna { credential: "ID_TOKEN" }
+7. Frontend POST /api/auth/google { credential }
+8. Backend llama https://oauth2.googleapis.com/tokeninfo?id_token=TOKEN
+9. Valida aud == GOOGLE_CLIENT_ID y email_verified == true
+10. Busca usuario por email (como username) en auth_db
+11. Si no existe, crea CLIENTE con email como username
+12. Emite JWT y AuthResponse → frontend lo almacena igual que login normal
+```
+
+### Configuracion en Google Cloud Console
+
+- Proyecto: `rebbeca`
+- Tipo de cliente: Web application
+- Nombre del cliente OAuth: `Rebbeca user`
+- Client ID configurado en servidor: `762114194584-kiukhkmjlot2qum4o9brsqirv8lfkl58.apps.googleusercontent.com`
+- Origen autorizado de JavaScript: `http://56.126.102.113.nip.io`
+- Estado: Prueba (Testing). Solo usuarios agregados como "usuarios de prueba" pueden autenticarse.
+- Para publicar: requiere HTTPS con dominio real.
+
+### Restriccion de origen
+
+Google valida que la pagina que llama al SDK coincida con el origen autorizado. Por eso:
+
+- Acceder por `http://56.126.102.113.nip.io/login` → boton de Google funciona.
+- Acceder por `http://56.126.102.113/login` → boton no funciona (origen no autorizado).
+
+### Variable de entorno
+
+```bash
+# En .env del servidor
+GOOGLE_CLIENT_ID=762114194584-kiukhkmjlot2qum4o9brsqirv8lfkl58.apps.googleusercontent.com
+```
+
+Para activar/desactivar Google OAuth sin rebuild de codigo: solo editar `.env` y reiniciar auth-service.
+
+### Para agregar usuarios de prueba
+
+Google Cloud Console → Google Auth Platform → Publico → Usuarios de prueba → Agregar usuarios.
+
+## 19. Assets e imagenes
 
 Assets Angular:
 
@@ -745,7 +846,7 @@ Carpeta raiz `imagenes`:
 - Incluye `filandia1.jpg`, pero esa imagen no esta actualmente en el carrusel publico copiado a `frontend/public/assets/territorio`.
 - Para que una imagen sea servida por Angular en produccion debe estar dentro de `frontend/public`.
 
-## 19. Liquid Glass / Glassmorphism
+## 20. Liquid Glass / Glassmorphism
 
 La app implementa Liquid Glass principalmente en:
 
@@ -777,7 +878,7 @@ Regla visual:
 - Domiciliario: rapido, legible y casi sin animacion.
 - Admin: enfocado en lectura y control.
 
-## 20. Stripe
+## 21. Stripe
 
 Stripe esta preparado en backend y frontend.
 
@@ -802,7 +903,7 @@ Pendiente:
 - Probar pago real o modo test extremo a extremo.
 - Definir factura administrativa completa.
 
-## 21. Kafka y reportes
+## 22. Kafka y reportes
 
 Kafka se usa para comunicar eventos de inventario hacia reportes.
 
@@ -818,7 +919,7 @@ Beneficio:
 - El inventario no depende sincronicamente de reportes.
 - Permite historico y alertas.
 
-## 22. Build y validacion
+## 23. Build y validacion
 
 Comando requerido para frontend:
 
@@ -832,28 +933,62 @@ Comando requerido para backend:
 mvn -pl api-gateway,auth-service,catalog-service,inventory-service,report-service -am -DskipTests compile
 ```
 
-Warnings conocidos:
+Warnings conocidos (no bloquean build):
 
 - Warnings Sass por funciones `lighten/darken` deprecadas.
 - Warning Angular `NG8011` en `post-form.component.html`.
-- Estos warnings no bloquean build actualmente.
 
-## 23. Que ya cumple el programa
+## 24. Correcciones de logica aplicadas (sesion 2026-04-26)
+
+Esta seccion documenta bugs criticos corregidos para no reintroducirlos.
+
+### UserRole ARTESANO en el enum del backend
+
+ARTESANO fue agregado al enum `UserRole` del auth-service. Antes solo existia MAESTRO como alias del artesano, lo que causaba que registrarse como ARTESANO desde el frontend creara silenciosamente una cuenta CLIENTE.
+
+- `UserRole` contiene: `ADMIN, OPERATOR, CLIENTE, MAESTRO, ARTESANO, DOMICILIARIO`.
+- `normalizeRole` mapea `OPERATOR` y `MAESTRO` → `ARTESANO` (alias historicos).
+- El JWT siempre contiene `ARTESANO`, nunca `MAESTRO`.
+- Todos los checks de rol en inventory-service usan `"ARTESANO"`.
+
+### Campos de Artesano en catalog.model.ts
+
+El modelo publico `Artesano` en `catalog.model.ts` usaba campos incorrectos (`oficio`, `municipio`, `fotoUrl`) que no existen en el backend. Corregido a `especialidad`, `ubicacion`, `imageUrl`.
+
+### registerCliente usa el endpoint correcto
+
+`auth.service.ts` `registerCliente()` ahora llama `/api/auth/register-cliente` directamente en lugar de hacer un doble cast hacia `/api/auth/register`.
+
+### AuthResponse incluye id del usuario
+
+El backend retorna el UUID del usuario en el login response. Antes el id quedaba vacio (`''`) hasta que `loadProfile()` terminaba, causando que el panel del domiciliario mostrara lista de entregas vacia momentaneamente.
+
+### markAsPaid preserva estado de entrega
+
+`VentaService.markAsPaid` ahora muta la entidad cargada (`venta.setEstado("PAGADA")`) en lugar de crear una nueva instancia Venta que reseteaba todos los campos de delivery tracking.
+
+### Error duplicado de usuario retorna 409
+
+`registerCliente` ahora lanza `"El usuario ya existe"` (mensaje que el handler convierte a 409) en lugar de `"El nombre de usuario ya esta registrado"` (que retornaba 500).
+
+## 25. Que ya cumple el programa
 
 Actualmente el sistema cumple con:
 
 - Landing publica premium.
 - Carrusel territorial.
-- Uso de imagenes de `frontend/public/assets/territorio`.
-- Remocion efectiva de `filandia1.jpg` del carrusel publico.
+- Artesanos reales desde backend con campos correctos.
 - Glassmorphism / Liquid Glass en cliente y ventas.
 - Cursor-reactive cards en desktop.
 - Reduccion de animaciones en mobile/reduced motion.
 - Carrito.
 - Checkout preparado con Stripe.
 - Mis pedidos.
-- Login y registro.
-- Roles CLIENTE, ARTESANO, DOMICILIARIO, ADMIN.
+- Login con usuario/contrasena.
+- Login con Google (Google Identity Services, modo testing).
+- Registro (usuario/contrasena).
+- Roles CLIENTE, ARTESANO, DOMICILIARIO, ADMIN correctamente normalizados.
+- Redireccion post-login por rol (DOMICILIARIO va directo a su panel).
 - Aprobacion de artesanos/domiciliarios.
 - Perfil ampliado.
 - Catalogo, productos, categorias y artesanos.
@@ -861,18 +996,19 @@ Actualmente el sistema cumple con:
 - Ventas.
 - Pedidos.
 - Seguimiento de entrega.
-- Panel domiciliario.
+- Panel domiciliario con checklist de fases.
 - Comunidad artesana.
 - Eventos.
 - Moderacion de comunidad.
 - Reportes.
-- Despliegue Docker en AWS.
+- Despliegue Docker en AWS EC2 (sa-east-1, t3.small).
+- `AuthResponse` con ID de usuario para disponibilidad inmediata post-login.
 
-## 24. Caracteristicas faltantes o pendientes
+## 26. Caracteristicas faltantes o pendientes
 
 Pendientes funcionales:
 
-- Google OAuth para login/registro.
+- Publicar Google OAuth en produccion (requiere HTTPS + dominio).
 - GraalVM Native Images / Spring Native.
 - Encuestas posteriores al registro.
 - Bloqueo funcional completo si perfil no esta completo.
@@ -881,10 +1017,10 @@ Pendientes funcionales:
 - Evidencia final robusta con foto/firma.
 - Factura formal al ADMIN cuando domiciliario acepta pedido.
 - Sistema completo de notificaciones.
-- Comentarios reales en comunidad, no solo contador visual si no esta conectado.
+- Comentarios reales en comunidad.
 - Moderacion real de imagenes con IA.
 - Filtros avanzados y busqueda global.
-- Dominio propio y HTTPS.
+- Dominio propio y HTTPS (necesario para Google OAuth en produccion).
 - Observabilidad: logs centralizados, metricas y alertas.
 - Backups automaticos de PostgreSQL.
 - CI/CD automatizado.
@@ -899,11 +1035,11 @@ Pendientes tecnicos:
 - Corregir warnings Sass y Angular.
 - Considerar Flyway/Liquibase para migraciones mas robustas.
 
-## 25. Recomendaciones de evolucion
+## 27. Recomendaciones de evolucion
 
 Prioridad alta:
 
-- HTTPS y dominio.
+- HTTPS y dominio (desbloquea Google OAuth en produccion y mejora seguridad general).
 - Backups de base de datos.
 - Cerrar PostgreSQL al publico si no es necesario.
 - Completar Stripe test end-to-end.
@@ -921,11 +1057,10 @@ Prioridad media:
 Prioridad baja o futura:
 
 - GraalVM Native Images.
-- Google OAuth.
 - CI/CD completo.
 - Escalado a arquitectura mas robusta.
 
-## 26. Prompt reutilizable para continuar el proyecto
+## 28. Prompt reutilizable para continuar el proyecto
 
 Usa este prompt cuando otra IA o desarrollador vaya a trabajar el proyecto:
 
@@ -938,27 +1073,31 @@ Respeta la arquitectura actual:
 - Microservicios: api-gateway, auth-service, catalog-service, inventory-service, report-service, discovery-server.
 - PostgreSQL 17 con auth_db, catalog_db, inventory_db y report_db.
 - Kafka 3.7 para eventos de inventario.
-- Docker Compose en EC2 Ubuntu.
+- Docker Compose en EC2 Ubuntu (AWS, sa-east-1, t3.small, IP 56.126.102.113).
 - Frontend servido por nginx y proxy /api hacia api-gateway.
 - environment.prod.ts usa apiUrl: ''.
 - El frontend se compila localmente y se commitea dist/frontend/browser.
 - En EC2 no compilar Angular dentro de Docker.
+- El frontend SIEMPRE necesita docker compose build frontend antes de force-recreate.
 
 No rompas:
-- Login, registro, refresh token, JWT.
+- Login con usuario/contrasena y con Google OAuth.
 - Roles ADMIN, CLIENTE, ARTESANO, DOMICILIARIO.
+- Normalizacion: OPERATOR y MAESTRO se convierten a ARTESANO. El JWT siempre lleva ARTESANO.
 - Carrito, checkout, mis-pedidos.
 - Productos, categorias, artesanos, stock, ventas, pedidos.
 - Comunidad, eventos y moderacion.
 - Healthchecks de Docker.
 - Ruteo nginx /api.
+- AuthResponse incluye id del usuario (UUID).
 
 Antes de cambiar codigo:
 - Revisa rutas existentes.
-- Revisa contratos actuales.
+- Revisa contratos actuales. Los campos de Artesano son: nombre, especialidad, ubicacion, imageUrl (NO oficio, municipio, fotoUrl).
 - No cambies backend si la tarea es solo UI.
 - No expongas secretos.
 - No sobrescribas .env.
+- No uses MAESTRO como rol en checks de inventory-service. Usa ARTESANO.
 
 Para frontend:
 - Mantener identidad Rebecca.
@@ -967,22 +1106,27 @@ Para frontend:
 - Mobile con animaciones reducidas.
 - Usar assets en frontend/public/assets.
 - No reintroducir filandia1.jpg en el carrusel.
+- Google OAuth: boton aparece cuando GOOGLE_CLIENT_ID esta configurado en el servidor.
 
 Para backend:
 - Mantener R2DBC, WebFlux y JWT.
 - Agregar migraciones idempotentes.
 - Mantener /actuator/health accesible para healthchecks.
 - No insertar passwords planas.
+- markAsPaid muta la entidad existente, no crea instancia nueva.
 
 Para despliegue:
 - Usar git pull --ff-only.
 - Construir servicios por separado.
+- Frontend: git pull + build + docker compose build frontend + force-recreate.
 - Arrancar escalonado.
-- Verificar docker compose ps, free -h, frontend 200, /api/products 200, comunidad sin token 401, login invalido 401.
+- Verificar: docker compose ps, free -h, frontend 200, /api/products 200, /api/auth/config 200, login invalido 401.
 ```
 
-## 27. Resumen ejecutivo
+## 29. Resumen ejecutivo
 
 Rebecca es una plataforma de comercio y gestion artesanal con tienda publica premium y backoffice por roles. El cliente ve una experiencia visual narrativa con productos, maestros, carrito y pedidos. El artesano administra catalogo, ventas, stock, comunidad y eventos. El domiciliario gestiona entregas y progreso. El administrador controla catalogo, usuarios, solicitudes, moderacion y reportes.
 
-La app ya esta desplegada y funcional en AWS EC2 con Docker Compose. Su mayor riesgo operativo actual es la memoria limitada de la instancia `t3.small`, por lo que los despliegues deben hacerse por etapas o considerar subir a `t3.medium` si se busca mas tranquilidad.
+La app esta desplegada y funcional en AWS EC2 (Sao Paulo, t3.small) con Docker Compose. Incluye login con Google Identity Services (modo testing, requiere dominio con HTTPS para produccion). El mayor riesgo operativo es la memoria limitada de la instancia, por lo que los despliegues deben hacerse por etapas.
+
+Ultimo despliegue: commit `a978557`, bundle `main-MWJNWTOV.js`, 2026-04-26.
