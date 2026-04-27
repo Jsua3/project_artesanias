@@ -1,14 +1,45 @@
-# Environment variables (contains secrets)
+# ============================================================
+# Secretos y variables de entorno — NUNCA commitear
+# ============================================================
 .env
+.env.local
+.env.*.local
+.env.production
+*.secret
+secrets/
+secrets.yml
+secrets.yaml
 
+# Claves SSH y certificados
+*.pem
+*.key
+*.p12
+*.jks
+*.pfx
+*.crt
+*.cer
+id_rsa
+id_ed25519
+
+# ============================================================
 # IDE
+# ============================================================
 .idea/
 .vscode/
 *.iml
+*.suo
+*.user
+.classpath
+.project
+.settings/
 
+# ============================================================
 # Build artifacts
+# ============================================================
 **/target/
 **/node_modules/
+
+# dist: ignorar todo EXCEPTO el bundle compilado del frontend
 **/dist/
 !frontend/dist/
 !frontend/dist/frontend/
@@ -16,6 +47,29 @@
 !frontend/dist/frontend/browser/**
 frontend/dist/frontend/prerendered-routes.json
 
-# OS
+# Maven wrapper cache
+.mvn/wrapper/maven-wrapper.jar
+
+# ============================================================
+# Sistema operativo
+# ============================================================
 .DS_Store
 Thumbs.db
+desktop.ini
+ehthumbs.db
+$RECYCLE.BIN/
+
+# ============================================================
+# Logs y temporales
+# ============================================================
+*.log
+logs/
+*.tmp
+*.temp
+*.swp
+*.bak
+
+# ============================================================
+# Imágenes locales (no son parte del build)
+# ============================================================
+imagenes/

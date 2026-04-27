@@ -1,364 +1,328 @@
-# Sistema de Inventario — Backend con Microservicios Reactivos
+# Almacén Artesanías — Rebecca
 
-Este proyecto es un sistema de gestión de inventario basado en una arquitectura de microservicios utilizando Java 21, Spring Boot 3.4.5 y programación reactiva (Project Reactor).
+Sistema de gestión, venta y exhibición de artesanías colombianas. Combina una tienda pública para clientes con un backoffice por roles para administradores, artesanos y domiciliarios.
 
-## Stack Tecnológico
+**URL pública:** `http://56.126.102.113`
 
-- **Java 21**
-- **Spring Boot 3.4.5**
-- **Spring Cloud 2024.0.1** (Eureka, Gateway)
-- **Spring Data R2DBC** (PostgreSQL)
-- **Spring Kafka** (Mensajería asíncrona)
-- **JJWT** (Seguridad JWT)
-- **Docker & Docker Compose**
+---
 
-## Arquitectura y Puertos
+## Stack tecnológico
 
-| Servicio | Puerto | Descripción |
-| :--- | :--- | :--- |
-| `discovery-server` | 8761 | Registro y descubrimiento de servicios (Eureka) |
-| `api-gateway` | 8080 | Único punto de entrada. Gestión de seguridad JWT. |
-| `auth-service` | 8081 | Gestión de usuarios, autenticación y tokens. |
-| `catalog-service` | 8082 | Gestión de categorías y productos. |
-| `inventory-service`| 8083 | Gestión de stock y movimientos (Entradas/Salidas). |
-| `report-service` | 8084 | Consumo de eventos y generación de reportes. |
-| `postgres-db` | 5432 | Base de datos relacional (múltiples DBs). |
-| `kafka-broker` | 9092 | Broker de mensajería (KRaft mode). |
+| Capa | Tecnologías |
+|------|-------------|
+| Frontend | Angular 21 · Angular Material · SCSS · ng2-charts · Google Identity Services |
+| Backend | Java 21 · Spring Boot 3.4.5 · Spring WebFlux · Spring Cloud Gateway · Eureka |
+| Datos | PostgreSQL 17 · Spring Data R2DBC · Apache Kafka 3.7 |
+| Seguridad | JWT (JJWT) · BCrypt · Google OAuth 2.0 |
+| Infraestructura | Docker Compose · nginx · AWS EC2 Ubuntu 22.04 (sa-east-1) |
 
-## Instrucciones de Ejecución
+---
+
+## Arquitectura y puertos
+
+```
+Navegador
+  └─→ nginx :80  (sirve Angular + proxea /api/)
+        └─→ api-gateway :8080
+              ├─→ auth-service      :8081  (auth_db)
+              ├─→ catalog-service   :8082  (catalog_db)
+              ├─→ inventory-service :8083  (inventory_db)
+              └─→ report-service    :8084  (report_db)
+
+discovery-server :8761  (Eureka — registro interno)
+postgres-db      :5432  (4 bases: auth_db, catalog_db, inventory_db, report_db)
+kafka-broker     :9092  (eventos de inventario → report-service)
+```
+
+| Contenedor | Puerto | Descripción |
+|-----------|--------|-------------|
+| `frontend` | 80 | nginx sirve Angular compilado + proxy `/api/` |
+| `api-gateway` | 8080 | Entrada única. Valida JWT, inyecta headers internos |
+| `auth-service` | 8081 | Usuarios, roles, sesiones, Google OAuth |
+| `catalog-service` | 8082 | Categorías, artesanos, productos, comunidad, eventos |
+| `inventory-service` | 8083 | Stock, ventas, pedidos, tracking, Stripe |
+| `report-service` | 8084 | Reportes y alertas (consume eventos Kafka) |
+| `discovery-server` | 8761 | Eureka — descubrimiento de servicios |
+| `postgres-db` | 5432 | PostgreSQL con 4 bases de datos |
+| `kafka-broker` | 9092 | Broker en modo KRaft |
+
+---
+
+## Roles del sistema
+
+| Rol | Descripción |
+|-----|-------------|
+| `ADMIN` | Acceso total al sistema |
+| `ARTESANO` | Gestiona sus productos, ventas, stock y comunidad |
+| `DOMICILIARIO` | Panel de entregas y tracking |
+| `CLIENTE` | Tienda pública, carrito y mis pedidos |
+
+> OPERATOR y MAESTRO son alias históricos normalizados a `ARTESANO` en toda la cadena (JWT siempre lleva `ARTESANO`).
+
+---
+
+## Ejecución local
 
 ### Requisitos
-- **Java 21**
-- **Maven 3.9+** (Asegúrate de tenerlo instalado y en tu PATH)
-- **Docker y Docker Compose**
 
-### Pasos para ejecución local
-1. **Verificar Maven**:
-   Ejecuta `mvn -version` en tu terminal para confirmar que está instalado.
-   Si no está instalado, descárgalo de [maven.apache.org](https://maven.apache.org/download.cgi).
+- Java 21
+- Maven 3.9+
+- Docker y Docker Compose
 
-2. **Compilar el proyecto**:
-   Desde la raíz del proyecto (`almacen-arle/`), ejecuta:
-   ```bash
-   mvn clean package -DskipTests
-   ```
-3. **Levantar la infraestructura**:
-   ```bash
-   docker compose up --build
-   ```
-
-## Flujo de Seguridad
-
-1. El cliente envía sus credenciales al `auth-service` a través del `api-gateway`.
-2. El `auth-service` valida y genera un JWT.
-3. Para peticiones protegidas, el cliente envía el JWT en el header `Authorization: Bearer <token>`.
-4. El `api-gateway` valida el token:
-   - Extrae los claims (`id`, `role`).
-   - Inyecta headers: `X-User-Id`, `X-User-Role`.
-   - Inyecta un token interno: `X-Internal-Token`.
-5. Los microservicios internos validan la presencia del `X-Internal-Token` y usan los otros headers para control de acceso.
-
-### Roles
-- `ADMIN`: Acceso total (lectura/escritura) en todos los servicios, incluyendo reportes.
-- `OPERATOR`: Lectura de catálogo, registro de movimientos de inventario. No puede editar catálogo ni ver reportes.
-
-## Reglas de Negocio (Inventario)
-
-- **Stock Inicial**: El stock se crea automáticamente en la primera entrada (0 por defecto).
-- **Consistencia**: El stock nunca puede ser negativo.
-- **Eventos**: Cada movimiento (entrada/salida) publica un evento en el tópico `inventory-events` de Kafka.
-- **Reportes**: El `report-service` consume estos eventos para mantener una base de datos denormalizada de solo lectura optimizada para consultas de histórico y alertas.
-
-## Principales Endpoints
-
-### Auth
-- `POST /api/auth/register`: Registro de usuario.
-- `POST /api/auth/login`: Obtención de tokens.
-
-### Catalog
-- `GET /api/categories`: Listar categorías.
-- `POST /api/categories`: Crear categoría (Solo ADMIN).
-- `GET /api/products`: Listar productos.
-- `POST /api/products`: Crear producto (Solo ADMIN).
-
-### Inventory
-- `GET /api/stock`: Ver stock actual.
-- `POST /api/entries`: Registrar entrada de productos.
-- `POST /api/exits`: Registrar salida de productos.
-
-### Reports
-- `GET /api/reports/summary`: Resumen de stock actual (Solo ADMIN).
-- `GET /api/reports/history`: Historial de movimientos (Solo ADMIN).
-
-## Ejemplo de Uso (cURL)
+### Pasos
 
 ```bash
+# 1. Compilar los JARs (sin ejecutar tests)
+mvn -pl api-gateway,auth-service,catalog-service,inventory-service,report-service \
+    -am -DskipTests package
+
+# 2. Compilar el frontend
+cd frontend
+node node_modules/@angular/cli/bin/ng.js build --configuration production
+cd ..
+
+# 3. Levantar toda la infraestructura
+docker compose up --build
+```
+
+> El arranque escalonado es necesario en máquinas con poca RAM: primero `postgres`, luego `discovery-server`, luego los servicios Java, por último `frontend`.
+
+---
+
+## Flujo de seguridad
+
+1. El cliente envía credenciales a `POST /api/auth/login`.
+2. El `auth-service` valida y emite un JWT firmado con `JWT_SECRET`.
+3. Las peticiones protegidas incluyen `Authorization: Bearer <token>`.
+4. El `api-gateway` valida el token y, si es válido:
+   - Extrae `userId` y `role` del JWT.
+   - Inyecta `X-User-Id`, `X-User-Role` y `X-Internal-Token` hacia los microservicios.
+5. Los microservicios internos verifican `X-Internal-Token` y usan los headers de usuario para control de acceso.
+
+### Google OAuth
+
+1. Frontend obtiene `googleClientId` de `GET /api/auth/config`.
+2. Carga el SDK de Google y renderiza el botón.
+3. El usuario se autentica con su cuenta de Google.
+4. Frontend envía el ID token a `POST /api/auth/google`.
+5. Backend valida contra `https://oauth2.googleapis.com/tokeninfo` (verifica `aud` y `email_verified`).
+6. Crea o encuentra el usuario como `CLIENTE` y emite JWT normal.
+
+> El botón de Google solo aparece cuando `GOOGLE_CLIENT_ID` está configurado en el servidor.
+
+---
+
+## Reglas de negocio — inventario
+
+- El stock nunca puede ser negativo (validado en capa de servicio).
+- Cada entrada o salida publica un evento en Kafka (`inventory-events`).
+- El `report-service` consume los eventos y mantiene `movement_logs` y `stock_snapshots`.
+- Al anular una venta se restaura el stock de todos los productos del detalle.
+- `markAsPaid` muta la entidad `Venta` existente (no crea una nueva), preservando todos los campos de delivery tracking.
+
+---
+
+## Principales endpoints
+
+Documentación completa en [`documentos/ENDPOINTS.md`](documentos/ENDPOINTS.md).
+
+### Autenticación
+
+```bash
+# Registro de artesano
+curl -X POST http://localhost:8080/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"username":"artesano1","password":"pass123","role":"ARTESANO"}'
+
 # Login
 curl -X POST http://localhost:8080/api/auth/login \
--H "Content-Type: application/json" \
--d '{"username": "admin", "password": "password"}'
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"password"}'
+# Respuesta: { accessToken, refreshToken, username, role, id }
 
-# Registrar Entrada
+# Client ID de Google (para el botón del frontend)
+curl http://localhost:8080/api/auth/config
+```
+
+### Catálogo (público)
+
+```bash
+curl http://localhost:8080/api/products
+curl http://localhost:8080/api/categories
+curl http://localhost:8080/api/artesanos
+curl http://localhost:8080/api/public/eventos
+```
+
+### Inventario
+
+```bash
+# Ver stock (requiere JWT)
+curl http://localhost:8080/api/stock \
+  -H "Authorization: Bearer <TOKEN>"
+
+# Registrar entrada
 curl -X POST http://localhost:8080/api/entries \
--H "Authorization: Bearer <YOUR_TOKEN>" \
--H "Content-Type: application/json" \
--d '{"productId": "<UUID>", "quantity": 50, "notes": "Carga inicial"}'
+  -H "Authorization: Bearer <TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{"productId":"<UUID>","quantity":50,"notes":"Carga inicial"}'
+
+# Registrar salida
+curl -X POST http://localhost:8080/api/exits \
+  -H "Authorization: Bearer <TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{"productId":"<UUID>","quantity":5,"notes":"Venta directa"}'
+```
+
+### Ventas del cliente
+
+```bash
+# Crear pedido desde carrito
+curl -X POST http://localhost:8080/api/cliente-ventas \
+  -H "Authorization: Bearer <CLIENTE_TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "items": [{"productId":"<UUID>","cantidad":2,"precioUnitario":45000}],
+    "shippingRecipientName":"Juan Pérez",
+    "shippingPhone":"3001234567",
+    "shippingAddress":"Cra 10 # 5-20",
+    "shippingCity":"Armenia"
+  }'
+
+# Mis pedidos
+curl http://localhost:8080/api/cliente-ventas/mias \
+  -H "Authorization: Bearer <CLIENTE_TOKEN>"
+```
+
+### Reportes
+
+```bash
+curl http://localhost:8080/api/reports/summary \
+  -H "Authorization: Bearer <ADMIN_TOKEN>"
+
+curl http://localhost:8080/api/reports/history \
+  -H "Authorization: Bearer <ADMIN_TOKEN>"
+
+curl http://localhost:8080/api/reports/alerts \
+  -H "Authorization: Bearer <ADMIN_TOKEN>"
 ```
 
 ---
 
-## Despliegue en Azure
+## Variables de entorno requeridas
 
-### Arquitectura Azure
+El archivo `.env` en la raíz del proyecto (no se versiona) debe contener:
 
-```
-Internet
-   │
-   ▼
-api-gateway  (Container App — ingress externo)
-   │
-   ├── auth-service        (Container App — interno)
-   ├── catalog-service     (Container App — interno)
-   ├── inventory-service   (Container App — interno)
-   ├── report-service      (Container App — interno)
-   └── discovery-server    (Container App — interno)
+```bash
+# Base de datos
+DB_PASSWORD=<contraseña_postgres>
 
-Azure PostgreSQL Flexible Server  ← reemplaza postgres local
-Azure Event Hubs (Kafka)          ← reemplaza kafka local, topic: inventory-events
-Azure Container Registry (ACR)    ← almacena imágenes Docker
-```
+# JWT
+JWT_SECRET=<clave_secreta_base64>
 
-No se requieren cambios de código. Toda la configuración se pasa como variables de entorno usando la convención de Spring Boot (`SPRING_R2DBC_URL`, `SPRING_KAFKA_BOOTSTRAP_SERVERS`, etc.).
+# Token interno entre microservicios
+INTERNAL_TOKEN=<token_interno>
 
-### Prerequisitos
+# Google OAuth (dejar vacío para deshabilitar el botón)
+GOOGLE_CLIENT_ID=<client_id>.apps.googleusercontent.com
 
-- [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli) instalado
-- Suscripción activa de Azure
-- Java 21 + Maven
-
-```powershell
-az --version   # verificar CLI
-az login       # iniciar sesión
+# Stripe (dejar vacío para modo sin pago online)
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+STRIPE_SUCCESS_URL=http://56.126.102.113/mis-pedidos
+STRIPE_CANCEL_URL=http://56.126.102.113/carrito
+STRIPE_CURRENCY=cop
 ```
 
 ---
 
-### Paso 1 — Variables
+## Despliegue en AWS EC2
 
-```powershell
-$RG       = "almacen-arle-rg"
-$LOCATION = "eastus"
-$ACR      = "almacenarleacr"     # solo minúsculas + números, globalmente único
-$PG       = "almacen-arle-pg"    # globalmente único
-$PG_PASS  = "P@ssw0rd2024!"      # cambiar por una contraseña segura
-$EH_NS    = "almacen-arle-eh"    # globalmente único
-$CA_ENV   = "almacen-arle-env"
+### Actualizar solo el frontend
+
+```bash
+ssh -i ~/Downloads/almacen-key.pem ubuntu@56.126.102.113
+
+cd ~/project_artesanias
+git pull --ff-only origin master
+docker compose build frontend
+docker compose up -d --no-deps --force-recreate frontend
+
+# Verificar bundle nuevo
+curl -s http://localhost/ | grep -o 'main-[A-Z0-9]*.js'
+```
+
+### Actualizar un servicio backend
+
+```bash
+cd ~/project_artesanias
+git pull --ff-only origin master
+docker compose build auth-service
+docker compose up -d --no-deps auth-service
+sleep 20
+docker compose ps
+free -h
+```
+
+### Arranque escalonado desde cero
+
+```bash
+docker compose up -d postgres
+sleep 30
+docker compose up -d discovery-server
+sleep 30
+docker compose up -d api-gateway auth-service
+sleep 30
+docker compose up -d catalog-service inventory-service report-service
+sleep 30
+docker compose up -d frontend
+```
+
+### Diagnóstico
+
+```bash
+docker compose ps
+free -h
+curl http://localhost/                   # 200
+curl http://localhost/api/products       # 200
+curl http://localhost/api/auth/config    # 200 con googleClientId
+curl http://localhost:8080/actuator/health
+docker compose logs --tail=100 auth-service
+docker compose logs --tail=100 inventory-service
 ```
 
 ---
 
-### Paso 2 — Crear infraestructura
+## Base de datos
 
-```powershell
-# Resource Group
-az group create --name $RG --location $LOCATION
+Schema completo en [`documentos/schema-completo.sql`](documentos/schema-completo.sql).
 
-# Container Registry
-az acr create --name $ACR --resource-group $RG --sku Basic --admin-enabled true
+| Base | Tablas principales |
+|------|--------------------|
+| `auth_db` | `user_accounts`, `refresh_tokens` |
+| `catalog_db` | `categories`, `artesanos`, `products`, `community_posts`, `community_post_likes`, `community_events` |
+| `inventory_db` | `stocks`, `stock_entries`, `stock_exits`, `clientes`, `ventas`, `venta_detalle` |
+| `report_db` | `movement_logs`, `stock_snapshots` |
 
-# PostgreSQL Flexible Server
-az postgres flexible-server create `
-  --name $PG --resource-group $RG --location $LOCATION `
-  --admin-user postgres --admin-password $PG_PASS `
-  --sku-name Standard_B1ms --tier Burstable `
-  --public-access All
+### Crear un ADMIN manualmente
 
-# Crear las 4 bases de datos
-az postgres flexible-server db create --server-name $PG --resource-group $RG --database-name auth_db
-az postgres flexible-server db create --server-name $PG --resource-group $RG --database-name catalog_db
-az postgres flexible-server db create --server-name $PG --resource-group $RG --database-name inventory_db
-az postgres flexible-server db create --server-name $PG --resource-group $RG --database-name report_db
-
-# Event Hubs con soporte Kafka
-az eventhubs namespace create `
-  --name $EH_NS --resource-group $RG --location $LOCATION `
-  --sku Standard --enable-kafka true
-
-# Event Hub (topic) = inventory-events
-az eventhubs eventhub create `
-  --name inventory-events --namespace-name $EH_NS `
-  --resource-group $RG --partition-count 1
-
-# Container Apps Environment
-az containerapp env create `
-  --name $CA_ENV --resource-group $RG --location $LOCATION
+```sql
+-- Conectar a auth_db
+UPDATE user_accounts
+SET role = 'ADMIN', approval_status = 'APPROVED'
+WHERE username = 'nombre_usuario';
 ```
+
+> Nunca insertar contraseñas en texto plano. Siempre BCrypt.
 
 ---
 
-### Paso 3 — Compilar los JARs
+## Documentación adicional
 
-```powershell
-mvn clean package -DskipTests
-```
-
----
-
-### Paso 4 — Construir y subir imágenes a ACR
-
-```powershell
-az acr build --registry $ACR --image discovery-server:latest ./discovery-server
-az acr build --registry $ACR --image api-gateway:latest       ./api-gateway
-az acr build --registry $ACR --image auth-service:latest      ./auth-service
-az acr build --registry $ACR --image catalog-service:latest   ./catalog-service
-az acr build --registry $ACR --image inventory-service:latest ./inventory-service
-az acr build --registry $ACR --image report-service:latest    ./report-service
-```
-
----
-
-### Paso 5 — Obtener credenciales
-
-```powershell
-$ACR_USER = az acr credential show --name $ACR --query username -o tsv
-$ACR_PASS = az acr credential show --name $ACR --query "passwords[0].value" -o tsv
-
-$PG_HOST  = "$PG.postgres.database.azure.com"
-
-$EH_CONN  = az eventhubs namespace authorization-rule keys list `
-  --resource-group $RG --namespace-name $EH_NS `
-  --name RootManageSharedAccessKey --query primaryConnectionString -o tsv
-
-$KAFKA_BOOTSTRAP = "$EH_NS.servicebus.windows.net:9093"
-$KAFKA_JAAS = "org.apache.kafka.common.security.plain.PlainLoginModule required username=`"`$ConnectionString`" password=`"$EH_CONN`";"
-```
-
----
-
-### Paso 6 — Desplegar Container Apps
-
-```powershell
-# 1. discovery-server (primero — los demás dependen de él)
-az containerapp create `
-  --name discovery-server --resource-group $RG --environment $CA_ENV `
-  --image "$ACR.azurecr.io/discovery-server:latest" `
-  --registry-server "$ACR.azurecr.io" --registry-username $ACR_USER --registry-password $ACR_PASS `
-  --target-port 8761 --ingress internal --min-replicas 1
-
-# 2. auth-service
-az containerapp create `
-  --name auth-service --resource-group $RG --environment $CA_ENV `
-  --image "$ACR.azurecr.io/auth-service:latest" `
-  --registry-server "$ACR.azurecr.io" --registry-username $ACR_USER --registry-password $ACR_PASS `
-  --target-port 8081 --ingress internal --min-replicas 1 `
-  --env-vars `
-    "SPRING_R2DBC_URL=r2dbc:postgresql://$PG_HOST:5432/auth_db?sslmode=require" `
-    "SPRING_R2DBC_USERNAME=postgres" `
-    "SPRING_R2DBC_PASSWORD=$PG_PASS" `
-    "EUREKA_HOST=discovery-server"
-
-# 3. catalog-service
-az containerapp create `
-  --name catalog-service --resource-group $RG --environment $CA_ENV `
-  --image "$ACR.azurecr.io/catalog-service:latest" `
-  --registry-server "$ACR.azurecr.io" --registry-username $ACR_USER --registry-password $ACR_PASS `
-  --target-port 8082 --ingress internal --min-replicas 1 `
-  --env-vars `
-    "SPRING_R2DBC_URL=r2dbc:postgresql://$PG_HOST:5432/catalog_db?sslmode=require" `
-    "SPRING_R2DBC_USERNAME=postgres" `
-    "SPRING_R2DBC_PASSWORD=$PG_PASS" `
-    "EUREKA_HOST=discovery-server"
-
-# 4. inventory-service
-az containerapp create `
-  --name inventory-service --resource-group $RG --environment $CA_ENV `
-  --image "$ACR.azurecr.io/inventory-service:latest" `
-  --registry-server "$ACR.azurecr.io" --registry-username $ACR_USER --registry-password $ACR_PASS `
-  --target-port 8083 --ingress internal --min-replicas 1 `
-  --env-vars `
-    "SPRING_R2DBC_URL=r2dbc:postgresql://$PG_HOST:5432/inventory_db?sslmode=require" `
-    "SPRING_R2DBC_USERNAME=postgres" `
-    "SPRING_R2DBC_PASSWORD=$PG_PASS" `
-    "SPRING_KAFKA_BOOTSTRAP_SERVERS=$KAFKA_BOOTSTRAP" `
-    "SPRING_KAFKA_PROPERTIES_SECURITY_PROTOCOL=SASL_SSL" `
-    "SPRING_KAFKA_PROPERTIES_SASL_MECHANISM=PLAIN" `
-    "SPRING_KAFKA_PROPERTIES_SASL_JAAS_CONFIG=$KAFKA_JAAS" `
-    "EUREKA_HOST=discovery-server"
-
-# 5. report-service
-az containerapp create `
-  --name report-service --resource-group $RG --environment $CA_ENV `
-  --image "$ACR.azurecr.io/report-service:latest" `
-  --registry-server "$ACR.azurecr.io" --registry-username $ACR_USER --registry-password $ACR_PASS `
-  --target-port 8084 --ingress internal --min-replicas 1 `
-  --env-vars `
-    "SPRING_R2DBC_URL=r2dbc:postgresql://$PG_HOST:5432/report_db?sslmode=require" `
-    "SPRING_R2DBC_USERNAME=postgres" `
-    "SPRING_R2DBC_PASSWORD=$PG_PASS" `
-    "SPRING_KAFKA_BOOTSTRAP_SERVERS=$KAFKA_BOOTSTRAP" `
-    "SPRING_KAFKA_PROPERTIES_SECURITY_PROTOCOL=SASL_SSL" `
-    "SPRING_KAFKA_PROPERTIES_SASL_MECHANISM=PLAIN" `
-    "SPRING_KAFKA_PROPERTIES_SASL_JAAS_CONFIG=$KAFKA_JAAS" `
-    "EUREKA_HOST=discovery-server"
-
-# 6. api-gateway (EXTERNO — único con ingress público)
-az containerapp create `
-  --name api-gateway --resource-group $RG --environment $CA_ENV `
-  --image "$ACR.azurecr.io/api-gateway:latest" `
-  --registry-server "$ACR.azurecr.io" --registry-username $ACR_USER --registry-password $ACR_PASS `
-  --target-port 8080 --ingress external --min-replicas 1 `
-  --env-vars `
-    "EUREKA_HOST=discovery-server" `
-    "AUTH_SERVICE_HOST=auth-service" `
-    "CATALOG_SERVICE_HOST=catalog-service" `
-    "INVENTORY_SERVICE_HOST=inventory-service" `
-    "REPORT_SERVICE_HOST=report-service"
-```
-
----
-
-### Paso 7 — Obtener URL pública
-
-```powershell
-az containerapp show `
-  --name api-gateway --resource-group $RG `
-  --query properties.configuration.ingress.fqdn -o tsv
-```
-
-La URL resultante es el endpoint público de toda la aplicación.
-
----
-
-### Actualizar un servicio (re-deploy)
-
-```powershell
-# 1. Recompilar
-mvn clean package -DskipTests
-
-# 2. Subir nueva imagen (ejemplo: auth-service)
-az acr build --registry $ACR --image auth-service:latest ./auth-service
-
-# 3. Actualizar el Container App
-az containerapp update --name auth-service --resource-group $RG `
-  --image "$ACR.azurecr.io/auth-service:latest"
-```
-
----
-
-### Eliminar todos los recursos Azure
-
-```powershell
-az group delete --name $RG --yes
-```
-
----
-
-### Costo estimado Azure
-
-| Recurso | SKU | Costo aprox/mes |
-|---------|-----|-----------------|
-| Azure Container Registry | Basic | ~$5 |
-| PostgreSQL Flexible Server | Burstable B1ms | ~$13 |
-| Event Hubs | Standard | ~$10 |
-| Container Apps (6 servicios) | Consumption | ~$5-15 |
-| **Total** | | **~$33-43 USD** |
+| Archivo | Descripción |
+|---------|-------------|
+| [`documentos/ENDPOINTS.md`](documentos/ENDPOINTS.md) | Tabla completa de los 74 endpoints |
+| [`documentos/requisitos.md`](documentos/requisitos.md) | Requisitos funcionales, reglas de negocio e historias de usuario |
+| [`documentos/schema-completo.sql`](documentos/schema-completo.sql) | Schema SQL de las 4 bases de datos |
+| [`postman/almacen-arle.postman_collection.json`](postman/almacen-arle.postman_collection.json) | Colección Postman completa |
+| [`postman/inventory-local.postman_environment.json`](postman/inventory-local.postman_environment.json) | Environment Postman (local) |
+| [`documentos/SCRIPT_MAESTRO_PROYECTO_REBECCA.md`](documentos/SCRIPT_MAESTRO_PROYECTO_REBECCA.md) | Documento maestro del proyecto |
