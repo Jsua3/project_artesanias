@@ -37,7 +37,37 @@ spring:
         - id: auth-service-private
           uri: ${AUTH_SERVICE_URL:http://localhost:8081}
           predicates:
-            - Path=/api/auth/me, /api/auth/users, /api/auth/profile, /api/auth/artisan-requests, /api/auth/artisan-requests/**, /api/auth/approval-requests, /api/auth/approval-requests/**
+            - Path=/api/auth/me, /api/auth/me/profile-status, /api/auth/users, /api/auth/profile, /api/auth/artisan-requests, /api/auth/artisan-requests/**, /api/auth/approval-requests, /api/auth/approval-requests/**
+          filters:
+            - JwtAuth
+
+        # Eventos públicos — sin JWT
+        - id: catalog-service-public-eventos
+          uri: ${CATALOG_SERVICE_URL:http://localhost:8082}
+          predicates:
+            - Path=/api/public/eventos
+          filters:
+            - AddRequestHeader=X-Internal-Token, ${security.jwt.internal-token}
+
+        # Admin DB — solo ADMIN
+        - id: catalog-service-admin-db
+          uri: ${CATALOG_SERVICE_URL:http://localhost:8082}
+          predicates:
+            - Path=/api/admin/db/artesanos, /api/admin/db/products, /api/admin/db/posts, /api/admin/db/eventos
+          filters:
+            - JwtAuth
+
+        - id: auth-service-admin-db
+          uri: ${AUTH_SERVICE_URL:http://localhost:8081}
+          predicates:
+            - Path=/api/admin/db/users
+          filters:
+            - JwtAuth
+
+        - id: inventory-service-admin-db
+          uri: ${INVENTORY_SERVICE_URL:http://localhost:8083}
+          predicates:
+            - Path=/api/admin/db/clientes, /api/admin/db/ventas, /api/admin/db/pedidos
           filters:
             - JwtAuth
 

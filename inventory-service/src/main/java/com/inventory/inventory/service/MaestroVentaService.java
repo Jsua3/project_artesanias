@@ -4,8 +4,10 @@ import com.inventory.inventory.dto.ArtesanoInfoDto;
 import com.inventory.inventory.dto.DeliveryTrackingResponse;
 import com.inventory.inventory.dto.VentaDetalleResponse;
 import com.inventory.inventory.dto.VentaResponse;
+import com.inventory.inventory.model.Cliente;
 import com.inventory.inventory.model.Venta;
 import com.inventory.inventory.model.VentaDetalle;
+import com.inventory.inventory.repository.ClienteRepository;
 import com.inventory.inventory.repository.VentaDetalleRepository;
 import com.inventory.inventory.repository.VentaRepository;
 import org.springframework.stereotype.Service;
@@ -33,13 +35,16 @@ public class MaestroVentaService {
 
     private final VentaRepository ventaRepository;
     private final VentaDetalleRepository ventaDetalleRepository;
+    private final ClienteRepository clienteRepository;
     private final WebClient catalogWebClient;
 
     public MaestroVentaService(VentaRepository ventaRepository,
                                VentaDetalleRepository ventaDetalleRepository,
+                               ClienteRepository clienteRepository,
                                WebClient catalogWebClient) {
         this.ventaRepository = ventaRepository;
         this.ventaDetalleRepository = ventaDetalleRepository;
+        this.clienteRepository = clienteRepository;
         this.catalogWebClient = catalogWebClient;
     }
 
@@ -71,11 +76,24 @@ public class MaestroVentaService {
 
     private Mono<VentaResponse> hydrateVenta(UUID ventaId) {
         return ventaRepository.findById(ventaId)
-                .zipWith(ventaDetalleRepository.findByVentaId(ventaId).collectList())
-                .map(t -> toResponse(t.getT1(), t.getT2()));
+                .flatMap(venta -> ventaDetalleRepository.findByVentaId(ventaId).collectList()
+                        .flatMap(detalles -> resolveClienteName(venta)
+                                .map(name -> toResponse(venta, detalles, name))));
     }
 
-    private VentaResponse toResponse(Venta venta, List<VentaDetalle> detalles) {
+    private Mono<String> resolveClienteName(Venta venta) {
+        if (venta.getShippingRecipientName() != null && !venta.getShippingRecipientName().isBlank()) {
+            return Mono.just(venta.getShippingRecipientName());
+        }
+        if (venta.clienteId() == null) {
+            return Mono.just("Cliente");
+        }
+        return clienteRepository.findById(venta.clienteId())
+                .map(c -> c.nombre() != null && !c.nombre().isBlank() ? c.nombre() : "Cliente")
+                .defaultIfEmpty("Cliente");
+    }
+
+    private VentaResponse toResponse(Venta venta, List<VentaDetalle> detalles, String clienteName) {
         List<VentaDetalleResponse> detalleResponses = detalles.stream()
                 .filter(Objects::nonNull)
                 .map(d -> new VentaDetalleResponse(
@@ -105,7 +123,8 @@ public class MaestroVentaService {
 
         return new VentaResponse(
                 venta.id(), venta.clienteId(), venta.vendedorId(),
-                venta.total(), venta.estado(), venta.createdAt(), deliveryTracking, detalleResponses);
+                venta.total(), venta.estado(), venta.createdAt(), deliveryTracking, detalleResponses,
+                null, null, clienteName);
     }
 
     private int calculateProgress(Venta venta) {

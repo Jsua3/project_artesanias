@@ -36,6 +36,7 @@ public class WebSecurityConfig {
                         .pathMatchers("/api/auth/register", "/api/auth/register-cliente",
                                 "/api/auth/login", "/api/auth/refresh",
                                 "/api/auth/google", "/api/auth/config").permitAll()
+                        .pathMatchers("/internal/**").permitAll()
                         .anyExchange().authenticated()
                 )
                 .addFilterAt(gatewayAuthFilter(), SecurityWebFiltersOrder.AUTHENTICATION)

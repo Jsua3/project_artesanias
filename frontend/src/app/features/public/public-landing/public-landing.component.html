@@ -332,6 +332,35 @@
       </div>
     </div>
   </section>
+  <!-- ========= FERIAS Y EVENTOS ========= -->
+  <section id="ferias" class="section ferias-section story-reveal">
+    <div class="section__head section__head--centered">
+      <div class="eyebrow">comunidad viva</div>
+      <h2 class="section__title">Ferias y eventos artesanos</h2>
+      <p class="section__sub">Encuentros donde el oficio toma forma de fiesta.</p>
+    </div>
+
+    @if (eventos().length) {
+      <div class="eventos-grid">
+        @for (e of eventos(); track e.id) {
+          <article class="evento-card liquid-glass liquid-tilt" appLiquidPointer [liquidTiltStrength]="1.5">
+            <img [src]="e.imagenUrl || 'assets/placeholders/feria.jpg'"
+                 [alt]="e.titulo" class="evento-img">
+            <div class="evento-body">
+              <span class="evento-fecha">{{ e.fecha | date:'EEE d MMM' : undefined : 'es-CO' }}</span>
+              <h3 class="evento-titulo">{{ e.titulo }}</h3>
+              <p class="evento-ubicacion">📍 {{ e.ubicacion }}</p>
+              <p class="evento-desc">{{ e.descripcion?.substring(0, 140) }}...</p>
+              <span class="evento-artesano">por {{ e.artesanoNombre }}</span>
+            </div>
+          </article>
+        }
+      </div>
+    } @else {
+      <p class="empty-eventos">Pronto anunciaremos nuevas ferias.</p>
+    }
+  </section>
+
 </main>
 
 <!-- ========= FOOTER ========= -->

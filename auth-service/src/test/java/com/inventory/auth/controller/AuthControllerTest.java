@@ -95,7 +95,7 @@ class AuthControllerTest {
     @Test
     void loginShouldDeserializeJsonBody() {
         when(authService.login(any(LoginRequest.class)))
-                .thenReturn(Mono.just(new AuthResponse("access", "refresh", "admin", "ADMIN", java.util.UUID.randomUUID())));
+                .thenReturn(Mono.just(new AuthResponse("access", "refresh", "admin", "ADMIN", java.util.UUID.randomUUID(), false)));
 
         String json = """
                 {

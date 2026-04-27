@@ -22,6 +22,7 @@ export interface AuthResponse {
   username: string;
   role: UserRole;
   id: string;
+  profileComplete?: boolean;
 }
 
 export interface UserProfile {

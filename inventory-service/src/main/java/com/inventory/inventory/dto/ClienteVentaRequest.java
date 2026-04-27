@@ -10,5 +10,11 @@ import java.util.List;
  */
 public record ClienteVentaRequest(
         List<VentaItemRequest> items,
-        String displayName
+        String displayName,
+        // Shipping data — obligatorio en el checkout
+        String recipientName,
+        String recipientPhone,
+        String address,
+        String city,
+        String notes
 ) {}

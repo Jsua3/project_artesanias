@@ -1,26 +1,36 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { Subscription, interval } from 'rxjs';
+import { switchMap, takeWhile } from 'rxjs/operators';
 import { ClienteVentaService } from '../../../core/services/cliente-venta.service';
-import { Venta, VentaEstado } from '../../../core/models/venta.model';
+import { Venta, VentaEstado, CourierCard } from '../../../core/models/venta.model';
 
 @Component({
   selector: 'app-mis-pedido-detail',
   standalone: true,
   imports: [
     CommonModule, RouterLink, DatePipe,
-    MatIconModule, MatButtonModule, MatProgressSpinnerModule
+    MatIconModule, MatButtonModule, MatProgressSpinnerModule,
+    MatProgressBarModule, MatSnackBarModule,
   ],
   templateUrl: './mis-pedido-detail.component.html',
   styleUrl: './mis-pedidos.component.scss'
 })
-export class MisPedidoDetailComponent implements OnInit {
+export class MisPedidoDetailComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private ventas = inject(ClienteVentaService);
+  private snackBar = inject(MatSnackBar);
+
+  private pollingSubscription?: Subscription;
+  private lastCourierId: string | null = null;
+  private vendorId = '';
 
   readonly trackingSteps = [
     { label: 'Pedido confirmado', value: 10 },
@@ -70,11 +80,24 @@ export class MisPedidoDetailComponent implements OnInit {
     this.error.set(null);
     this.ventas.byId(id).subscribe({
       next: venta => {
+        const prevCourier = this.lastCourierId;
         this.pedido.set(venta);
         this.loading.set(false);
+        this.vendorId = id;
 
-        // Si venimos del success URL pero la venta aún es PENDIENTE,
-        // el webhook probablemente está en vuelo. Repolleamos unas veces.
+        // Notificar cuando aparece el courier por primera vez
+        if (venta.courier && !prevCourier) {
+          this.lastCourierId = venta.courier.id;
+          this.snackBar.open(`¡${venta.courier.displayName} aceptó tu pedido!`, 'Ver', { duration: 6000 });
+          this.tryBrowserNotification(venta.courier);
+        }
+
+        // Iniciar polling de 15s si el pedido aún está en progreso
+        if (!this.pollingSubscription && venta.estado !== 'COMPLETADA' && !venta.delivery?.delivered) {
+          this.startPolling(id);
+        }
+
+        // Si venimos del success URL pero la venta aún es PENDIENTE, repoll
         if (this.cameFromPaid()
             && venta.estado === 'PENDIENTE'
             && this.pollAttempts < this.POLL_MAX_ATTEMPTS) {
@@ -119,6 +142,44 @@ export class MisPedidoDetailComponent implements OnInit {
         }
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    this.pollingSubscription?.unsubscribe();
+  }
+
+  private startPolling(id: string): void {
+    this.pollingSubscription = interval(15000).pipe(
+      takeWhile(() => document.visibilityState === 'visible'),
+      switchMap(() => this.ventas.byId(id))
+    ).subscribe({
+      next: venta => {
+        const prevCourier = this.lastCourierId;
+        this.pedido.set(venta);
+        if (venta.courier && !prevCourier) {
+          this.lastCourierId = venta.courier.id;
+          this.snackBar.open(`¡${venta.courier.displayName} aceptó tu pedido!`, 'OK', { duration: 6000 });
+          this.tryBrowserNotification(venta.courier);
+        }
+        if (venta.estado === 'COMPLETADA' || venta.delivery?.delivered) {
+          this.pollingSubscription?.unsubscribe();
+        }
+      },
+      error: () => {}
+    });
+  }
+
+  private tryBrowserNotification(courier: CourierCard): void {
+    if ('Notification' in window && Notification.permission === 'granted') {
+      new Notification('¡Tu pedido ya tiene domiciliario!', {
+        body: `${courier.displayName} aceptó tu pedido`,
+        icon: courier.avatarUrl ?? undefined
+      });
+    }
+  }
+
+  getProgressPercent(pedido: Venta): number {
+    return this.deliveryProgress(pedido);
   }
 
   formatPrice(n: number): string {

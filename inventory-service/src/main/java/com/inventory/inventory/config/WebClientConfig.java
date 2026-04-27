@@ -23,4 +23,14 @@ public class WebClientConfig {
                 .defaultHeader("X-Internal-Token", internalToken)
                 .build();
     }
+
+    @Bean("authWebClient")
+    public WebClient authWebClient(
+            @Value("${auth.service.url:http://auth-service:8081}") String baseUrl,
+            @Value("${security.jwt.internal-token:my-super-secret-internal-token}") String internalToken) {
+        return WebClient.builder()
+                .baseUrl(baseUrl)
+                .defaultHeader("X-Internal-Token", internalToken)
+                .build();
+    }
 }

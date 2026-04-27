@@ -47,3 +47,5 @@ ALTER TABLE user_accounts ADD COLUMN IF NOT EXISTS approved_by UUID;
 UPDATE user_accounts
 SET approval_status = 'APPROVED'
 WHERE approval_status IS NULL;
+
+ALTER TABLE user_accounts ADD COLUMN IF NOT EXISTS profile_complete BOOLEAN NOT NULL DEFAULT FALSE;

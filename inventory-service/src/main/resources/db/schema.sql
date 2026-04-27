@@ -91,3 +91,12 @@ ALTER TABLE venta_detalle ADD COLUMN IF NOT EXISTS artesano_id UUID;
 ALTER TABLE ventas DROP CONSTRAINT IF EXISTS chk_venta_estado;
 ALTER TABLE ventas ADD CONSTRAINT chk_venta_estado
     CHECK (estado IN ('PENDIENTE', 'PAGADA', 'COMPLETADA', 'ANULADA'));
+
+ALTER TABLE ventas ADD COLUMN IF NOT EXISTS shipping_recipient_name VARCHAR(150);
+ALTER TABLE ventas ADD COLUMN IF NOT EXISTS shipping_phone VARCHAR(10);
+ALTER TABLE ventas ADD COLUMN IF NOT EXISTS shipping_address TEXT;
+ALTER TABLE ventas ADD COLUMN IF NOT EXISTS shipping_city VARCHAR(100);
+ALTER TABLE ventas ADD COLUMN IF NOT EXISTS shipping_notes TEXT;
+ALTER TABLE ventas ADD COLUMN IF NOT EXISTS courier_user_id UUID;
+ALTER TABLE ventas ADD COLUMN IF NOT EXISTS courier_accepted_at TIMESTAMP;
+CREATE INDEX IF NOT EXISTS idx_ventas_courier ON ventas(courier_user_id);

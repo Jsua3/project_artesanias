@@ -7,9 +7,12 @@ import com.inventory.inventory.model.VentaDetalle;
 import com.inventory.inventory.repository.ClienteRepository;
 import com.inventory.inventory.repository.VentaRepository;
 import com.inventory.inventory.repository.VentaDetalleRepository;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -26,17 +29,20 @@ public class VentaService {
     private final VentaDetalleRepository ventaDetalleRepository;
     private final ClienteRepository clienteRepository;
     private final WebClient catalogWebClient;
+    private final WebClient authWebClient;
     private final ExitService exitService;
 
     public VentaService(VentaRepository ventaRepository,
                        VentaDetalleRepository ventaDetalleRepository,
                        ClienteRepository clienteRepository,
                        WebClient catalogWebClient,
+                       @Qualifier("authWebClient") WebClient authWebClient,
                        ExitService exitService) {
         this.ventaRepository = ventaRepository;
         this.ventaDetalleRepository = ventaDetalleRepository;
         this.clienteRepository = clienteRepository;
         this.catalogWebClient = catalogWebClient;
+        this.authWebClient = authWebClient;
         this.exitService = exitService;
     }
 
@@ -133,6 +139,12 @@ public class VentaService {
                                     // Estado = PENDIENTE hasta que Stripe confirme el pago (Fase 2b).
                                     Venta venta = new Venta(ventaId, cliente.id(), userAccountId,
                                                             total, "PENDIENTE", LocalDateTime.now());
+                                    // Persist shipping data
+                                    venta.setShippingRecipientName(request.recipientName());
+                                    venta.setShippingPhone(request.recipientPhone());
+                                    venta.setShippingAddress(request.address());
+                                    venta.setShippingCity(request.city());
+                                    venta.setShippingNotes(request.notes());
 
                                     return ventaRepository.save(venta.withIsNew(true))
                                             .flatMap(savedVenta ->
@@ -238,6 +250,71 @@ public class VentaService {
     /** Lookup de la entidad Venta cruda (para StripeService que necesita el modelo). */
     public Mono<com.inventory.inventory.model.Venta> getVentaEntity(UUID id) {
         return ventaRepository.findById(id);
+    }
+
+    /**
+     * Un DOMICILIARIO acepta la entrega. Registra courier_user_id y courier_accepted_at.
+     * Solo se puede aceptar si la venta está PAGADA y sin courier asignado.
+     */
+    @Transactional
+    public Mono<VentaResponse> aceptarDomicilio(UUID ventaId, UUID courierUserId) {
+        return ventaRepository.findById(ventaId)
+                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Venta no encontrada")))
+                .flatMap(venta -> {
+                    if (venta.getCourierUserId() != null) {
+                        return Mono.error(new ResponseStatusException(HttpStatus.CONFLICT,
+                                "Esta entrega ya fue tomada por otro domiciliario"));
+                    }
+                    if (!"PAGADA".equalsIgnoreCase(venta.getEstado())
+                            && !"COMPLETADA".equalsIgnoreCase(venta.getEstado())) {
+                        return Mono.error(new ResponseStatusException(HttpStatus.CONFLICT,
+                                "Solo se pueden aceptar ventas en estado PAGADA"));
+                    }
+                    venta.setCourierUserId(courierUserId);
+                    venta.setCourierAcceptedAt(LocalDateTime.now());
+                    return ventaRepository.save(venta);
+                })
+                .flatMap(saved -> buildEnrichedResponse(saved));
+    }
+
+    /** Versión enriquecida de getVenta — incluye shipping + courier card. */
+    public Mono<VentaResponse> getVentaEnriquecida(UUID id) {
+        return ventaRepository.findById(id)
+                .flatMap(venta -> ventaDetalleRepository.findByVentaId(id).collectList()
+                        .flatMap(detalles -> buildEnrichedResponse(venta, detalles)));
+    }
+
+    private Mono<VentaResponse> buildEnrichedResponse(Venta venta) {
+        return ventaDetalleRepository.findByVentaId(venta.id()).collectList()
+                .flatMap(detalles -> buildEnrichedResponse(venta, detalles));
+    }
+
+    private Mono<VentaResponse> buildEnrichedResponse(Venta venta, List<VentaDetalle> detalles) {
+        VentaResponse base = toResponse(venta, detalles);
+        ShippingInfoDto shipping = venta.getShippingRecipientName() != null
+                ? new ShippingInfoDto(venta.getShippingRecipientName(), venta.getShippingPhone(),
+                        venta.getShippingAddress(), venta.getShippingCity(), venta.getShippingNotes())
+                : null;
+        if (venta.getCourierUserId() != null) {
+            return fetchCourierCard(venta.getCourierUserId())
+                    .map(card -> new VentaResponse(base.id(), base.clienteId(), base.vendedorId(),
+                            base.total(), base.estado(), base.createdAt(), base.delivery(),
+                            base.detalles(), shipping, card, base.clienteName()))
+                    .onErrorReturn(new VentaResponse(base.id(), base.clienteId(), base.vendedorId(),
+                            base.total(), base.estado(), base.createdAt(), base.delivery(),
+                            base.detalles(), shipping, null, base.clienteName()));
+        }
+        return Mono.just(new VentaResponse(base.id(), base.clienteId(), base.vendedorId(),
+                base.total(), base.estado(), base.createdAt(), base.delivery(),
+                base.detalles(), shipping, null, base.clienteName()));
+    }
+
+    private Mono<CourierCardDto> fetchCourierCard(UUID courierId) {
+        return authWebClient.get()
+                .uri("/internal/users/{id}/public-card", courierId)
+                .retrieve()
+                .bodyToMono(CourierCardDto.class)
+                .onErrorResume(e -> Mono.empty());
     }
 
     public Flux<VentaResponse> getAllVentas() {

@@ -182,6 +182,10 @@ const SHELL_ROUTES: Routes = [
         path: 'moderacion',
         loadComponent: () => import('./features/comunidad/moderacion/moderacion.component').then(m => m.ModeracionComponent)
       },
+      {
+        path: 'database',
+        loadComponent: () => import('./features/admin/database/database.component').then(m => m.DatabaseComponent)
+      },
       { path: '', redirectTo: '/dashboard', pathMatch: 'full' }
     ]
   },

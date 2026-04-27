@@ -116,7 +116,8 @@ public class GoogleAuthService {
 
     private Mono<AuthResponse> generateTokens(UserAccount user) {
         UserRole effectiveRole = normalizeRole(user.getRole());
-        String accessToken = jwtService.generateToken(user.getId().toString(), effectiveRole.name());
+        boolean pc = user.isProfileComplete();
+        String accessToken = jwtService.generateToken(user.getId().toString(), effectiveRole.name(), pc);
         String refreshTokenStr = UUID.randomUUID().toString();
 
         RefreshToken refreshToken = new RefreshToken();
@@ -132,7 +133,7 @@ public class GoogleAuthService {
                     return new AuthResponse(
                             accessToken, refreshTokenStr,
                             user.getUsername(), effectiveRole.name(),
-                            user.getId());
+                            user.getId(), pc);
                 });
     }
 

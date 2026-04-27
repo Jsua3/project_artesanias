@@ -23,10 +23,16 @@ public class JwtService {
         this.jwtProperties = jwtProperties;
     }
 
-    public String generateToken(String subject, String role) {
+    public String generateToken(String subject, String role, boolean profileComplete) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", role);
+        claims.put("profileComplete", profileComplete);
         return createToken(claims, subject, jwtProperties.expiration());
+    }
+
+    /** Sobrecarga de compatibilidad — asume profileComplete=false si no se conoce. */
+    public String generateToken(String subject, String role) {
+        return generateToken(subject, role, false);
     }
 
     private String createToken(Map<String, Object> claims, String subject, long expirationMs) {

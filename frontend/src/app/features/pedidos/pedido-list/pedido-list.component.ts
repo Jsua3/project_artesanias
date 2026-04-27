@@ -86,6 +86,17 @@ export class PedidoListComponent implements OnInit {
     });
   }
 
+  numeroPedido(venta: Venta): string {
+    return 'PEDIDO ' + venta.id.substring(0, 8).toUpperCase();
+  }
+
+  clienteNombreLegible(venta: Venta): string {
+    if (venta.clienteName) return venta.clienteName;
+    if (venta.shipping?.recipientName) return venta.shipping.recipientName;
+    const fromMap = this.clienteMap().get(venta.clienteId);
+    return fromMap ?? 'Cliente';
+  }
+
   getClienteNombre(clienteId: string): string {
     return this.clienteMap().get(clienteId) ?? clienteId;
   }

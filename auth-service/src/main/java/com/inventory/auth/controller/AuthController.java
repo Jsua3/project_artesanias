@@ -111,4 +111,12 @@ public class AuthController {
             @RequestBody ArtisanApprovalRequest request) {
         return authService.reviewApprovalRequest(userId, adminUserId, request);
     }
+
+    @GetMapping("/me/profile-status")
+    public Mono<ResponseEntity<ProfileStatusResponse>> getProfileStatus(
+            @RequestHeader("X-User-Id") String userId) {
+        return authService.getProfileStatus(UUID.fromString(userId))
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
+    }
 }

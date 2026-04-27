@@ -1,11 +1,12 @@
 import { DatePipe } from '@angular/common';
-import { Component, OnInit, computed, inject } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatDialog } from '@angular/material/dialog';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartData, ChartOptions } from 'chart.js';
 import { Venta } from '../../core/models/venta.model';
@@ -27,7 +28,7 @@ import { VentaService } from '../../core/services/venta.service';
     MatButtonModule,
     DatePipe,
     RouterLink,
-    BaseChartDirective
+    BaseChartDirective,
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
@@ -38,11 +39,13 @@ export class DashboardComponent implements OnInit {
   private stockService = inject(StockService);
   private reportService = inject(ReportService);
   private ventaService = inject(VentaService);
+  private dialog = inject(MatDialog);
   auth = inject(AuthService);
 
   isAdmin = computed(() => this.auth.isAdmin());
   isArtesano = computed(() => this.auth.isArtesano());
   isDomiciliario = computed(() => this.auth.isDomiciliario());
+  profileCompleteSignal = computed(() => this.auth.currentUser()?.profileComplete ?? true);
 
   loading = computed(() => {
     if (this.isDomiciliario()) {
@@ -284,5 +287,12 @@ export class DashboardComponent implements OnInit {
       default:
         return 'Pendiente de alistamiento';
     }
+  }
+
+  openProfileModal(): void {
+    import('../auth/profile-dialog/profile-dialog.component').then(m => {
+      this.dialog.open(m.ProfileDialogComponent, { width: '720px', maxWidth: '92vw' })
+        .afterClosed().subscribe(() => this.auth.loadProfile());
+    });
   }
 }

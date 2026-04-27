@@ -1065,6 +1065,36 @@
     text-transform: uppercase;
   }
 
+  /* ============ FERIAS ============ */
+  .ferias-section { background: var(--section-bone, #f7f2eb); padding: 80px 48px; }
+  .section__sub { color: var(--muted, #7a7370); font-size: 1.05rem; margin-top: 8px; }
+  .empty-eventos { color: var(--muted, #7a7370); text-align: center; padding: 32px; }
+  .eventos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+    margin-top: 32px;
+  }
+  .evento-card {
+    border-radius: 16px;
+    overflow: hidden;
+    background: rgba(255,255,255,0.55);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(200,155,110,0.2);
+    transition: transform .2s;
+    &:hover { transform: translateY(-4px); }
+  }
+  .evento-img {
+    width: 100%; height: 160px; object-fit: cover;
+    background: #ece6dc;
+  }
+  .evento-body { padding: 16px; }
+  .evento-fecha { font-size: 0.75rem; font-weight: 600; color: var(--clay, #a05c34); text-transform: uppercase; letter-spacing: .1em; }
+  .evento-titulo { font-family: var(--font-display); font-size: 1.15rem; margin: 6px 0 4px; color: var(--coffee, #3a3228); }
+  .evento-ubicacion { font-size: 0.85rem; color: var(--muted, #7a7370); margin: 0 0 6px; }
+  .evento-desc { font-size: 0.8rem; color: var(--muted, #7a7370); margin: 0 0 8px; }
+  .evento-artesano { font-size: 0.75rem; color: var(--gold, #c9a253); font-style: italic; }
+
   /* ============ FOOTER ============ */
   .footer { background: var(--coffee); color: var(--cream); padding: 80px 48px 32px; }
   .footer__inner {

@@ -55,7 +55,8 @@ export class AuthService {
           id: res.id,
           username: res.username,
           role: res.role,
-          approvalStatus: 'APPROVED'
+          approvalStatus: 'APPROVED',
+          profileComplete: res.profileComplete ?? false
         });
         localStorage.setItem('user', JSON.stringify(user));
         this.currentUser.set(user);
@@ -85,7 +86,8 @@ export class AuthService {
           id: res.id,
           username: res.username,
           role: res.role,
-          approvalStatus: 'APPROVED'
+          approvalStatus: 'APPROVED',
+          profileComplete: res.profileComplete ?? false
         });
         localStorage.setItem('user', JSON.stringify(user));
         this.currentUser.set(user);

@@ -10,13 +10,14 @@ import {
   inject,
   signal
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { AuthService } from '../../../core/services/auth.service';
 import { CatalogService } from '../../../core/services/catalog.service';
 import { CartService } from '../../../core/services/cart.service';
+import { EventosPublicosService, EventoPublico } from '../../../core/services/eventos-publicos.service';
 import { LiquidPointerDirective } from '../../../core/directives/liquid-pointer.directive';
 import { Artesano, Category, Product } from '../../../core/models/catalog.model';
 
@@ -63,7 +64,7 @@ interface OficioHighlight {
 @Component({
   selector: 'app-public-landing',
   standalone: true,
-  imports: [CommonModule, LiquidPointerDirective],
+  imports: [CommonModule, DatePipe, LiquidPointerDirective],
   templateUrl: './public-landing.component.html',
   styleUrl: './public-landing.component.scss',
   encapsulation: ViewEncapsulation.None,
@@ -74,7 +75,10 @@ export class PublicLandingComponent implements OnInit, AfterViewInit, OnDestroy 
   cart = inject(CartService);
   private router = inject(Router);
   private catalog = inject(CatalogService);
+  private eventosService = inject(EventosPublicosService);
   private host = inject<ElementRef<HTMLElement>>(ElementRef);
+
+  readonly eventos = signal<EventoPublico[]>([]);
 
   readonly scrolled = signal(false);
   readonly heroSlide = signal(0);
@@ -218,6 +222,9 @@ export class PublicLandingComponent implements OnInit, AfterViewInit, OnDestroy 
     }
 
     this.loadCatalog();
+    this.eventosService.listAprobados().pipe(
+      catchError(() => of([]))
+    ).subscribe(ev => this.eventos.set(ev));
   }
 
   ngOnDestroy(): void {

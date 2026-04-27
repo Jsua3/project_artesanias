@@ -2,6 +2,7 @@ package com.inventory.auth.service;
 
 import com.inventory.auth.dto.ArtisanApprovalRequest;
 import com.inventory.auth.dto.AuthResponse;
+import com.inventory.auth.dto.ProfileStatusResponse;
 import com.inventory.auth.dto.SyncArtesanoRequest;
 import com.inventory.auth.dto.LoginRequest;
 import com.inventory.auth.dto.ProfileUpdateRequest;
@@ -25,7 +26,9 @@ import reactor.core.publisher.Mono;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -82,9 +85,14 @@ public class AuthService {
                     user.setCreatedAt(now);
                     user.setApprovedAt(approvalStatus == ApprovalStatus.APPROVED ? now : null);
                     return userRepository.save(user)
-                            .map(saved -> {
+                            .flatMap(saved -> {
                                 saved.setNew(false);
-                                return saved;
+                                // Si es ARTESANO aprobado, crear entrada en catalog-service automáticamente
+                                if (normalizeRole(saved.getRole()) == UserRole.ARTESANO
+                                        && saved.getApprovalStatus() == ApprovalStatus.APPROVED) {
+                                    return syncArtesanoInCatalog(saved).thenReturn(saved);
+                                }
+                                return Mono.just(saved);
                             });
                 });
     }
@@ -106,7 +114,8 @@ public class AuthService {
                 .flatMap(this::ensureLoginAllowed)
                 .flatMap(user -> {
                     UserRole effectiveRole = normalizeRole(user.getRole());
-                    String accessToken = jwtService.generateToken(user.getId().toString(), effectiveRole.name());
+                    boolean pc = profileComplete(user);
+                    String accessToken = jwtService.generateToken(user.getId().toString(), effectiveRole.name(), pc);
                     String refreshTokenStr = UUID.randomUUID().toString();
 
                     RefreshToken refreshToken = new RefreshToken();
@@ -119,7 +128,7 @@ public class AuthService {
                             .then(refreshTokenRepository.save(refreshToken))
                             .map(token -> {
                                 token.setNew(false);
-                                return new AuthResponse(accessToken, refreshTokenStr, user.getUsername(), effectiveRole.name(), user.getId());
+                                return new AuthResponse(accessToken, refreshTokenStr, user.getUsername(), effectiveRole.name(), user.getId(), pc);
                             });
                 })
                 .switchIfEmpty(Mono.error(new RuntimeException("Invalid credentials")));
@@ -140,8 +149,9 @@ public class AuthService {
                         .map(user -> {
                             user.setNew(false);
                             UserRole effectiveRole = normalizeRole(user.getRole());
-                            String accessToken = jwtService.generateToken(user.getId().toString(), effectiveRole.name());
-                            return new AuthResponse(accessToken, token.getToken(), user.getUsername(), effectiveRole.name(), user.getId());
+                            boolean pc = profileComplete(user);
+                            String accessToken = jwtService.generateToken(user.getId().toString(), effectiveRole.name(), pc);
+                            return new AuthResponse(accessToken, token.getToken(), user.getUsername(), effectiveRole.name(), user.getId(), pc);
                         }))
                 .switchIfEmpty(Mono.error(new RuntimeException("Invalid or expired refresh token")));
     }
@@ -257,7 +267,11 @@ public class AuthService {
                         user.setLastName(normalizeOptional(request.lastName()));
                     }
                     if (request.phone() != null) {
-                        user.setPhone(normalizeOptional(request.phone()));
+                        String phone = normalizeOptional(request.phone());
+                        if (phone != null && !phone.matches("^\\d{10}$")) {
+                            return Mono.error(new RuntimeException("El teléfono debe tener exactamente 10 dígitos numéricos"));
+                        }
+                        user.setPhone(phone);
                     }
                     if (request.bio() != null) {
                         user.setBio(normalizeOptional(request.bio()));
@@ -271,9 +285,33 @@ public class AuthService {
                     if (request.address() != null) {
                         user.setAddress(normalizeOptional(request.address()));
                     }
+                    // Recalcular y persistir profileComplete
+                    user.setProfileComplete(profileComplete(user));
                     return userRepository.save(user);
                 })
                 .map(this::toUserProfileResponse);
+    }
+
+    public Mono<ProfileStatusResponse> getProfileStatus(UUID userId) {
+        return userRepository.findById(userId)
+                .map(user -> {
+                    user.setNew(false);
+                    List<String> missing = missingProfileFields(user);
+                    return new ProfileStatusResponse(missing.isEmpty(), missing);
+                });
+    }
+
+    private List<String> missingProfileFields(UserAccount user) {
+        UserRole role = normalizeRole(user.getRole());
+        List<String> missing = new ArrayList<>();
+        if (!hasText(user.getFirstName())) missing.add("firstName");
+        if (!hasText(user.getLastName()))  missing.add("lastName");
+        if (!hasText(user.getPhone()) || !user.getPhone().matches("^\\d{10}$")) missing.add("phone");
+        if (!hasText(user.getLocality()))  missing.add("locality");
+        if (!hasText(user.getAvatarUrl())) missing.add("avatarUrl");
+        if (!hasText(user.getAddress()))   missing.add("address");
+        if (role == UserRole.ARTESANO && !hasText(user.getCraftType())) missing.add("craftType");
+        return missing;
     }
 
     private UserRole resolveRole(String rawRole) {
@@ -349,7 +387,8 @@ public class AuthService {
     }
 
     private boolean requiresAdminApproval(UserRole role) {
-        return role == UserRole.ARTESANO || role == UserRole.MAESTRO || role == UserRole.DOMICILIARIO;
+        // Todos los roles se aprueban directamente — sin cola de aprobación
+        return false;
     }
 
     public UserProfileResponse toUserProfileResponse(UserAccount user) {

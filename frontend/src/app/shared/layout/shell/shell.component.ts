@@ -90,7 +90,8 @@ export class ShellComponent {
       items: [
         { label: 'Reportes', icon: 'assessment', route: '/reports', roles: ['ADMIN', 'ARTESANO'] },
         { label: 'Solicitudes de acceso', icon: 'verified_user', route: '/admin/aprobaciones', roles: ['ADMIN'] },
-        { label: 'Moderación comunidad', icon: 'shield', route: '/admin/moderacion', roles: ['ADMIN'] }
+        { label: 'Moderación comunidad', icon: 'shield', route: '/admin/moderacion', roles: ['ADMIN'] },
+        { label: 'Base de Datos', icon: 'storage', route: '/admin/database', roles: ['ADMIN'] }
       ]
     }
   ];

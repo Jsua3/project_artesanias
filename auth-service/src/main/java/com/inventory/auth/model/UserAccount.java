@@ -30,6 +30,7 @@ public class UserAccount implements Persistable<UUID> {
     private LocalDateTime createdAt;
     private LocalDateTime approvedAt;
     private UUID approvedBy;
+    private boolean profileComplete = false;
 
     @Transient
     private boolean isNew = true;
@@ -205,5 +206,13 @@ public class UserAccount implements Persistable<UUID> {
 
     public void setApprovedBy(UUID approvedBy) {
         this.approvedBy = approvedBy;
+    }
+
+    public boolean isProfileComplete() {
+        return profileComplete;
+    }
+
+    public void setProfileComplete(boolean profileComplete) {
+        this.profileComplete = profileComplete;
     }
 }

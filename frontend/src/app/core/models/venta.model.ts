@@ -28,6 +28,21 @@ export interface VentaDetalle {
   subtotal: number;
 }
 
+export interface ShippingInfo {
+  recipientName: string;
+  recipientPhone: string;
+  address: string;
+  city: string;
+  notes?: string;
+}
+
+export interface CourierCard {
+  id: string;
+  displayName: string;
+  avatarUrl: string | null;
+  phone: string;
+}
+
 export interface Venta {
   id: string;
   clienteId: string;
@@ -37,6 +52,9 @@ export interface Venta {
   createdAt: string;
   delivery: DeliveryTracking;
   detalles: VentaDetalle[];
+  shipping?: ShippingInfo | null;
+  courier?: CourierCard | null;
+  clienteName?: string | null;
 }
 
 export interface VentaItemRequest {
@@ -47,6 +65,11 @@ export interface VentaItemRequest {
 export interface ClienteVentaRequest {
   items: VentaItemRequest[];
   displayName?: string;
+  recipientName?: string;
+  recipientPhone?: string;
+  address?: string;
+  city?: string;
+  notes?: string;
 }
 
 export interface VentaRequest {

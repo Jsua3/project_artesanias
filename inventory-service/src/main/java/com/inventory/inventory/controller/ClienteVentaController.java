@@ -76,7 +76,7 @@ public class ClienteVentaController {
                     if (!owned) {
                         return Mono.just(ResponseEntity.status(HttpStatus.FORBIDDEN).<VentaResponse>build());
                     }
-                    return ventaService.getVenta(id)
+                    return ventaService.getVentaEnriquecida(id)
                             .map(ResponseEntity::ok)
                             .defaultIfEmpty(ResponseEntity.notFound().build());
                 });

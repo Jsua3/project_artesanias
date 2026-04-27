@@ -1,4 +1,16 @@
 <div class="page-container animate-in">
+
+  @if ((isArtesano() || isDomiciliario()) && !profileCompleteSignal()) {
+    <div class="profile-incomplete-banner">
+      <mat-icon>warning</mat-icon>
+      <div class="banner-text">
+        <h3>Tu perfil está incompleto</h3>
+        <p>Debes completar todos los campos para acceder a las funciones del panel.</p>
+      </div>
+      <button mat-flat-button color="warn" (click)="openProfileModal()">Completar perfil</button>
+    </div>
+  }
+
   <div class="page-header">
     <h2 class="page-title">{{ isAdmin() ? 'Dashboard general' : isDomiciliario() ? 'Panel del Domiciliario' : isArtesano() ? 'Panel del Artesano' : 'Dashboard' }}</h2>
     <p class="page-subtitle">

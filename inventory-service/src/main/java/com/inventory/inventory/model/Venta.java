@@ -40,6 +40,24 @@ public class Venta implements Persistable<UUID> {
     @Column("stripe_session_id")
     private String stripeSessionId;
 
+    // Shipping data — persisted at checkout
+    @Column("shipping_recipient_name")
+    private String shippingRecipientName;
+    @Column("shipping_phone")
+    private String shippingPhone;
+    @Column("shipping_address")
+    private String shippingAddress;
+    @Column("shipping_city")
+    private String shippingCity;
+    @Column("shipping_notes")
+    private String shippingNotes;
+
+    // Courier assignment
+    @Column("courier_user_id")
+    private UUID courierUserId;
+    @Column("courier_accepted_at")
+    private LocalDateTime courierAcceptedAt;
+
     @Transient
     private boolean isNew = false;
 
@@ -156,6 +174,14 @@ public class Venta implements Persistable<UUID> {
     public String stripeSessionId() {
         return stripeSessionId;
     }
+
+    public String shippingRecipientName() { return shippingRecipientName; }
+    public String shippingPhone() { return shippingPhone; }
+    public String shippingAddress() { return shippingAddress; }
+    public String shippingCity() { return shippingCity; }
+    public String shippingNotes() { return shippingNotes; }
+    public UUID courierUserId() { return courierUserId; }
+    public LocalDateTime courierAcceptedAt() { return courierAcceptedAt; }
 
     // Standard getters/setters for R2DBC mapping
     public UUID getId() {
@@ -333,6 +359,21 @@ public class Venta implements Persistable<UUID> {
     public void setStripeSessionId(String stripeSessionId) {
         this.stripeSessionId = stripeSessionId;
     }
+
+    public String getShippingRecipientName() { return shippingRecipientName; }
+    public void setShippingRecipientName(String v) { this.shippingRecipientName = v; }
+    public String getShippingPhone() { return shippingPhone; }
+    public void setShippingPhone(String v) { this.shippingPhone = v; }
+    public String getShippingAddress() { return shippingAddress; }
+    public void setShippingAddress(String v) { this.shippingAddress = v; }
+    public String getShippingCity() { return shippingCity; }
+    public void setShippingCity(String v) { this.shippingCity = v; }
+    public String getShippingNotes() { return shippingNotes; }
+    public void setShippingNotes(String v) { this.shippingNotes = v; }
+    public UUID getCourierUserId() { return courierUserId; }
+    public void setCourierUserId(UUID v) { this.courierUserId = v; }
+    public LocalDateTime getCourierAcceptedAt() { return courierAcceptedAt; }
+    public void setCourierAcceptedAt(LocalDateTime v) { this.courierAcceptedAt = v; }
 
     // Persistable
     @Override

@@ -65,14 +65,39 @@
             </div>
           </div>
         } @else {
-          <div class="checkout-card checkout-user liquid-glass liquid-glass--solid" appLiquidPointer [liquidTiltStrength]="1.2">
-            <h2>Datos del cliente</h2>
-            <p class="muted">
-              Estás como <strong>{{ currentDisplayName() }}</strong>.
-            </p>
-            <p class="muted small">
-              Un maestro te contactará con los datos de envío y pago.
-            </p>
+          <!-- Datos de envío -->
+          <div class="checkout-card liquid-glass liquid-glass--solid" appLiquidPointer [liquidTiltStrength]="1.2">
+            <h2>Datos de envío</h2>
+            <form [formGroup]="shippingForm" class="shipping-form">
+              <div class="shipping-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Nombre del destinatario *</mat-label>
+                  <input matInput formControlName="recipientName">
+                  @if (shippingForm.controls['recipientName'].invalid && shippingForm.controls['recipientName'].touched) {
+                    <mat-error>Mínimo 3 caracteres</mat-error>
+                  }
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Teléfono (10 dígitos) *</mat-label>
+                  <input matInput formControlName="recipientPhone" type="tel" maxlength="10">
+                  @if (shippingForm.controls['recipientPhone'].errors?.['pattern'] && shippingForm.controls['recipientPhone'].touched) {
+                    <mat-error>Exactamente 10 dígitos numéricos</mat-error>
+                  }
+                </mat-form-field>
+              </div>
+              <mat-form-field appearance="outline">
+                <mat-label>Dirección *</mat-label>
+                <input matInput formControlName="address">
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Ciudad *</mat-label>
+                <input matInput formControlName="city">
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Notas adicionales</mat-label>
+                <textarea matInput formControlName="notes" rows="2"></textarea>
+              </mat-form-field>
+            </form>
           </div>
         }
       </section>

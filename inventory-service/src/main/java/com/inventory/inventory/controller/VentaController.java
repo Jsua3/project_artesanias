@@ -87,6 +87,22 @@ public class VentaController {
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
+    @PatchMapping("/{id}/aceptar-domicilio")
+    public Mono<ResponseEntity<VentaResponse>> aceptarDomicilio(
+            @PathVariable UUID id,
+            @RequestHeader(value = "X-User-Role", defaultValue = "") String userRole,
+            @RequestHeader(value = "X-User-Id", defaultValue = "") String userId) {
+        if (!"DOMICILIARIO".equals(normalizeRole(userRole))) {
+            return Mono.just(ResponseEntity.status(HttpStatus.FORBIDDEN).build());
+        }
+        if (userId.isEmpty()) {
+            return Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
+        }
+        return ventaService.aceptarDomicilio(id, UUID.fromString(userId))
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
+    }
+
     @PatchMapping("/{id}/seguimiento")
     public Mono<ResponseEntity<VentaResponse>> updateDeliveryTracking(
             @PathVariable UUID id,

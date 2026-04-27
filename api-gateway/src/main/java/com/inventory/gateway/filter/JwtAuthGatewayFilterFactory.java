@@ -45,10 +45,13 @@ public class JwtAuthGatewayFilterFactory extends AbstractGatewayFilterFactory<Jw
                 
                 String userId = claims.getSubject();
                 String role = claims.get("role", String.class);
+                Boolean profileComplete = claims.get("profileComplete", Boolean.class);
+                String profileCompleteHeader = Boolean.TRUE.equals(profileComplete) ? "true" : "false";
 
                 ServerHttpRequest modifiedRequest = request.mutate()
                         .header("X-User-Id", userId)
                         .header("X-User-Role", role)
+                        .header("X-Profile-Complete", profileCompleteHeader)
                         .header("X-Internal-Token", jwtProperties.internalToken())
                         .build();
 

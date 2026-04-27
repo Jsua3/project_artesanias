@@ -17,4 +17,7 @@ public interface CommunityEventRepository extends ReactiveCrudRepository<Communi
 
     @Query("SELECT * FROM community_events ORDER BY created_at DESC")
     Flux<CommunityEvent> findAllOrdered();
+
+    @Query("SELECT * FROM community_events WHERE estado = 'APROBADO' AND fecha_inicio >= CURRENT_DATE - INTERVAL '1 day' ORDER BY fecha_inicio ASC")
+    Flux<CommunityEvent> findApprovedUpcoming();
 }
