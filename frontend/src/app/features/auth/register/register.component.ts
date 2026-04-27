@@ -11,6 +11,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { CourierMode, RegisterRequest, UserRole } from '../../../core/models/auth.model';
 import { AuthService } from '../../../core/services/auth.service';
+import { LiquidPointerDirective } from '../../../core/directives/liquid-pointer.directive';
 
 @Component({
   selector: 'app-register',
@@ -18,6 +19,7 @@ import { AuthService } from '../../../core/services/auth.service';
   imports: [
     ReactiveFormsModule,
     RouterLink,
+    LiquidPointerDirective,
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
