@@ -114,6 +114,11 @@
   min-height: 620px;
   padding: 42px;
   animation: rb-glass-in 640ms var(--ease-glass);
+
+  // Estilo nav-bar: translúcido con blur fuerte, igual que la barra de navegación
+  --glass-bg: rgba(255, 255, 255, 0.50);
+  --glass-blur: 32px;
+  --glass-saturate: 1.42;
 }
 
 .auth-header {
@@ -357,8 +362,8 @@
 }
 
 :host ::ng-deep .mat-mdc-text-field-wrapper {
-  background: rgba(255, 255, 255, 0.34);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.46);
+  background: rgba(255, 255, 255, 0.62);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
 }
 
 :host ::ng-deep .mat-mdc-form-field-icon-prefix {
