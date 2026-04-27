@@ -38,7 +38,7 @@ export class EntryFormComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.productService.loadAll();
+    this.productService.loadForManagement();
   }
 
   submit(): void {

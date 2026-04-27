@@ -27,7 +27,7 @@ export class StockComponent implements OnInit {
 
   ngOnInit(): void {
     this.stockService.loadAll();
-    this.productService.loadAll();
+    this.productService.loadForManagement();
   }
 
   getProductName(productId: string): string {

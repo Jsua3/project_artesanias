@@ -36,7 +36,7 @@ export class ReportsComponent implements OnInit {
 
   ngOnInit(): void {
     this.reportService.loadAll();
-    this.productService.loadAll();
+    this.productService.loadForManagement();
   }
 
   getProductName(productId: string): string {

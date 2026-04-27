@@ -38,7 +38,7 @@ export class ExitFormComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.productService.loadAll();
+    this.productService.loadForManagement();
   }
 
   submit(): void {
