@@ -112,6 +112,214 @@ body {
   background: var(--warm-white);
   color: var(--text);
   overflow-x: hidden;
+  transition: background 280ms ease, color 220ms ease;
+}
+
+// ===== MODO OSCURO =====
+body[data-theme="dark"] {
+  color-scheme: dark;
+
+  // Fondos
+  --warm-white:      #18140F;
+  --cream:           #18140F;
+  --cream-dark:      #211C16;
+  --charcoal:        #EDE6D8;
+  --text:            #DDD5C8;
+  --text-light:      #9A9290;
+  --danger-light:    rgba(192, 57, 43, 0.22);
+
+  // Tokens Rebeca
+  --rb-bg:           #18140F;
+  --rb-surface:      rgba(33, 28, 22, 0.94);
+  --rb-text:         #DDD5C8;
+  --rb-muted:        #9A9290;
+  --rb-crema-50:     #18140F;
+  --rb-crema-100:    #211C16;
+  --rb-crema-200:    #2C2620;
+  --rb-carbon-700:   #DDD5C8;
+  --rb-carbon-900:   #F0EAE0;
+  --rb-border-soft:  rgba(201, 162, 83, 0.16);
+  --rb-border-strong:rgba(201, 162, 83, 0.30);
+  --terracotta-light:#C49A6C;
+
+  // Liquid glass oscuro
+  --glass-bg:        rgba(28, 22, 14, 0.68);
+  --glass-tint:      rgba(28, 22, 14, 0.48);
+  --glass-blur:      20px;
+
+  background: #18140F;
+  color: #DDD5C8;
+
+  // Material: tarjetas, tablas y formularios
+  .mat-mdc-card,
+  .mat-mdc-dialog-container,
+  .mat-mdc-table {
+    background: #211C16 !important;
+    color: #DDD5C8 !important;
+  }
+
+  .mat-mdc-row,
+  .mat-mdc-header-row {
+    background: transparent !important;
+    border-bottom-color: rgba(201, 162, 83, 0.12) !important;
+  }
+
+  .mat-mdc-cell,
+  .mat-mdc-header-cell {
+    color: #DDD5C8 !important;
+  }
+
+  .mat-mdc-text-field-wrapper {
+    background: rgba(40, 34, 26, 0.88) !important;
+  }
+
+  .mat-mdc-form-field-label,
+  .mdc-floating-label {
+    color: #9A9290 !important;
+  }
+
+  .mat-mdc-input-element {
+    color: #DDD5C8 !important;
+    caret-color: #C9A253 !important;
+  }
+
+  .mat-mdc-select-value { color: #DDD5C8 !important; }
+  .mat-mdc-select-panel { background: #2C2620 !important; }
+  .mat-mdc-option { color: #DDD5C8 !important; }
+  .mat-mdc-option:hover { background: rgba(201, 162, 83, 0.14) !important; }
+
+  // Página container (backoffice)
+  .page-container { color: #DDD5C8; }
+
+  // Data cards (shared backoffice style)
+  .data-card {
+    background: #211C16 !important;
+    border-color: rgba(201, 162, 83, 0.16) !important;
+    color: #DDD5C8 !important;
+  }
+
+  .stat-card {
+    background: #211C16 !important;
+    border-color: rgba(201, 162, 83, 0.14) !important;
+  }
+
+  .quick-link-card {
+    background: rgba(40, 34, 26, 0.88) !important;
+    border-color: rgba(201, 162, 83, 0.14) !important;
+    color: #DDD5C8 !important;
+  }
+
+  .artisan-panel {
+    background: rgba(33, 28, 22, 0.92) !important;
+    border-color: rgba(201, 162, 83, 0.14) !important;
+  }
+
+  // Chip status
+  .status-badge.disponible { background: rgba(46,125,50,0.18); }
+  .status-badge.stock-bajo { background: rgba(245,158,11,0.18); }
+  .status-badge.sin-stock  { background: rgba(184,61,50,0.18); }
+
+  // Main content del shell
+  .main-content {
+    background:
+      linear-gradient(180deg, rgba(24, 20, 15, 0.99) 0%, rgba(20, 16, 12, 0.98) 100%),
+      url('/assets/imagenes/paisaje1.jpeg') center / cover fixed !important;
+  }
+
+  h1, h2, h3, h4, h5, h6 { color: #EDE6D8 !important; }
+
+  .filter-card { background: #211C16 !important; }
+  .kpi-card    { background: rgba(33, 28, 22, 0.88) !important; border-color: rgba(201,162,83,0.16) !important; }
+}
+
+// ===== MODO OSCURO — LANDING PÚBLICA =====
+// .public-landing define sus tokens localmente, hay que pisarlos aquí
+body[data-theme="dark"] .public-landing {
+  // Fondos
+  --cream:         #18140F;
+  --bone:          #211C16;
+  --warm-white:    #141008;
+
+  // Texto
+  --coffee:        #DDD5C8;
+  --coffee-soft:   #BDB5A8;
+  --text-muted:    #9A9290;
+  --text-subtle:   #7A7370;
+
+  // Semantic backgrounds
+  --bg-1:          #18140F;
+  --bg-2:          #211C16;
+  --bg-3:          #141008;
+
+  // Bordes
+  --border-soft:   rgba(201, 162, 83, 0.10);
+  --border:        rgba(201, 162, 83, 0.20);
+  --border-strong: rgba(201, 162, 83, 0.34);
+
+  // Glass
+  --glass-bg:      rgba(28, 22, 14, 0.74);
+  --glass-bg-dark: rgba(14, 10, 4, 0.88);
+  --nav-glass-bg:  rgba(28, 22, 14, 0.80);
+
+  background: #18140F;
+  color: #DDD5C8;
+
+  // Secciones claras que usan fondos directos
+  .section,
+  .coleccion,
+  .oficio-section,
+  .comunidad-section {
+    background: #18140F;
+    color: #DDD5C8;
+  }
+
+  // Tarjetas de producto/colección
+  .pieza-card,
+  .pieza-glass,
+  .glass-card,
+  .evento-card {
+    background: rgba(33, 28, 22, 0.88) !important;
+    border-color: rgba(201, 162, 83, 0.16) !important;
+    color: #DDD5C8 !important;
+  }
+
+  // Evento: imagen placeholder y fondo blanco del card
+  .evento-img   { background: #2C2620 !important; }
+  .evento-titulo { color: #EDE6D8 !important; }
+
+  // Header glass
+  .cliente-header__inner {
+    background: rgba(24, 20, 15, 0.80) !important;
+    border-color: rgba(201, 162, 83, 0.18) !important;
+  }
+
+  // Barra flotante móvil
+  .rb-floating-bar {
+    background: rgba(24, 20, 15, 0.90) !important;
+    border-color: rgba(201, 162, 83, 0.16) !important;
+    backdrop-filter: blur(20px) saturate(1.1);
+  }
+
+  // Footer: ya usa var(--coffee) como bg (que ahora es claro), lo invertimos
+  .footer {
+    background: #0E0B06 !important;
+    color: #DDD5C8 !important;
+  }
+
+  // Textos h dentro de la landing
+  h1, h2, h3, h4, h5, h6 { color: #EDE6D8; }
+
+  // Story / strip sections con fondo crema
+  .story-strip,
+  .strip--cream,
+  .strip--bone {
+    background: #211C16 !important;
+  }
+
+  // Sección oscura de territorio — ya es oscura, solo ajustar
+  .section--dark {
+    background: #0E0B06 !important;
+  }
 }
 
 // ===== NOISE TEXTURE (SUBTLE) =====
