@@ -835,98 +835,321 @@
   }
 
   /* ============ MAESTROS ============ */
+  /* ───────────────────────────────────────────────────────
+     MAESTROS — tarjetas premium con expansión en hover
+  ─────────────────────────────────────────────────────── */
   .maestros__intro { max-width: 620px; margin: 20px auto 0; }
-  .maestros__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
-  .maestro {
-    background: var(--warm-white);
-    border: 1px solid var(--border-soft);
-    border-radius: 16px; overflow: hidden;
-    box-shadow: var(--shadow-sm);
-    transition: all var(--dur-base) var(--ease-out);
-  }
-  .maestro:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
-  .maestro__portrait { position: relative; aspect-ratio: 1; overflow: hidden; background: var(--clay-light); }
-  .maestro__portrait img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .maestro__overlay {
-    position: absolute; inset: 0;
-    background: linear-gradient(to top, rgba(62,39,35,0.75) 0%, rgba(62,39,35,0.2) 55%, transparent 100%);
-  }
-  .maestro__years {
-    position: absolute; bottom: 20px; left: 24px; right: 24px;
-    display: flex; align-items: baseline; justify-content: space-between;
-  }
-  .maestro__yearsNum { font-size: 44px; color: var(--warm-white); font-weight: 700; }
-  .maestro__yearsLabel { color: var(--bone) !important; }
-  .maestro__body { padding: 24px 28px 32px; }
-  .maestro__location { color: var(--clay-deep) !important; }
-  .maestro__name { font-family: var(--font-serif); font-size: 24px; font-weight: 500; color: var(--coffee); margin: 4px 0 4px; letter-spacing: -0.01em; }
-  .maestro__craft { font-family: var(--font-body); font-size: 13px; color: var(--fg-2); letter-spacing: .04em; }
-  .maestro__quote {
-    font-family: var(--font-serif); font-style: italic; font-size: 17px;
-    color: var(--coffee-soft); border-left: 1px solid var(--gold);
-    padding: 4px 0 4px 16px; margin: 20px 0 16px; line-height: 1.55;
+
+  .maestros__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
   }
 
-  .maestro.liquid-glass {
-    border-radius: 22px;
-    background:
-      linear-gradient(145deg, rgba(255,255,255,0.56), rgba(255,255,255,0.24)),
-      rgba(255,255,255,0.40);
-    border-color: rgba(255,255,255,0.48);
+  /* ── Tarjeta base ── */
+  .maestro {
+    background: var(--warm-white);
+    border-radius: 24px;
+    overflow: hidden;
     box-shadow:
-      0 8px 32px rgba(0,0,0,0.10),
-      inset 0 1px 0 rgba(255,255,255,0.58),
-      inset 0 -1px 0 rgba(255,255,255,0.12),
-      inset 0 0 10px 5px rgba(255,255,255,0.26);
+      0 2px 8px rgba(58, 50, 40, 0.06),
+      0 12px 40px rgba(58, 50, 40, 0.08);
+    border: 1px solid rgba(201, 162, 83, 0.14);
+    transition:
+      transform 480ms cubic-bezier(0.34, 1.2, 0.64, 1),
+      box-shadow 480ms cubic-bezier(0.16, 1, 0.3, 1);
+    cursor: pointer;
+    position: relative;
   }
-  .maestro.liquid-glass::before {
-    z-index: 2;
-    background:
-      radial-gradient(circle at var(--mx, 50%) var(--my, 50%),
-        rgba(255,255,255,0.46),
-        rgba(255,255,255,0.14) 24%,
-        transparent 54%);
+
+  .maestro:hover {
+    transform: translateY(-6px) scale(1.012);
+    box-shadow:
+      0 4px 16px rgba(58, 50, 40, 0.08),
+      0 24px 64px rgba(58, 50, 40, 0.16),
+      0 0 0 1px rgba(201, 162, 83, 0.22);
   }
-  .maestro__reveal {
+
+  /* ── Portrait: fondo difuminado + avatar circular ── */
+  .maestro__portrait {
+    position: relative;
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    background: #3A2C20;
+  }
+
+  /* Imagen de fondo difuminada — captura --portrait-bg */
+  .maestro__portrait-bg {
     position: absolute;
-    left: 16px;
-    right: 16px;
-    bottom: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    padding: 14px 16px;
-    border-radius: 18px;
-    background:
-      linear-gradient(145deg, rgba(255,255,255,0.54), rgba(255,255,255,0.18)),
-      rgba(255,255,255,0.30);
-    border: 1px solid rgba(255,255,255,0.45);
-    backdrop-filter: blur(14px) saturate(1.16);
-    -webkit-backdrop-filter: blur(14px) saturate(1.16);
-    box-shadow:
-      0 16px 34px -24px rgba(0,0,0,0.42),
-      inset 0 1px 0 rgba(255,255,255,0.62);
-    opacity: 0;
-    transform: translateY(16px);
-    transition: opacity 420ms ease 460ms, transform 420ms cubic-bezier(.2,.8,.2,1) 460ms;
+    inset: -12px;
+    background-image: var(--portrait-bg);
+    background-size: cover;
+    background-position: center;
+    filter: blur(22px) brightness(0.42) saturate(1.3);
+    transform: scale(1.08);
+    transition: filter 600ms ease, transform 600ms cubic-bezier(0.33, 1, 0.68, 1);
   }
-  .maestro:hover .maestro__reveal {
+
+  .maestro:hover .maestro__portrait-bg {
+    filter: blur(18px) brightness(0.50) saturate(1.5);
+    transform: scale(1.12);
+  }
+
+  /* Grano cinematográfico */
+  .maestro__portrait-grain {
+    position: absolute;
+    inset: 0;
+    background-image: url('/assets/noise.svg');
+    background-size: 160px;
+    opacity: 0.06;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+  }
+
+  /* Overlay degradado para legibilidad */
+  .maestro__portrait-overlay {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 50% 30%, rgba(201, 162, 83, 0.08), transparent 60%),
+      linear-gradient(to bottom, rgba(30, 20, 12, 0.18) 0%, rgba(30, 20, 12, 0.0) 40%, rgba(30, 20, 12, 0.72) 100%);
+  }
+
+  /* ── Avatar circular ── */
+  .maestro__avatar-wrap {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -58%);
+  }
+
+  .maestro__avatar-ring {
+    position: absolute;
+    inset: -5px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(201, 162, 83, 0.55);
+    box-shadow:
+      0 0 0 4px rgba(201, 162, 83, 0.10),
+      0 0 24px rgba(201, 162, 83, 0.22);
+    transition: box-shadow 480ms ease, border-color 480ms ease;
+  }
+
+  .maestro:hover .maestro__avatar-ring {
+    border-color: rgba(201, 162, 83, 0.90);
+    box-shadow:
+      0 0 0 5px rgba(201, 162, 83, 0.18),
+      0 0 36px rgba(201, 162, 83, 0.35);
+  }
+
+  .maestro__avatar {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    background-color: #5A4535;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.36), inset 0 1px 0 rgba(255,255,255,0.16);
+    transition: transform 480ms cubic-bezier(0.34, 1.2, 0.64, 1);
+  }
+
+  .maestro:hover .maestro__avatar {
+    transform: scale(1.06);
+  }
+
+  /* ── Badge años de oficio ── */
+  .maestro__years-badge {
+    position: absolute;
+    bottom: 18px;
+    left: 20px;
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+  }
+
+  .maestro__years-num {
+    font-family: var(--font-serif);
+    font-size: 42px;
+    font-weight: 700;
+    color: rgba(255, 248, 220, 0.95);
+    line-height: 1;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+  }
+
+  .maestro__years-lbl {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(201, 162, 83, 0.88);
+  }
+
+  /* ── Chip de especialidad en el portrait ── */
+  .maestro__craft-chip {
+    position: absolute;
+    bottom: 18px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.14);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.26);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: rgba(255, 248, 220, 0.90);
+    text-transform: uppercase;
+    max-width: 140px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.24);
+  }
+
+  /* ── Body siempre visible ── */
+  .maestro__body {
+    padding: 22px 26px 20px;
+    background:
+      linear-gradient(180deg, rgba(252, 249, 244, 0.0) 0%, rgba(252, 249, 244, 1) 6px),
+      var(--warm-white);
+  }
+
+  .maestro__body-static { margin-bottom: 0; }
+
+  .maestro__location-eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--clay-deep, #8A6548);
+    margin: 0 0 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .maestro__location-dot {
+    color: var(--gold, #C9A253);
+    font-size: 16px;
+    line-height: 1;
+  }
+
+  .maestro__name {
+    font-family: var(--font-serif);
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--coffee, #3A2C20);
+    margin: 0 0 12px;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+
+  .maestro__gold-rule {
+    height: 1.5px;
+    background: linear-gradient(90deg, var(--gold, #C9A253) 0%, rgba(201, 162, 83, 0.12) 100%);
+    margin-bottom: 0;
+    width: 48px;
+    border-radius: 1px;
+    transition: width 480ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .maestro:hover .maestro__gold-rule {
+    width: 100%;
+  }
+
+  /* ── Expansión en hover (grid-rows técnica premium) ── */
+  .maestro__expand {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 520ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .maestro:hover .maestro__expand {
+    grid-template-rows: 1fr;
+  }
+
+  .maestro__expand-inner {
+    overflow: hidden;
+    /* padding en transición para evitar salto brusco */
+    padding-top: 0;
+    opacity: 0;
+    transform: translateY(6px);
+    transition:
+      padding-top 520ms cubic-bezier(0.16, 1, 0.3, 1),
+      opacity     360ms ease 180ms,
+      transform   440ms cubic-bezier(0.16, 1, 0.3, 1) 120ms;
+  }
+
+  .maestro:hover .maestro__expand-inner {
+    padding-top: 14px;
     opacity: 1;
     transform: translateY(0);
   }
-  .maestro__reveal strong {
-    color: var(--coffee);
-    font-size: 13px;
-    font-weight: 700;
+
+  .maestro__quote {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 15px;
+    color: var(--coffee-soft, #544A3E);
+    border-left: 2px solid rgba(201, 162, 83, 0.44);
+    padding: 4px 0 4px 14px;
+    margin: 0 0 14px;
+    line-height: 1.65;
   }
-  .maestro__reveal span,
-  .maestro__reveal small {
-    color: rgba(58,50,40,0.76);
+
+  .maestro__expand-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+
+  .maestro__meta-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
     font-size: 12px;
-    line-height: 1.35;
+    color: var(--text-muted, #7A7164);
+    letter-spacing: 0.02em;
+
+    svg {
+      width: 13px;
+      height: 13px;
+      flex-shrink: 0;
+      color: var(--gold, #C9A253);
+      opacity: 0.8;
+    }
   }
-  .maestro__reveal small {
-    color: var(--moss);
+
+  .maestro__meta-piezas { font-size: 11.5px; }
+
+  .maestro__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    color: var(--clay-deep, #8A6548);
+    text-decoration: none;
+    padding: 8px 16px 8px 0;
+    border-bottom: 1px solid rgba(201, 162, 83, 0.28);
+    transition: gap 240ms ease, border-color 240ms ease, color 240ms ease;
+
+    svg {
+      width: 16px;
+      height: 16px;
+      transition: transform 280ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    &:hover {
+      gap: 11px;
+      color: var(--coffee, #3A2C20);
+      border-color: rgba(201, 162, 83, 0.68);
+
+      svg { transform: translateX(4px); }
+    }
   }
 
   /* ============ TERRITORIO ============ */
@@ -1227,7 +1450,13 @@
     .oficio-section { padding: 72px 24px; }
     .oficio__inner { grid-template-columns: 1fr; gap: 40px; }
     .pieces { grid-template-columns: repeat(2, 1fr); gap: 20px; }
-    .maestros__grid { grid-template-columns: 1fr; }
+    .maestros__grid { grid-template-columns: repeat(2, 1fr); gap: 18px; }
+    .maestro__avatar { width: 80px; height: 80px; }
+    .maestro__avatar-ring { inset: -4px; }
+    .maestro__name { font-size: 20px; }
+    /* En móvil: mostrar la expansión siempre abierta */
+    .maestro__expand { grid-template-rows: 1fr; }
+    .maestro__expand-inner { opacity: 1; transform: translateY(0); padding-top: 12px; }
     .territorio { grid-template-columns: 1fr; gap: 40px; }
     .footer { padding: 60px 24px 24px; }
     .footer__inner { grid-template-columns: 1fr; gap: 40px; }
@@ -1271,6 +1500,7 @@
     .modal__body { padding: 20px; }
   }
   @media (max-width: 560px) {
+    .maestros__grid { grid-template-columns: 1fr; }
     .story-strip__inner { grid-template-columns: 1fr; }
     .story-step { min-height: auto; }
     .pieces { grid-template-columns: 1fr; gap: 16px; }

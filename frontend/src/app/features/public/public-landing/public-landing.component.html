@@ -288,30 +288,77 @@
     </div>
     <div class="maestros__grid">
       @for (m of maestros(); track m.name) {
-        <article class="maestro liquid-glass liquid-tilt" appLiquidPointer [liquidTiltStrength]="3">
+        <article class="maestro" [style.--portrait-bg]="'url(' + (m.image || '/assets/placeholder-maestro.svg') + ')'">
+
+          <!-- ── PORTRAIT: fondo difuminado + avatar circular ── -->
           <div class="maestro__portrait">
-            <img [src]="m.image || '/assets/placeholder-maestro.svg'" [alt]="m.name"/>
-            <div class="maestro__overlay"></div>
-            <div class="maestro__years">
-              <div class="display maestro__yearsNum">{{ m.years }}</div>
-              <div class="eyebrow maestro__yearsLabel">años de oficio</div>
+            <div class="maestro__portrait-bg" aria-hidden="true"></div>
+            <div class="maestro__portrait-grain" aria-hidden="true"></div>
+            <div class="maestro__portrait-overlay" aria-hidden="true"></div>
+
+            <div class="maestro__avatar-wrap">
+              <div class="maestro__avatar-ring" aria-hidden="true"></div>
+              <div class="maestro__avatar"
+                   [style.background-image]="'url(' + (m.image || '/assets/placeholder-maestro.svg') + ')'">
+              </div>
             </div>
-            <div class="maestro__reveal">
-              <strong>{{ m.town }} · {{ m.vereda }}</strong>
-              <span>{{ m.craft }}</span>
-              @if (piezasForMaestro(m).length) {
-                <small>{{ piezasForMaestro(m).join(' · ') }}</small>
-              } @else {
-                <small>Catalogo en preparacion</small>
-              }
-            </div>
+
+            @if (m.years > 0) {
+              <div class="maestro__years-badge">
+                <span class="maestro__years-num">{{ m.years }}</span>
+                <span class="maestro__years-lbl">años de oficio</span>
+              </div>
+            }
+
+            @if (m.craft) {
+              <div class="maestro__craft-chip">{{ m.craft }}</div>
+            }
           </div>
+
+          <!-- ── BODY: info siempre visible ── -->
           <div class="maestro__body">
-            <div class="eyebrow maestro__location">{{ m.town }} · vereda {{ m.vereda }}</div>
-            <h3 class="maestro__name">{{ m.name }}</h3>
-            <div class="maestro__craft">{{ m.craft }}</div>
-            <blockquote class="maestro__quote">{{ m.quote }}</blockquote>
-            <a href="#" class="btn btn--text">Visita el taller →</a>
+            <div class="maestro__body-static">
+              @if (m.town) {
+                <p class="maestro__location-eyebrow">
+                  <span class="maestro__location-dot">·</span> {{ m.town }}
+                </p>
+              }
+              <h3 class="maestro__name">{{ m.name }}</h3>
+              <div class="maestro__gold-rule"></div>
+            </div>
+
+            <!-- ── EXPAND: se despliega hacia abajo en hover ── -->
+            <div class="maestro__expand">
+              <div class="maestro__expand-inner">
+                @if (m.quote) {
+                  <blockquote class="maestro__quote">"{{ m.quote }}"</blockquote>
+                }
+                <div class="maestro__expand-meta">
+                  @if (m.craft) {
+                    <span class="maestro__meta-item">
+                      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 1.5c0 0-4 3.5-4 6.5a4 4 0 0 0 8 0C12 5 8 1.5 8 1.5z"/></svg>
+                      {{ m.craft }}
+                    </span>
+                  }
+                  @if (m.vereda && m.vereda !== m.town) {
+                    <span class="maestro__meta-item">
+                      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 2a4.5 4.5 0 0 0 0 9c2.5 0 4.5-2 4.5-4.5S10.5 2 8 2z"/><path d="M8 14s0-3 0-3"/></svg>
+                      Vereda {{ m.vereda }}
+                    </span>
+                  }
+                  @if (piezasForMaestro(m).length) {
+                    <span class="maestro__meta-item maestro__meta-piezas">
+                      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg>
+                      {{ piezasForMaestro(m).join(' · ') }}
+                    </span>
+                  }
+                </div>
+                <a href="#coleccion" class="maestro__cta">
+                  Ver sus piezas
+                  <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 10h12M10 4l6 6-6 6"/></svg>
+                </a>
+              </div>
+            </div>
           </div>
         </article>
       }
