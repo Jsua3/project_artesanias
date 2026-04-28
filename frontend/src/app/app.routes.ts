@@ -176,6 +176,10 @@ const SHELL_ROUTES: Routes = [
     canActivate: [adminGuard],
     children: [
       {
+        path: 'usuarios',
+        loadComponent: () => import('./features/admin/usuarios/usuarios.component').then(m => m.UsuariosComponent)
+      },
+      {
         path: 'artisan-requests',
         loadComponent: () => import('./features/auth/artisan-requests/artisan-requests.component').then(m => m.ArtisanRequestsComponent)
       },

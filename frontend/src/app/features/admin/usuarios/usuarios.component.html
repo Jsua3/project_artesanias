@@ -1,0 +1,216 @@
+<div class="page-container animate-in">
+
+  <div class="page-header">
+    <div>
+      <h2 class="page-title">Usuarios del Sistema</h2>
+      <p class="page-subtitle">Gestión completa de cuentas registradas en Rebeca</p>
+    </div>
+    <button mat-icon-button (click)="cargar()" [disabled]="loading()" matTooltip="Recargar">
+      <mat-icon>refresh</mat-icon>
+    </button>
+  </div>
+
+  <!-- KPIs -->
+  <div class="kpi-row">
+    <div class="kpi-card">
+      <span class="kpi-label">Total usuarios</span>
+      <span class="kpi-value">{{ totals().total }}</span>
+    </div>
+    <div class="kpi-card kpi-card--admin">
+      <span class="kpi-label">Admins</span>
+      <span class="kpi-value">{{ totals().admins }}</span>
+    </div>
+    <div class="kpi-card kpi-card--artesano">
+      <span class="kpi-label">Artesanos</span>
+      <span class="kpi-value">{{ totals().artesanos }}</span>
+    </div>
+    <div class="kpi-card kpi-card--domiciliario">
+      <span class="kpi-label">Domiciliarios</span>
+      <span class="kpi-value">{{ totals().domiciliarios }}</span>
+    </div>
+    <div class="kpi-card kpi-card--cliente">
+      <span class="kpi-label">Clientes</span>
+      <span class="kpi-value">{{ totals().clientes }}</span>
+    </div>
+    @if (totals().pendientes > 0) {
+      <div class="kpi-card kpi-card--warn">
+        <span class="kpi-label">Pendientes</span>
+        <span class="kpi-value">{{ totals().pendientes }}</span>
+      </div>
+    }
+  </div>
+
+  <!-- Filtros -->
+  <mat-card class="filter-card">
+    <div class="filter-row">
+      <mat-form-field appearance="outline" class="filter-search">
+        <mat-label>Buscar usuario...</mat-label>
+        <mat-icon matPrefix>search</mat-icon>
+        <input matInput [formControl]="searchCtrl" placeholder="Nombre, usuario, localidad..."/>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="filter-rol">
+        <mat-label>Filtrar por rol</mat-label>
+        <mat-select [formControl]="rolCtrl">
+          @for (op of rolOptions; track op.value) {
+            <mat-option [value]="op.value">{{ op.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </mat-card>
+
+  @if (loading()) {
+    <div class="loading-center"><mat-spinner /></div>
+  } @else {
+
+    <!-- Tabla desktop -->
+    <div class="desktop-table">
+      <mat-card>
+        <table mat-table [dataSource]="filtered()" class="full-width usuarios-table">
+
+          <!-- Avatar -->
+          <ng-container matColumnDef="avatar">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let u">
+              <div class="user-avatar-cell" [ngClass]="rolClass(u.role)">
+                @if (u.avatarUrl) {
+                  <img [src]="u.avatarUrl" [alt]="u.username" />
+                } @else {
+                  {{ initials(u) }}
+                }
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Usuario -->
+          <ng-container matColumnDef="usuario">
+            <th mat-header-cell *matHeaderCellDef>Usuario</th>
+            <td mat-cell *matCellDef="let u">
+              <div class="user-info-cell">
+                <strong>{{ u.displayName || u.username }}</strong>
+                @if (u.displayName) { <small>&#64;{{ u.username }}</small> }
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Rol -->
+          <ng-container matColumnDef="rol">
+            <th mat-header-cell *matHeaderCellDef>Rol</th>
+            <td mat-cell *matCellDef="let u">
+              <span class="chip" [ngClass]="rolClass(u.role)">{{ rolLabel(u.role) }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Estado -->
+          <ng-container matColumnDef="estado">
+            <th mat-header-cell *matHeaderCellDef>Estado</th>
+            <td mat-cell *matCellDef="let u">
+              <span class="chip estado-chip" [ngClass]="estadoClass(u.approvalStatus)">
+                {{ estadoLabel(u.approvalStatus) }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Perfil -->
+          <ng-container matColumnDef="perfil">
+            <th mat-header-cell *matHeaderCellDef>Perfil</th>
+            <td mat-cell *matCellDef="let u">
+              @if (u.profileCompletion !== undefined) {
+                <div class="perfil-bar">
+                  <div class="perfil-bar__fill" [style.width.%]="u.profileCompletion"></div>
+                </div>
+                <small>{{ u.profileCompletion }}%</small>
+              } @else {
+                <small class="text-muted">—</small>
+              }
+            </td>
+          </ng-container>
+
+          <!-- Courier -->
+          <ng-container matColumnDef="courier">
+            <th mat-header-cell *matHeaderCellDef>Modalidad</th>
+            <td mat-cell *matCellDef="let u">
+              @if (u.courierMode) {
+                <span class="chip chip--small">{{ u.courierMode }}</span>
+                @if (u.courierCompany) { <small> · {{ u.courierCompany }}</small> }
+              } @else {
+                <small class="text-muted">—</small>
+              }
+            </td>
+          </ng-container>
+
+          <!-- Localidad -->
+          <ng-container matColumnDef="localidad">
+            <th mat-header-cell *matHeaderCellDef>Localidad</th>
+            <td mat-cell *matCellDef="let u">{{ u.locality || '—' }}</td>
+          </ng-container>
+
+          <!-- Tipo artesanía -->
+          <ng-container matColumnDef="artesania">
+            <th mat-header-cell *matHeaderCellDef>Especialidad</th>
+            <td mat-cell *matCellDef="let u">{{ u.craftType || '—' }}</td>
+          </ng-container>
+
+          <!-- Fecha registro -->
+          <ng-container matColumnDef="fecha">
+            <th mat-header-cell *matHeaderCellDef>Registro</th>
+            <td mat-cell *matCellDef="let u">
+              {{ u.createdAt ? (u.createdAt | date:'dd/MM/yyyy':'':'es-CO') : '—' }}
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="user-row"></tr>
+        </table>
+        @if (!filtered().length) {
+          <p class="empty-msg">No hay usuarios que coincidan con los filtros.</p>
+        }
+      </mat-card>
+    </div>
+
+    <!-- Cards móvil -->
+    <div class="mobile-cards">
+      <div class="cards-grid">
+        @for (u of filtered(); track u.id) {
+          <div class="data-card">
+            <div class="data-card-header">
+              <div class="user-avatar-cell" [ngClass]="rolClass(u.role)" style="width:38px;height:38px;font-size:14px;flex-shrink:0">
+                @if (u.avatarUrl) { <img [src]="u.avatarUrl" [alt]="u.username" /> }
+                @else { {{ initials(u) }} }
+              </div>
+              <div style="flex:1;min-width:0">
+                <p class="data-card-title" style="margin:0">{{ u.displayName || u.username }}</p>
+                @if (u.displayName) { <small style="color:#9a9290">&#64;{{ u.username }}</small> }
+              </div>
+              <span class="chip" [ngClass]="rolClass(u.role)">{{ rolLabel(u.role) }}</span>
+            </div>
+            <div class="data-card-body">
+              <div class="data-card-row">
+                <span class="label">Estado</span>
+                <span class="chip estado-chip" [ngClass]="estadoClass(u.approvalStatus)">{{ estadoLabel(u.approvalStatus) }}</span>
+              </div>
+              @if (u.locality) {
+                <div class="data-card-row">
+                  <span class="label">Localidad</span>
+                  <span class="value">{{ u.locality }}</span>
+                </div>
+              }
+              @if (u.craftType) {
+                <div class="data-card-row">
+                  <span class="label">Especialidad</span>
+                  <span class="value">{{ u.craftType }}</span>
+                </div>
+              }
+              @if (u.createdAt) {
+                <div class="data-card-row">
+                  <span class="label">Registro</span>
+                  <span class="value">{{ u.createdAt | date:'dd/MM/yyyy' }}</span>
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

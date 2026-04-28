@@ -25,7 +25,7 @@ import { PostFormComponent } from '../post-form/post-form.component';
     <div class="feed-shell">
       <header class="feed-header liquid-glass liquid-glass--solid">
         <div>
-          <span class="feed-kicker">Gremio Rebecca</span>
+          <span class="feed-kicker">Gremio Rebeca</span>
           <h1>Comunidad Artesana</h1>
           <p class="feed-sub">Comparte ideas, logros y noticias con el gremio</p>
         </div>

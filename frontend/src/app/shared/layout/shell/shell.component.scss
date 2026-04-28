@@ -345,6 +345,36 @@
 }
 
 // ===== MAIN CONTENT =====
+/* ── Botón volver a la tienda ── */
+.back-to-store-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 8px 16px 4px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  background: rgba(166, 124, 82, 0.10);
+  border: 1px solid rgba(166, 124, 82, 0.22);
+  color: var(--terracotta, #A67C52);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  transition: background 220ms ease, border-color 220ms ease, transform 280ms cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover {
+    background: rgba(166, 124, 82, 0.18);
+    border-color: rgba(166, 124, 82, 0.40);
+    transform: translateX(3px);
+  }
+}
+
 .main-content {
   background:
     linear-gradient(180deg, rgba(248, 245, 238, 0.97) 0%, rgba(245, 240, 230, 0.96) 100%),

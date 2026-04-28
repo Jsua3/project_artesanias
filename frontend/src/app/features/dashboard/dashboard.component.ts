@@ -98,34 +98,35 @@ export class DashboardComponent implements OnInit {
   quickLinks = computed(() => {
     if (this.isAdmin()) {
       return [
-        { label: 'Artesanos', route: '/artesanos', icon: 'person_pin' },
-        { label: 'Categorias', route: '/categories', icon: 'category' },
-        { label: 'Artesanias', route: '/products', icon: 'palette' },
-        { label: 'Clientes', route: '/clientes', icon: 'people' },
-        { label: 'Pedidos', route: '/pedidos', icon: 'receipt_long' },
-        { label: 'Ventas', route: '/ventas', icon: 'point_of_sale' },
-        { label: 'Entregas', route: '/entregas', icon: 'local_shipping' },
-        { label: 'Panel de entregas', route: '/domiciliario/panel', icon: 'delivery_dining' },
-        { label: 'Inventario', route: '/stock', icon: 'inventory_2' },
-        { label: 'Reportes', route: '/reports', icon: 'assessment' },
-        { label: 'Solicitudes', route: '/admin/aprobaciones', icon: 'verified_user' },
-        { label: 'Moderacion', route: '/admin/moderacion', icon: 'shield' }
+        { label: 'Maestros Artesanos',     route: '/artesanos',          icon: 'person_pin' },
+        { label: 'Tipos de Artesanía',     route: '/categories',         icon: 'category' },
+        { label: 'Artesanías',             route: '/products',           icon: 'palette' },
+        { label: 'Compradores',            route: '/clientes',           icon: 'people' },
+        { label: 'Pedidos',                route: '/pedidos',            icon: 'receipt_long' },
+        { label: 'Ventas',                 route: '/ventas',             icon: 'point_of_sale' },
+        { label: 'Entregas',               route: '/entregas',           icon: 'local_shipping' },
+        { label: 'Panel de Entregas',      route: '/domiciliario/panel', icon: 'delivery_dining' },
+        { label: 'Existencias',            route: '/stock',              icon: 'inventory_2' },
+        { label: 'Informes',               route: '/reports',            icon: 'assessment' },
+        { label: 'Solicitudes',            route: '/admin/aprobaciones', icon: 'verified_user' },
+        { label: 'Usuarios del Sistema',   route: '/admin/usuarios',     icon: 'manage_accounts' }
       ];
     }
 
     if (this.isDomiciliario()) {
       return [
-        { label: 'Pedidos', route: '/pedidos', icon: 'receipt_long' },
-        { label: 'Gestionar entregas', route: '/entregas', icon: 'local_shipping' }
+        { label: 'Mis Pedidos',       route: '/pedidos',   icon: 'receipt_long' },
+        { label: 'Gestionar Entregas', route: '/entregas', icon: 'local_shipping' }
       ];
     }
 
     return [
-      { label: 'Gestionar artesanias', route: '/products', icon: 'palette' },
-      { label: 'Pedidos', route: '/pedidos', icon: 'receipt_long' },
-      { label: 'Ventas', route: '/ventas', icon: 'point_of_sale' },
-      { label: 'Inventario', route: '/stock', icon: 'inventory_2' },
-      { label: 'Reportes', route: '/reports', icon: 'assessment' }
+      { label: 'Mis Piezas',       route: '/products',   icon: 'palette' },
+      { label: 'Mis Pedidos',      route: '/pedidos',    icon: 'receipt_long' },
+      { label: 'Mis Ventas',       route: '/ventas',     icon: 'point_of_sale' },
+      { label: 'Existencias',      route: '/stock',      icon: 'inventory_2' },
+      { label: 'Ferias y Eventos', route: '/artesano/eventos', icon: 'event' },
+      { label: 'Movimientos',      route: '/movimientos', icon: 'swap_horiz' }
     ];
   });
 

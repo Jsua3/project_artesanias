@@ -44,54 +44,55 @@ export class ShellComponent {
     {
       title: '',
       items: [
-        { label: 'Dashboard', icon: 'dashboard', route: '/dashboard' }
+        { label: 'Panel Principal', icon: 'dashboard', route: '/dashboard' }
       ]
     },
     {
-      title: 'Catalogo',
+      title: 'Mi Taller',
       items: [
-        { label: 'Artesanos', icon: 'person_pin', route: '/artesanos', roles: ['ADMIN'] },
-        { label: 'Categorias', icon: 'category', route: '/categories', roles: ['ADMIN'] },
-        { label: 'Artesanias', icon: 'palette', route: '/products', roles: ['ADMIN', 'ARTESANO'] }
+        { label: 'Maestros Artesanos', icon: 'person_pin', route: '/artesanos', roles: ['ADMIN'] },
+        { label: 'Tipos de Artesanía', icon: 'category', route: '/categories', roles: ['ADMIN'] },
+        { label: 'Mis Piezas', icon: 'palette', route: '/products', roles: ['ADMIN', 'ARTESANO'] }
       ]
     },
     {
-      title: 'Ventas',
+      title: 'Comercio',
       items: [
-        { label: 'Clientes', icon: 'people', route: '/clientes', roles: ['ADMIN', 'ARTESANO'] },
+        { label: 'Compradores', icon: 'people', route: '/clientes', roles: ['ADMIN', 'ARTESANO'] },
         { label: 'Pedidos', icon: 'receipt_long', route: '/pedidos', roles: ['ADMIN', 'ARTESANO', 'DOMICILIARIO'] },
-        { label: 'Ventas', icon: 'point_of_sale', route: '/ventas', roles: ['ADMIN', 'ARTESANO'] }
+        { label: 'Mis Ventas', icon: 'point_of_sale', route: '/ventas', roles: ['ADMIN', 'ARTESANO'] }
       ]
     },
     {
-      title: 'Logistica',
+      title: 'Entregas',
       items: [
-        { label: 'Panel de entregas', icon: 'delivery_dining', route: '/domiciliario/panel', roles: ['ADMIN', 'DOMICILIARIO'] },
-        { label: 'Entregas', icon: 'local_shipping', route: '/entregas', roles: ['ADMIN', 'DOMICILIARIO'] }
+        { label: 'Mi Panel de Entregas', icon: 'delivery_dining', route: '/domiciliario/panel', roles: ['ADMIN', 'DOMICILIARIO'] },
+        { label: 'Seguimiento de Entregas', icon: 'local_shipping', route: '/entregas', roles: ['ADMIN', 'DOMICILIARIO'] }
       ]
     },
     {
-      title: 'Inventario',
+      title: 'Bodega',
       items: [
-        { label: 'Stock', icon: 'warehouse', route: '/stock', roles: ['ADMIN', 'ARTESANO'] },
-        { label: 'Entradas', icon: 'add_circle_outline', route: '/inventory/entries', roles: ['ADMIN', 'ARTESANO'] },
-        { label: 'Salidas', icon: 'remove_circle_outline', route: '/inventory/exits', roles: ['ADMIN', 'ARTESANO'] }
+        { label: 'Existencias', icon: 'warehouse', route: '/stock', roles: ['ADMIN', 'ARTESANO'] },
+        { label: 'Recibir Mercancía', icon: 'add_circle_outline', route: '/inventory/entries', roles: ['ADMIN', 'ARTESANO'] },
+        { label: 'Registrar Salida', icon: 'remove_circle_outline', route: '/inventory/exits', roles: ['ADMIN', 'ARTESANO'] }
       ]
     },
     {
       title: 'Comunidad',
       items: [
-        { label: 'Feed artesanos', icon: 'groups', route: '/artesano/comunidad', roles: ['ARTESANO', 'ADMIN'] },
-        { label: 'Eventos y ferias', icon: 'event', route: '/artesano/eventos', roles: ['ARTESANO', 'ADMIN'] }
+        { label: 'Red de Artesanos', icon: 'groups', route: '/artesano/comunidad', roles: ['ARTESANO', 'ADMIN'] },
+        { label: 'Ferias y Eventos', icon: 'event', route: '/artesano/eventos', roles: ['ARTESANO', 'ADMIN'] }
       ]
     },
     {
-      title: 'Admin',
+      title: 'Administración',
       items: [
         { label: 'Movimientos', icon: 'swap_horiz', route: '/movimientos', roles: ['ADMIN', 'ARTESANO'] },
-        { label: 'Reportes', icon: 'assessment', route: '/reports', roles: ['ADMIN', 'ARTESANO'] },
-        { label: 'Solicitudes de acceso', icon: 'verified_user', route: '/admin/aprobaciones', roles: ['ADMIN'] },
-        { label: 'Moderación comunidad', icon: 'shield', route: '/admin/moderacion', roles: ['ADMIN'] },
+        { label: 'Informes', icon: 'assessment', route: '/reports', roles: ['ADMIN', 'ARTESANO'] },
+        { label: 'Usuarios del Sistema', icon: 'manage_accounts', route: '/admin/usuarios', roles: ['ADMIN'] },
+        { label: 'Solicitudes de Registro', icon: 'verified_user', route: '/admin/aprobaciones', roles: ['ADMIN'] },
+        { label: 'Moderación', icon: 'shield', route: '/admin/moderacion', roles: ['ADMIN'] },
         { label: 'Base de Datos', icon: 'storage', route: '/admin/database', roles: ['ADMIN'] }
       ]
     }
@@ -108,20 +109,14 @@ export class ShellComponent {
 
   readonly roleLabel = computed(() => {
     switch (this.auth.currentUser()?.role) {
-      case 'ADMIN':
-        return 'Administrador';
-      case 'ARTESANO':
-        return 'Artesano';
-      case 'OPERATOR':
-        return 'Artesano';
-      case 'CLIENTE':
-        return 'Cliente';
-      case 'DOMICILIARIO':
-        return this.auth.currentUser()?.courierCompany
-          ? `Domiciliario - ${this.auth.currentUser()?.courierCompany}`
-          : 'Domiciliario';
-      default:
-        return this.auth.currentUser()?.role ?? '';
+      case 'ADMIN':        return 'Administrador';
+      case 'ARTESANO':     return 'Artesano';
+      case 'OPERATOR':     return 'Artesano';
+      case 'CLIENTE':      return 'Cliente';
+      case 'DOMICILIARIO': return this.auth.currentUser()?.courierCompany
+        ? `Domiciliario · ${this.auth.currentUser()?.courierCompany}`
+        : 'Domiciliario';
+      default:             return this.auth.currentUser()?.role ?? '';
     }
   });
 
@@ -132,20 +127,13 @@ export class ShellComponent {
     if (!mobile) this.sidenavOpen.set(true);
   }
 
-  toggleSidenav() {
-    this.sidenavOpen.update(v => !v);
-  }
+  toggleSidenav() { this.sidenavOpen.update(v => !v); }
 
   closeMobileSidenav() {
-    if (this.isMobile()) {
-      this.sidenavOpen.set(false);
-    }
+    if (this.isMobile()) this.sidenavOpen.set(false);
   }
 
   openProfileDialog() {
-    this.dialog.open(ProfileDialogComponent, {
-      width: '440px',
-      maxWidth: '95vw'
-    });
+    this.dialog.open(ProfileDialogComponent, { width: '440px', maxWidth: '95vw' });
   }
 }
