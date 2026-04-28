@@ -975,24 +975,27 @@ El backend retorna el UUID del usuario en el login response. Antes el id quedaba
 
 Actualmente el sistema cumple con:
 
-- Landing publica premium.
-- Carrusel territorial.
+- Landing publica premium con separadores liquid glass entre secciones.
+- Carrusel territorial (Filandia, Salento).
 - Artesanos reales desde backend con campos correctos.
+- Tarjetas de maestros rediseñadas: avatar circular, fondo difuminado, expansión premium en hover.
+- Panel artesano en landing: acceso rapido a dashboard/artesanias/movimientos para ARTESANO y ADMIN.
 - Glassmorphism / Liquid Glass en cliente y ventas.
-- Cursor-reactive cards en desktop.
-- Reduccion de animaciones en mobile/reduced motion.
-- Carrito.
-- Checkout preparado con Stripe.
-- Mis pedidos.
-- Login con usuario/contrasena.
-- Login con Google (Google Identity Services, modo testing).
-- Registro (usuario/contrasena).
+- Cursor-reactive cards en desktop, reduccion de animaciones en mobile.
+- Carrito con fondo de imagen sutil.
+- Checkout con Stripe (URLs actualizadas a 56.126.102.113.nip.io).
+- Checkbox "Guardar datos de envio para futuras compras" en checkout.
+- Mis pedidos con fondo cafe.
+- Login y Register con responsive movil mejorado (100dvh, breakpoints 640/480/360px).
+- Register rediseñado: "UNETE AL TALLER" con role cards visuales (iconos), mismo estilo que registro-cliente.
+- Login con usuario/contrasena y con Google (Google Identity Services, modo testing).
 - Roles CLIENTE, ARTESANO, DOMICILIARIO, ADMIN correctamente normalizados.
 - Redireccion post-login por rol (DOMICILIARIO va directo a su panel).
 - Aprobacion de artesanos/domiciliarios.
 - Perfil ampliado.
 - Catalogo, productos, categorias y artesanos.
-- Stock, entradas y salidas.
+- Productos con multiples categorias: junction table `product_categories`, selector multiple en el formulario.
+- Stock, entradas y salidas (formularios usan loadForManagement para ver todos los productos del artesano).
 - Ventas.
 - Pedidos.
 - Seguimiento de entrega.
@@ -1001,7 +1004,12 @@ Actualmente el sistema cumple con:
 - Eventos.
 - Moderacion de comunidad.
 - Reportes.
+- Movimientos: nueva seccion `/movimientos` para ADMIN (todas las ventas) y ARTESANO (solo las suyas), con filtros de fecha/estado, KPIs y exportacion a Excel (CSV).
+- Backoffice con fondos de imagen sutiles (pseudo-elemento ::after, opacity 0.06-0.07).
+- Animaciones de botones premium con spring easing (cubic-bezier 0.34, 1.56, 0.64, 1) y shimmer sweep.
 - Despliegue Docker en AWS EC2 (sa-east-1, t3.small).
+- .env fuera del tracking de git, historial limpio (git filter-repo).
+- Documentacion completa en `documentos/`: requisitos.md, schema-completo.sql, ENDPOINTS.md.
 - `AuthResponse` con ID de usuario para disponibilidad inmediata post-login.
 
 ## 26. Caracteristicas faltantes o pendientes
@@ -1009,30 +1017,28 @@ Actualmente el sistema cumple con:
 Pendientes funcionales:
 
 - Publicar Google OAuth en produccion (requiere HTTPS + dominio).
-- GraalVM Native Images / Spring Native.
-- Encuestas posteriores al registro.
+- Webhook de Stripe: actualizar URL en dashboard de Stripe a `http://56.126.102.113/api/stripe/webhook` (evento `checkout.session.completed`) para que el stock descuente al pagar.
 - Bloqueo funcional completo si perfil no esta completo.
 - Mapa real con rutas para domiciliario.
 - Geolocalizacion en vivo.
 - Evidencia final robusta con foto/firma.
-- Factura formal al ADMIN cuando domiciliario acepta pedido.
-- Sistema completo de notificaciones.
+- Notificaciones al cliente/artesano/domiciliario.
 - Comentarios reales en comunidad.
 - Moderacion real de imagenes con IA.
 - Filtros avanzados y busqueda global.
-- Dominio propio y HTTPS (necesario para Google OAuth en produccion).
+- Dominio propio y HTTPS.
 - Observabilidad: logs centralizados, metricas y alertas.
 - Backups automaticos de PostgreSQL.
 - CI/CD automatizado.
-- Tests unitarios/integracion/e2e mas completos.
 
 Pendientes tecnicos:
 
+- Secretos de produccion (DB_PASSWORD, JWT_SECRET, INTERNAL_TOKEN) aun usan valores de ejemplo en .env del servidor. Rotar si el repositorio estuvo publico antes del git filter-repo.
+- Migrar secretos a gestor seguro (AWS Secrets Manager o SSM).
 - Revisar publicacion del puerto 5432.
-- Migrar secretos a gestor seguro.
 - Revisar CORS para dominio productivo.
 - Ajustar instancia a `t3.medium` si se quiere margen de RAM.
-- Corregir warnings Sass y Angular.
+- Corregir warnings Sass (lighten/darken deprecados) y Angular NG8011.
 - Considerar Flyway/Liquibase para migraciones mas robustas.
 
 ## 27. Recomendaciones de evolucion
@@ -1100,33 +1106,79 @@ Antes de cambiar codigo:
 - No uses MAESTRO como rol en checks de inventory-service. Usa ARTESANO.
 
 Para frontend:
-- Mantener identidad Rebecca.
-- Liquid Glass expresivo solo en cliente.
-- Backoffice sobrio y eficiente.
-- Mobile con animaciones reducidas.
-- Usar assets en frontend/public/assets.
+- Mantener identidad Rebecca: terracota, crema, sage, mauve, dorado, Cormorant Garamond + Outfit.
+- Liquid Glass expresivo en cliente (landing, checkout, carrito). Backoffice sobrio.
+- Mobile con animaciones reducidas. Login/register usan 100dvh, breakpoints 640/480/360px.
+- Usar assets en frontend/public/assets y frontend/public/assets/imagenes.
 - No reintroducir filandia1.jpg en el carrusel.
 - Google OAuth: boton aparece cuando GOOGLE_CLIENT_ID esta configurado en el servidor.
+- Botones de la landing usan spring easing: cubic-bezier(0.34, 1.56, 0.64, 1).
+- Separadores entre secciones: rb-sep con backdrop-filter blur, NO svg wave.
+- Formulario de producto usa mat-select multiple para categoryIds (no categoryId unico).
+- entry-form, exit-form, stock y reports usan productService.loadForManagement() (no loadAll).
+- Fondos decorativos en backoffice via ::after con opacity 0.06-0.07 y mask-image radial-gradient.
 
 Para backend:
 - Mantener R2DBC, WebFlux y JWT.
-- Agregar migraciones idempotentes.
+- Agregar migraciones idempotentes con IF NOT EXISTS y ON CONFLICT DO NOTHING.
 - Mantener /actuator/health accesible para healthchecks.
 - No insertar passwords planas.
 - markAsPaid muta la entidad existente, no crea instancia nueva.
+- catalog-service: ProductService usa ProductCategoryRepository para multiples categorias.
+- ProductResponse incluye categoryIds List<UUID> ademas del legacy categoryId.
+- getProductsByCategory busca en junction table product_categories (no solo en category_id de products).
 
 Para despliegue:
 - Usar git pull --ff-only.
+- Si hay divergencia por reescritura de historial: cp .env /tmp/.env.bak && git fetch && git reset --hard origin/master && cp /tmp/.env.bak .env.
 - Construir servicios por separado.
 - Frontend: git pull + build + docker compose build frontend + force-recreate.
-- Arrancar escalonado.
+- catalog-service o backend: docker compose build <servicio> + docker compose up -d --no-deps <servicio> + sleep 20.
+- Arrancar escalonado: postgres → discovery-server → api-gateway + auth → catalog + inventory + report → frontend.
 - Verificar: docker compose ps, free -h, frontend 200, /api/products 200, /api/auth/config 200, login invalido 401.
 ```
 
-## 29. Resumen ejecutivo
+## 29. Cambios criticos sesion 2026-04-27/28
 
-Rebecca es una plataforma de comercio y gestion artesanal con tienda publica premium y backoffice por roles. El cliente ve una experiencia visual narrativa con productos, maestros, carrito y pedidos. El artesano administra catalogo, ventas, stock, comunidad y eventos. El domiciliario gestiona entregas y progreso. El administrador controla catalogo, usuarios, solicitudes, moderacion y reportes.
+Esta seccion documenta los cambios mas importantes para no reintroducir bugs ni deshacer trabajo.
 
-La app esta desplegada y funcional en AWS EC2 (Sao Paulo, t3.small) con Docker Compose. Incluye login con Google Identity Services (modo testing, requiere dominio con HTTPS para produccion). El mayor riesgo operativo es la memoria limitada de la instancia, por lo que los despliegues deben hacerse por etapas.
+### Seguridad: .env fuera del historial de git
 
-Ultimo despliegue: commit `a978557`, bundle `main-MWJNWTOV.js`, 2026-04-26.
+El archivo `.env` fue removido del tracking (`git rm --cached`) y el historial reescrito con `git filter-repo --path .env --invert-paths --force`. El repositorio publico ya no contiene ninguna version del .env. El .gitignore ahora cubre *.pem, *.key, secrets/, imagenes/, logs/ y variantes de .env.
+
+Importante: los secretos que estaban en commit `1acbed8` (DB_PASSWORD, JWT_SECRET, INTERNAL_TOKEN) pueden haberse indexado durante el tiempo que el repo fue publico. Se recomienda rotarlos en el servidor EC2.
+
+### Multiples categorias por producto (catalog_db)
+
+Se agrego la tabla `product_categories (id UUID, product_id UUID, category_id UUID, UNIQUE(product_id, category_id))`. La migracion en schema.sql copia automaticamente el `category_id` existente de cada producto a la nueva tabla al arrancar. El campo legacy `category_id` en `products` se mantiene como columna de compatibilidad (apunta a la primera categoria).
+
+- `ProductRequest` ahora acepta `categoryIds: List<UUID>` ademas del legacy `categoryId`.
+- `ProductResponse` incluye `categoryIds: List<UUID>`.
+- `getProductsByCategory` busca en `product_categories` (captura productos con multiples categorias).
+- Frontend: `mat-select multiple` sobre `categoryIds`. Al editar, precarga las categorias existentes.
+
+No reintroducir un selector simple de categoria unica — el formulario debe ser siempre multi-select.
+
+### Stripe: URLs deben apuntar al servidor real
+
+`STRIPE_SUCCESS_URL` y `STRIPE_CANCEL_URL` en `.env` del servidor apuntan a `http://56.126.102.113.nip.io`. El stock descuenta en `markAsPaid()` que es llamado por el webhook. Para que el webhook funcione, la URL en el dashboard de Stripe debe ser `http://56.126.102.113/api/stripe/webhook` con evento `checkout.session.completed`.
+
+### Inventario: loadForManagement en formularios
+
+`entry-form`, `exit-form`, `stock.component` y `reports.component` usan `productService.loadForManagement()` → `GET /api/products/admin/all`. Este endpoint ya filtra por artesano en el backend (ARTESANO solo ve los suyos, ADMIN ve todos). No usar `loadAll()` para estos componentes porque solo devuelve productos activos y no filtra por artesano.
+
+### Separadores de secciones en landing
+
+Los separadores entre secciones usan `backdrop-filter: blur(28px)` con `position` fija y solape de ±44px. No tienen altura propia. No usar SVG wave con relleno solido — eso crea bordes duros. El badge central (emblema Rebecca) es liquid glass con border dorado.
+
+### Fondos decorativos en backoffice
+
+Dashboard, movimientos y stock usan `::after` pseudo-elemento con `position: fixed`, `opacity: 0.06`, `mask-image: radial-gradient` para el efecto de imagen en esquina. NO usar `background: transparent 0%` con imagen porque la imagen se ve cruda sin overlay en la zona inicial del degradado.
+
+## 30. Resumen ejecutivo
+
+Rebecca es una plataforma de comercio y gestion artesanal con tienda publica premium y backoffice por roles. El cliente ve una experiencia visual narrativa con productos, maestros, carrito y pedidos. El artesano administra catalogo, ventas, stock, comunidad, eventos y revisa sus movimientos de ventas. El domiciliario gestiona entregas y progreso. El administrador controla catalogo, usuarios, solicitudes, moderacion, reportes y todos los movimientos del sistema.
+
+La app esta desplegada y funcional en AWS EC2 (Sao Paulo, t3.small) con Docker Compose. Incluye login con Google Identity Services (modo testing). El historial de git esta limpio sin secretos. La documentacion completa (requisitos, schema SQL, endpoints) esta en la carpeta `documentos/`.
+
+Ultimo despliegue: commit `0916add`, bundle `main-YWHGDPUF.js`, 2026-04-28.
