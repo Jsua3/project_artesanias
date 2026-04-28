@@ -28,8 +28,8 @@
           <circle cx="25" cy="25" r="5" stroke="currentColor" stroke-width="1.5"/>
         </svg>
       </div>
-      <h1 class="auth-title">REBECCA</h1>
-      <p class="auth-subtitle">Crear nueva cuenta</p>
+      <h1 class="auth-title">ÚNETE AL TALLER</h1>
+      <p class="auth-subtitle">Crea tu cuenta en Rebecca</p>
     </div>
 
     <div class="auth-body">
@@ -45,11 +45,31 @@
           <span>{{ successMessage }}</span>
         </div>
       }
+
+      <!-- Selector visual de tipo de cuenta -->
+      <div class="role-cards">
+        @for (option of roleOptions; track option.value) {
+          <button type="button"
+                  class="role-card"
+                  [class.role-card--active]="form.controls.role.value === option.value"
+                  (click)="form.controls.role.setValue(option.value)">
+            <mat-icon>{{ option.value === 'CLIENTE' ? 'shopping_bag' : option.value === 'ARTESANO' ? 'palette' : 'delivery_dining' }}</mat-icon>
+            <span>{{ option.label }}</span>
+          </button>
+        }
+      </div>
+
+      @if (selectedRoleDescription()) {
+        <p class="role-hint">{{ selectedRoleDescription() }}</p>
+      }
+
+      <div class="auth-separator"><span>datos de la cuenta</span></div>
+
       <form [formGroup]="form" (ngSubmit)="submit()">
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Usuario</mat-label>
           <mat-icon matPrefix>person_outline</mat-icon>
-          <input matInput formControlName="username" />
+          <input matInput formControlName="username" autocomplete="username"/>
           @if (form.get('username')?.hasError('minlength')) {
             <mat-error>Mínimo 3 caracteres</mat-error>
           }
@@ -59,7 +79,8 @@
           <mat-label>Contraseña</mat-label>
           <mat-icon matPrefix>lock_outline</mat-icon>
           <input matInput formControlName="password"
-                 [type]="hidePassword ? 'password' : 'text'" />
+                 [type]="hidePassword ? 'password' : 'text'"
+                 autocomplete="new-password"/>
           <button mat-icon-button matSuffix type="button"
                   (click)="hidePassword = !hidePassword">
             <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
@@ -68,19 +89,6 @@
             <mat-error>Mínimo 6 caracteres</mat-error>
           }
         </mat-form-field>
-
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Tipo de cuenta</mat-label>
-          <mat-select formControlName="role">
-            @for (option of roleOptions; track option.value) {
-              <mat-option [value]="option.value">{{ option.label }}</mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-
-        @if (selectedRoleDescription()) {
-          <p class="role-hint">{{ selectedRoleDescription() }}</p>
-        }
 
         @if (isCourierRole()) {
           <mat-form-field appearance="outline" class="full-width">
@@ -112,7 +120,7 @@
               <mat-form-field appearance="outline" class="full-width">
                 <mat-label>Especifica la empresa</mat-label>
                 <mat-icon matPrefix>business</mat-icon>
-                <input matInput formControlName="courierCompanyOther" />
+                <input matInput formControlName="courierCompanyOther"/>
                 @if (form.get('courierCompanyOther')?.hasError('required')) {
                   <mat-error>Debes especificar la empresa</mat-error>
                 }
@@ -123,7 +131,7 @@
 
         <button mat-raised-button color="primary" type="submit"
                 class="full-width submit-btn" [disabled]="loading">
-          @if (loading) { <mat-spinner diameter="20" /> } @else { Registrarse }
+          @if (loading) { <mat-spinner diameter="20" /> } @else { Crear cuenta }
         </button>
       </form>
     </div>

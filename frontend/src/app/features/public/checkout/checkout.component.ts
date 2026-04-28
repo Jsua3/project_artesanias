@@ -10,6 +10,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { HttpErrorResponse } from '@angular/common/http';
 import { LiquidPointerDirective } from '../../../core/directives/liquid-pointer.directive';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { CartService } from '../../../core/services/cart.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ClienteVentaService } from '../../../core/services/cliente-venta.service';
@@ -22,7 +23,7 @@ import { ClienteVentaRequest, VentaItemRequest } from '../../../core/models/vent
     CommonModule, RouterLink, ReactiveFormsModule,
     MatIconModule, MatButtonModule, MatProgressSpinnerModule,
     MatStepperModule, MatFormFieldModule, MatInputModule,
-    LiquidPointerDirective
+    MatCheckboxModule, LiquidPointerDirective
   ],
   templateUrl: './checkout.component.html',
   styleUrl: './checkout.component.scss'
@@ -43,6 +44,7 @@ export class CheckoutComponent implements OnInit {
   readonly submitting = signal(false);
   readonly errorMsg = signal<string | null>(null);
   readonly canceledBanner = signal(false);
+  readonly saveShipping = signal(false);
 
   readonly isLoggedCliente = computed(
     () => this.auth.isLoggedIn() && this.auth.currentUser()?.role === 'CLIENTE'
@@ -113,6 +115,14 @@ export class CheckoutComponent implements OnInit {
     this.submitting.set(true);
     this.errorMsg.set(null);
     this.canceledBanner.set(false);
+
+    if (this.saveShipping()) {
+      this.auth.updateProfile({
+        phone: sv.recipientPhone ?? undefined,
+        address: sv.address ?? undefined,
+        locality: sv.city ?? undefined
+      }).subscribe();
+    }
 
     this.ventas.create(payload).subscribe({
       next: venta => {

@@ -97,6 +97,12 @@
                 <mat-label>Notas adicionales</mat-label>
                 <textarea matInput formControlName="notes" rows="2"></textarea>
               </mat-form-field>
+
+              <div class="save-shipping-row">
+                <mat-checkbox [checked]="saveShipping()" (change)="saveShipping.set($event.checked)" color="primary">
+                  Guardar estos datos para futuras compras
+                </mat-checkbox>
+              </div>
             </form>
           </div>
         }

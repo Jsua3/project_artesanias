@@ -125,6 +125,11 @@ const SHELL_ROUTES: Routes = [
 
   // ── Reportes ─────────────────────────────────────────────────────────────
   {
+    path: 'movimientos',
+    canActivate: [roleGuard(['ADMIN', 'ARTESANO'])],
+    loadComponent: () => import('./features/movimientos/movimientos.component').then(m => m.MovimientosComponent)
+  },
+  {
     path: 'reports',
     canActivate: [roleGuard(['ADMIN', 'ARTESANO'])],
     loadComponent: () => import('./features/reports/reports.component').then(m => m.ReportsComponent)

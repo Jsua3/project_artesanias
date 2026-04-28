@@ -504,6 +504,52 @@
   }
 }
 
+// ── Role cards (usadas en register) ────────────────────────────────────────
+.role-cards {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.role-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 10px 6px;
+  border-radius: 14px;
+  border: 1.5px solid rgba(166, 124, 82, 0.18);
+  background: rgba(255, 255, 255, 0.38);
+  color: var(--rb-carbon-700);
+  font: 600 0.74rem var(--font-body);
+  cursor: pointer;
+  transition: all 160ms ease;
+
+  mat-icon { font-size: 20px; width: 20px; height: 20px; }
+
+  &:hover {
+    border-color: rgba(166, 124, 82, 0.42);
+    background: rgba(255, 255, 255, 0.58);
+  }
+
+  &--active {
+    border-color: var(--rb-terracota-500);
+    background: rgba(166, 124, 82, 0.12);
+    color: var(--rb-terracota-700);
+    box-shadow: 0 0 0 3px rgba(166, 124, 82, 0.12);
+  }
+}
+
+// ── Checkbox guardar envío (checkout) ───────────────────────────────────────
+.save-shipping-row {
+  margin-top: 8px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(166, 124, 82, 0.06);
+  border: 1px solid rgba(166, 124, 82, 0.12);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .auth-card {
     animation: none;

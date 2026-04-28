@@ -66,6 +66,10 @@ export class VentaService {
     );
   }
 
+  getMaestroMias(): Observable<Venta[]> {
+    return this.http.get<Venta[]>(`${environment.apiUrl}/api/maestro-ventas/mias`);
+  }
+
   anular(id: string): Observable<Venta> {
     return this.http.put<Venta>(`${this.API}/${id}/anular`, {}).pipe(
       tap(() => {

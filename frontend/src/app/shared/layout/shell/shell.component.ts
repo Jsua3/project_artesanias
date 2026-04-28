@@ -88,6 +88,7 @@ export class ShellComponent {
     {
       title: 'Admin',
       items: [
+        { label: 'Movimientos', icon: 'swap_horiz', route: '/movimientos', roles: ['ADMIN', 'ARTESANO'] },
         { label: 'Reportes', icon: 'assessment', route: '/reports', roles: ['ADMIN', 'ARTESANO'] },
         { label: 'Solicitudes de acceso', icon: 'verified_user', route: '/admin/aprobaciones', roles: ['ADMIN'] },
         { label: 'Moderación comunidad', icon: 'shield', route: '/admin/moderacion', roles: ['ADMIN'] },
