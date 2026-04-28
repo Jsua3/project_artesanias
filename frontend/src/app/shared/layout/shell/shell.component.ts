@@ -10,6 +10,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { AuthService } from '../../../core/services/auth.service';
 import { UserRole } from '../../../core/models/auth.model';
 import { ProfileDialogComponent } from './profile-dialog.component';
+import { ThemeService } from '../../../core/services/theme.service';
 
 interface NavItem {
   label: string;
@@ -36,6 +37,7 @@ interface NavSection {
 })
 export class ShellComponent {
   auth = inject(AuthService);
+  theme = inject(ThemeService);
   private dialog = inject(MatDialog);
   isMobile = signal(window.innerWidth < 992);
   sidenavOpen = signal(window.innerWidth >= 992);

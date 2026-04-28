@@ -17,6 +17,7 @@ import { catchError } from 'rxjs/operators';
 import { AuthService } from '../../../core/services/auth.service';
 import { CatalogService } from '../../../core/services/catalog.service';
 import { CartService } from '../../../core/services/cart.service';
+import { ThemeService } from '../../../core/services/theme.service';
 import { EventosPublicosService, EventoPublico } from '../../../core/services/eventos-publicos.service';
 import { LiquidPointerDirective } from '../../../core/directives/liquid-pointer.directive';
 import { Artesano, Category, Product } from '../../../core/models/catalog.model';
@@ -73,6 +74,7 @@ interface OficioHighlight {
 export class PublicLandingComponent implements OnInit, AfterViewInit, OnDestroy {
   auth = inject(AuthService);
   cart = inject(CartService);
+  theme = inject(ThemeService);
   private router = inject(Router);
   private catalog = inject(CatalogService);
   private eventosService = inject(EventosPublicosService);

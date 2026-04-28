@@ -36,6 +36,13 @@
     object-fit: cover;
   }
 
+  .toolbar-theme-btn {
+    color: var(--terracotta-deep) !important;
+    opacity: 0.8;
+
+    &:hover { opacity: 1; }
+  }
+
   .toolbar-user {
     width: 32px;
     height: 32px;
@@ -293,9 +300,35 @@
     opacity: 0.7;
   }
 
-  .logout-btn {
-    width: 100%;
+  .footer-actions {
+    display: flex;
+    gap: 4px;
     margin-top: 6px;
+  }
+
+  .theme-btn {
+    flex: 1;
+    color: rgba(245, 240, 230, 0.5) !important;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+    border-radius: 10px !important;
+    transition: all 0.25s ease;
+
+    &:hover {
+      color: var(--terracotta-light) !important;
+      background: rgba(166, 124, 82, 0.12) !important;
+    }
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  .logout-btn {
+    flex: 1;
+    margin-top: 0;
     color: rgba(245, 240, 230, 0.5) !important;
     font-size: 0.8rem;
     letter-spacing: 0.5px;
