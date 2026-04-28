@@ -10,7 +10,9 @@ $sage: #8a9e8d;
 :host {
   display: block;
   min-height: 100vh;
-  background: linear-gradient(160deg, #faf7f2 0%, #f0e9de 100%);
+  background:
+    linear-gradient(160deg, rgba(250, 247, 242, 0.95) 0%, rgba(240, 233, 222, 0.90) 100%),
+    url('/assets/imagenes/artesanias4.jpeg') center / cover fixed;
   color: $dark;
 }
 

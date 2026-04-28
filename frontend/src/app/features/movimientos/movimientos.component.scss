@@ -1,3 +1,11 @@
+:host {
+  display: block;
+  min-height: 100%;
+  background:
+    linear-gradient(180deg, transparent 0%, rgba(245, 240, 230, 0.16) 100%),
+    url('/assets/imagenes/paisaje3.jpeg') right top / 380px auto no-repeat;
+}
+
 .kpi-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

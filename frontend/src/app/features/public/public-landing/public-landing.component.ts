@@ -11,7 +11,7 @@ import {
   signal
 } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { AuthService } from '../../../core/services/auth.service';
@@ -64,7 +64,7 @@ interface OficioHighlight {
 @Component({
   selector: 'app-public-landing',
   standalone: true,
-  imports: [CommonModule, DatePipe, LiquidPointerDirective],
+  imports: [CommonModule, DatePipe, RouterLink, LiquidPointerDirective],
   templateUrl: './public-landing.component.html',
   styleUrl: './public-landing.component.scss',
   encapsulation: ViewEncapsulation.None,

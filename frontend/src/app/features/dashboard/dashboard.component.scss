@@ -1,3 +1,11 @@
+:host {
+  display: block;
+  min-height: 100%;
+  background:
+    linear-gradient(180deg, transparent 0%, rgba(245, 240, 230, 0.22) 100%),
+    url('/assets/imagenes/paisaje2.jpeg') right bottom / 420px auto no-repeat;
+}
+
 .profile-incomplete-banner {
   display: flex;
   align-items: center;

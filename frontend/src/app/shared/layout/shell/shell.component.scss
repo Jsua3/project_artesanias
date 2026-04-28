@@ -346,7 +346,9 @@
 
 // ===== MAIN CONTENT =====
 .main-content {
-  background: var(--warm-white);
+  background:
+    linear-gradient(180deg, rgba(248, 245, 238, 0.97) 0%, rgba(245, 240, 230, 0.96) 100%),
+    url('/assets/imagenes/paisaje1.jpeg') center / cover fixed;
   overflow-y: auto;
 
   &.mobile {

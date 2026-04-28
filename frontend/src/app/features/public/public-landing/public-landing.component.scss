@@ -1325,6 +1325,126 @@
   }
 }
 
+/* =====================================================================
+   PANEL ARTESANO — CTA rápido para artesanos/admin después del hero
+   ===================================================================== */
+.artesano-panel {
+  position: relative;
+  overflow: hidden;
+  padding: 72px clamp(20px, 6vw, 80px);
+  color: var(--warm-white, #F8F5EE);
+
+  &__bg {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(135deg, rgba(43, 35, 28, 0.82) 0%, rgba(43, 35, 28, 0.64) 60%, rgba(80, 60, 40, 0.72) 100%),
+      url('/assets/imagenes/artesanias2.jpeg') center / cover no-repeat;
+    transform: scale(1.03);
+  }
+
+  &__inner {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: center;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+  }
+
+  &__copy {
+    .eyebrow {
+      color: rgba(255, 248, 220, 0.68);
+      font-size: 0.72rem;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      font-weight: 600;
+      margin-bottom: 14px;
+      display: block;
+    }
+
+    h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+      font-weight: 600;
+      line-height: 1.15;
+      color: #FFFAF3;
+      margin: 0 0 16px;
+    }
+
+    p {
+      font-size: 1rem;
+      line-height: 1.8;
+      color: rgba(255, 248, 220, 0.78);
+      max-width: 440px;
+      margin: 0;
+    }
+  }
+
+  &__cards {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+}
+
+.panel-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  border-radius: 16px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+
+  --glass-bg: rgba(255, 255, 255, 0.14);
+  --glass-blur: 16px;
+  border-color: rgba(255, 255, 255, 0.24) !important;
+  color: #FFFAF3;
+
+  &:hover {
+    transform: translateX(4px);
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.24);
+  }
+
+  &__icon {
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.16);
+    flex-shrink: 0;
+
+    svg { width: 20px; height: 20px; }
+  }
+
+  &__body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    strong { font-size: 0.96rem; font-weight: 700; color: #FFFAF3; }
+    span   { font-size: 0.78rem; color: rgba(255, 248, 220, 0.64); }
+  }
+
+  &__arrow {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    opacity: 0.56;
+  }
+}
+
 /* Animations must be global (scoped @keyframes per component) */
 @keyframes public-landing-fadein { from { opacity: 0; } to { opacity: 1; } }
 @keyframes public-landing-slideup { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }

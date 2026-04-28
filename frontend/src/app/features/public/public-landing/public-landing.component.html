@@ -153,6 +153,52 @@
     </div>
   </section>
 
+  <!-- ========= PANEL ARTESANO / ADMIN (visible solo si no es CLIENTE) ========= -->
+  @if (auth.isLoggedIn() && !auth.isCliente()) {
+    <section class="artesano-panel story-reveal">
+      <div class="artesano-panel__bg" aria-hidden="true"></div>
+      <div class="artesano-panel__inner">
+        <div class="artesano-panel__copy">
+          <span class="eyebrow">Tu espacio en Rebecca</span>
+          <h2>Hola, {{ currentUsername() }} —<br>tu panel te espera.</h2>
+          <p>Gestiona tus artesanías, revisa movimientos y sigue el estado de tus pedidos desde el backoffice.</p>
+        </div>
+        <div class="artesano-panel__cards">
+          <a class="panel-card liquid-glass liquid-glass--solid" (click)="goToPanel()">
+            <div class="panel-card__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+            </div>
+            <div class="panel-card__body">
+              <strong>Dashboard</strong>
+              <span>Vista general</span>
+            </div>
+            <svg class="panel-card__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+          <a class="panel-card liquid-glass liquid-glass--solid" routerLink="/products">
+            <div class="panel-card__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14 2 9.27l6.91-1.01z"/></svg>
+            </div>
+            <div class="panel-card__body">
+              <strong>Artesanías</strong>
+              <span>Catálogo</span>
+            </div>
+            <svg class="panel-card__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+          <a class="panel-card liquid-glass liquid-glass--solid" routerLink="/movimientos">
+            <div class="panel-card__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3h18v18H3zM8 12h8M12 8v8"/></svg>
+            </div>
+            <div class="panel-card__body">
+              <strong>Movimientos</strong>
+              <span>Ventas y reportes</span>
+            </div>
+            <svg class="panel-card__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+        </div>
+      </div>
+    </section>
+  }
+
   <!-- ========= STORY RAIL ========= -->
   <section class="story-strip story-reveal" aria-label="Recorrido de compra Rebecca">
     <div class="story-strip__inner">
