@@ -40,12 +40,13 @@
     </div>
 
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Categoría</mat-label>
-      <mat-select formControlName="categoryId">
+      <mat-label>Categorías</mat-label>
+      <mat-select formControlName="categoryIds" multiple>
         @for (cat of categories(); track cat.id) {
           <mat-option [value]="cat.id">{{ cat.name }}</mat-option>
         }
       </mat-select>
+      <mat-hint>Selecciona una o más categorías</mat-hint>
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="full-width">

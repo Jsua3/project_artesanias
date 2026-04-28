@@ -4,7 +4,8 @@ export interface Product {
   sku: string;
   description?: string;
   price: number;
-  categoryId: string;
+  categoryId: string;      // categoría primaria (compatibilidad)
+  categoryIds?: string[];  // todas las categorías
   artesanoId?: string;
   imageUrl?: string;
   stockMinimo?: number;
@@ -19,7 +20,8 @@ export interface ProductRequest {
   description?: string;
   price: number;
   imageUrl?: string;
-  categoryId: string;
+  categoryId?: string;     // legacy
+  categoryIds?: string[];  // múltiples categorías
   artesanoId?: string;
   stockMinimo?: number;
 }

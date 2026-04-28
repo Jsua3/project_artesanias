@@ -66,6 +66,7 @@ public class AdminDbController {
                 .map(all -> paginate(all.stream()
                         .map(p -> new ProductResponse(p.id(), p.name(), p.description(), p.sku(),
                                 p.price(), p.imageUrl(), p.stockMinimo(), p.categoryId(),
+                                p.categoryId() != null ? java.util.List.of(p.categoryId()) : java.util.List.of(),
                                 p.artesanoId(), p.active(), p.createdAt(), p.updatedAt()))
                         .collect(Collectors.toList()), page, safeSize));
     }

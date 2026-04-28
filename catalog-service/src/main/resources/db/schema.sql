@@ -108,3 +108,24 @@ CREATE INDEX IF NOT EXISTS idx_community_events_estado_created
 
 CREATE INDEX IF NOT EXISTS idx_community_events_artesano_created
     ON community_events (artesano_id, created_at DESC);
+
+-- ========================
+-- CATEGORÍAS POR PRODUCTO (many-to-many)
+-- ========================
+CREATE TABLE IF NOT EXISTS product_categories (
+    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    product_id  UUID NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+    category_id UUID NOT NULL REFERENCES categories(id) ON DELETE CASCADE,
+    CONSTRAINT uk_product_category UNIQUE (product_id, category_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_product_categories_product
+    ON product_categories (product_id);
+CREATE INDEX IF NOT EXISTS idx_product_categories_category
+    ON product_categories (category_id);
+
+-- Migrar datos existentes: copia category_id de products a la tabla junction
+INSERT INTO product_categories (product_id, category_id)
+SELECT id, category_id FROM products
+WHERE category_id IS NOT NULL
+ON CONFLICT DO NOTHING;

@@ -72,7 +72,7 @@ export class ProductFormComponent implements OnInit {
     description: [''],
     price: [0, [Validators.required, Validators.min(0)]],
     stockMinimo: [5, [Validators.required, Validators.min(0)]],
-    categoryId: ['', Validators.required],
+    categoryIds: [[] as string[], Validators.required],
     artesanoId: ['']
   });
 
@@ -81,12 +81,15 @@ export class ProductFormComponent implements OnInit {
     this.artesanoService.loadAll();
 
     if (this.data) {
+      const existingCategoryIds = this.data.categoryIds?.length
+        ? this.data.categoryIds
+        : (this.data.categoryId ? [this.data.categoryId] : []);
       this.form.patchValue({
         name: this.data.name,
         description: this.data.description ?? '',
         price: this.data.price,
         stockMinimo: this.data.stockMinimo ?? 5,
-        categoryId: this.data.categoryId,
+        categoryIds: existingCategoryIds,
         artesanoId: this.data.artesanoId ?? ''
       });
       if (this.data.imageUrl) {
@@ -105,6 +108,8 @@ export class ProductFormComponent implements OnInit {
 
       if (!this.categories().length) {
         this.snackBar.open('No hay categorias disponibles para asociar la artesania.', 'OK', { duration: 3500 });
+      } else if (!this.form.value.categoryIds?.length) {
+        this.snackBar.open('Selecciona al menos una categoría.', 'OK', { duration: 3000 });
       } else {
         this.snackBar.open('Completa los campos obligatorios antes de guardar.', 'OK', { duration: 3000 });
       }
@@ -113,6 +118,7 @@ export class ProductFormComponent implements OnInit {
 
     this.loading.set(true);
 
+    const selectedCategoryIds = (this.form.value.categoryIds ?? []) as string[];
     const req: ProductRequest = {
       name: this.form.value.name!,
       sku: this.data ? this.data.sku : undefined,
@@ -120,7 +126,8 @@ export class ProductFormComponent implements OnInit {
       price: this.form.value.price!,
       imageUrl: this.imageSignal() || undefined,
       stockMinimo: this.form.value.stockMinimo ?? 5,
-      categoryId: this.form.value.categoryId!,
+      categoryIds: selectedCategoryIds,
+      categoryId: selectedCategoryIds[0] || undefined,
       artesanoId: this.form.value.artesanoId || undefined
     };
 
