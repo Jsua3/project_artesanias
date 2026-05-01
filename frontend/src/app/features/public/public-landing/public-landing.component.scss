@@ -1886,6 +1886,7 @@
     .section { padding: 88px 24px; }
     .section--dark { padding: 88px 24px; }
     .oficio-section { padding: 88px 24px; }
+    .pre-footer { padding: 96px 24px; }
     .oficio__inner { grid-template-columns: 1fr; gap: 40px; }
     .pieces { grid-template-columns: repeat(2, 1fr); gap: 20px; }
     .maestros__grid { grid-template-columns: repeat(2, 1fr); gap: 18px; }
@@ -1930,6 +1931,8 @@
     .section--dark { padding: 64px 16px; }
     .oficio-section { padding: 64px 16px; }
     .ferias-section { padding: 64px 16px; }
+    .pre-footer { padding: 72px 16px; }
+    .pre-footer__statement { font-size: clamp(1.9rem, 6vw, 2.8rem); }
     .section__head { gap: 12px; flex-direction: column; align-items: flex-start; }
     .section__head.section__head--centered { align-items: center; }
     .section__filters { flex-wrap: wrap; gap: 8px; }
@@ -1944,7 +1947,7 @@
     .pieces { grid-template-columns: 1fr; gap: 16px; }
     .oficio__cards { grid-template-columns: 1fr; }
     .oficio-card { min-height: auto; }
-    .hero__center { padding: 60px 14px 0; max-width: 100%; }
+    .hero__center { padding: 60px 14px 0; max-width: 100%; margin-bottom: 88px; }
     .hero__title { font-size: clamp(2rem, 9vw, 3.2rem); letter-spacing: -0.01em; }
     .hero__ctas { flex-direction: column; align-items: center; gap: 12px; }
     .hero__ctas .btn { text-align: center; min-width: 200px; }
@@ -1953,6 +1956,10 @@
     .section--dark { padding: 48px 14px; }
     .oficio-section { padding: 48px 14px; }
     .ferias-section { padding: 48px 14px; }
+    .pre-footer { padding: 56px 14px; }
+    .pre-footer__statement { font-size: clamp(1.65rem, 7vw, 2.2rem); }
+    .pre-footer__inner { gap: 28px; }
+    .pre-footer__cta { width: 100%; justify-content: center; }
     .eventos-grid { grid-template-columns: 1fr; gap: 14px; margin-top: 20px; }
     .evento-card { border-radius: 12px; }
     .evento-img { height: 140px; }
