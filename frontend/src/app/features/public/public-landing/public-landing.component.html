@@ -133,55 +133,53 @@
       <div class="hero__grain"></div>
     </div>
 
-    <div class="hero__grid">
-      <div class="hero__copy">
-        <div class="eyebrow hero__eyebrow">Eje Cafetero · Colombia</div>
-        <h1 class="display-lg hero__title">
-          Piezas con nombre,<br/>
-          con vereda,<br/>
-          <em>con neblina.</em>
-        </h1>
-        <div class="gold-rule hero__rule"></div>
-        <p class="lead hero__lead">
-          Compra directo del taller. Cada maestra, cada maestro, cuenta su historia —
-          y llevas a casa algo con territorio.
-        </p>
-        <div class="hero__ctas">
-          <a href="#coleccion" class="btn btn--primary">Pasa al taller</a>
-          <a href="#maestros" class="btn btn--text btn--text-light">Conoce a los maestros →</a>
+    <div class="hero__center">
+      <div class="eyebrow hero__eyebrow">Eje Cafetero · Colombia</div>
+      <h1 class="hero__title">
+        Piezas con nombre,<br/>
+        con vereda,<br/>
+        <em>con neblina.</em>
+      </h1>
+      <div class="gold-rule hero__rule"></div>
+      <p class="lead hero__lead">
+        Compra directo del taller. Cada maestra, cada maestro, cuenta su historia —
+        y llevas a casa algo con territorio.
+      </p>
+      <div class="hero__ctas">
+        <a href="#coleccion" class="btn btn--primary">Pasa al taller</a>
+        <a href="#maestros" class="btn btn--text btn--text-light">Conoce a los maestros →</a>
+      </div>
+    </div>
+
+    <div class="hero__bottom">
+      <div class="hero__meta">
+        <div class="hero__meta-stat">
+          <div class="hero__metaNum">48</div>
+          <div class="eyebrow hero__metaLabel">maestros</div>
+        </div>
+        <div class="hero__metaDiv"></div>
+        <div class="hero__meta-stat">
+          <div class="hero__metaNum">7</div>
+          <div class="eyebrow hero__metaLabel">municipios</div>
+        </div>
+        <div class="hero__metaDiv"></div>
+        <div class="hero__meta-stat">
+          <div class="hero__metaNum">1.820</div>
+          <div class="eyebrow hero__metaLabel">piezas</div>
         </div>
       </div>
-
-      <div class="hero__side">
-        <div class="hero__caption">
+      <div class="hero__nav">
+        <div class="hero__caption-place">
           <div class="eyebrow hero__captionEyebrow">En el objetivo</div>
           <div class="hero__captionTitle">{{ currentCaption().place }}</div>
-          <div class="hero__captionSub"><em>{{ currentCaption().sub }}</em></div>
-          <div class="hero__dots">
-            @for (_ of photos; track $index) {
-              <button class="hero__dot"
-                      [class.is-on]="$index === heroSlide()"
-                      (click)="setSlide($index)"
-                      [attr.aria-label]="'foto ' + ($index + 1)"></button>
-            }
-          </div>
         </div>
-
-        <div class="hero__meta">
-          <div>
-            <div class="hero__metaNum">48</div>
-            <div class="eyebrow hero__metaLabel">maestros</div>
-          </div>
-          <div class="hero__metaDiv"></div>
-          <div>
-            <div class="hero__metaNum">7</div>
-            <div class="eyebrow hero__metaLabel">municipios</div>
-          </div>
-          <div class="hero__metaDiv"></div>
-          <div>
-            <div class="hero__metaNum">1.820</div>
-            <div class="eyebrow hero__metaLabel">piezas</div>
-          </div>
+        <div class="hero__dots">
+          @for (_ of photos; track $index) {
+            <button class="hero__dot"
+                    [class.is-on]="$index === heroSlide()"
+                    (click)="setSlide($index)"
+                    [attr.aria-label]="'foto ' + ($index + 1)"></button>
+          }
         </div>
       </div>
     </div>
@@ -277,11 +275,9 @@
 
   <!-- ========= COLLECTION ========= -->
   <section id="coleccion" class="section story-reveal">
-    <div class="section__head">
-      <div>
-        <div class="eyebrow">La colección · abril 2026</div>
-        <h2 class="section__title">Del <em>taller</em> a tu casa.</h2>
-      </div>
+    <div class="section__head section__head--centered">
+      <div class="eyebrow">La colección · abril 2026</div>
+      <h2 class="section__title">Del <em>taller</em> a tu casa.</h2>
       <div class="section__filters">
         @for (c of categories(); track c) {
           <button class="tag" [class.is-active]="c === selectedCategory()" (click)="setCategory(c)">
