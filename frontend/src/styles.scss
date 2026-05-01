@@ -320,6 +320,19 @@ body[data-theme="dark"] .public-landing {
   .section--dark {
     background: #0E0B06 !important;
   }
+
+  // Pre-footer: usa --coffee como fondo, que en dark se invierte a crema → fondo propio oscuro
+  .pre-footer {
+    background: #0E0B06 !important;
+    border-top: 1px solid rgba(201, 162, 83, 0.14);
+  }
+  .pre-footer__statement { color: #EDE6D8 !important; }
+
+  // rb-statement em: clay-deep (#6E6152) tiene contraste bajo sobre fondos muy oscuros
+  .rb-statement em { color: var(--gold) !important; }
+
+  // Evento img-wrap placeholder en ferias (--bone ya es #211C16, pero forzamos el wrap)
+  .evento-img-wrap { background: #2C2620 !important; }
 }
 
 // ===== NOISE TEXTURE (SUBTLE) =====
