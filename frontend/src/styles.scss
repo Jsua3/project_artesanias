@@ -991,7 +991,7 @@ code {
 
 .rb-floating-bar__main {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   flex: 1;
   min-width: 0;
 }
@@ -1075,6 +1075,25 @@ code {
 
   body.has-mobile-bar {
     padding-bottom: 76px;
+  }
+}
+
+@media (max-width: 400px) {
+  .rb-floating-bar__item,
+  .rb-floating-bar__action {
+    padding: 6px 2px;
+    font-size: 0.6rem;
+  }
+
+  .rb-floating-bar__item svg,
+  .rb-floating-bar__action svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .rb-floating-bar__action {
+    width: 40px;
+    height: 40px;
   }
 }
 
