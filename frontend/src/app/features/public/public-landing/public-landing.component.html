@@ -63,7 +63,7 @@
   </div>
 </header>
 
-<nav class="rb-floating-bar cliente-bottom-bar" aria-label="Navegacion rapida">
+<nav class="rb-floating-bar cliente-bottom-bar" aria-label="Navegación rápida">
   <div class="rb-floating-bar__main">
     <a class="rb-floating-bar__item" href="#coleccion">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
@@ -147,6 +147,7 @@
       </p>
       <div class="hero__ctas">
         <a href="#coleccion" class="btn btn--primary">Pasa al taller</a>
+        <a routerLink="/disena-tu-pieza" class="btn btn--text btn--text-light">Diseña tu pieza 3D</a>
         <a href="#maestros" class="btn btn--text btn--text-light">Conoce a los maestros →</a>
       </div>
     </div>
@@ -494,7 +495,7 @@
               <time class="evento-fecha">{{ e.fecha | date:'d MMM · yyyy' : undefined : 'es-CO' }}</time>
               <h3 class="evento-titulo">{{ e.titulo }}</h3>
               <p class="evento-ubicacion">{{ e.ubicacion }}</p>
-              <p class="evento-desc">{{ e.descripcion?.substring(0, 110) }}</p>
+              <p class="evento-desc">{{ e.descripcion.substring(0, 110) }}</p>
               <span class="evento-artesano">{{ e.artesanoNombre }}</span>
             </div>
           </article>

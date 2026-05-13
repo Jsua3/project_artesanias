@@ -94,7 +94,9 @@ export class ProductListComponent implements OnInit {
   ngOnInit(): void {
     this.loadProducts();
     this.categoryService.loadAll();
-    this.artesanoService.loadAll();
+    if (this.auth.isAdmin()) {
+      this.artesanoService.loadAll();
+    }
     this.stockService.loadAll();
   }
 

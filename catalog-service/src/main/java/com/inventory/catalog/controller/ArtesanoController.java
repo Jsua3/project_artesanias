@@ -2,10 +2,12 @@ package com.inventory.catalog.controller;
 
 import com.inventory.catalog.dto.ArtesanoRequest;
 import com.inventory.catalog.dto.ArtesanoResponse;
+import com.inventory.catalog.dto.PublicArtesanoResponse;
 import com.inventory.catalog.service.ArtesanoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -23,12 +25,33 @@ public class ArtesanoController {
     }
 
     @GetMapping
-    public Flux<ArtesanoResponse> getAllArtesanos() {
+    public Flux<PublicArtesanoResponse> getAllArtesanos() {
+        return artesanoService.getAllPublicArtesanos();
+    }
+
+    @GetMapping("/admin/all")
+    public Flux<ArtesanoResponse> getAllArtesanosForManagement(
+            @RequestHeader(value = "X-User-Role", defaultValue = "") String userRole) {
+        if (!"ADMIN".equals(userRole)) {
+            return Flux.error(new ResponseStatusException(HttpStatus.FORBIDDEN));
+        }
         return artesanoService.getAllArtesanos();
     }
 
     @GetMapping("/{id}")
-    public Mono<ResponseEntity<ArtesanoResponse>> getArtesano(@PathVariable UUID id) {
+    public Mono<ResponseEntity<PublicArtesanoResponse>> getArtesano(@PathVariable UUID id) {
+        return artesanoService.getPublicArtesano(id)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/admin/{id}")
+    public Mono<ResponseEntity<ArtesanoResponse>> getArtesanoForManagement(
+            @PathVariable UUID id,
+            @RequestHeader(value = "X-User-Role", defaultValue = "") String userRole) {
+        if (!"ADMIN".equals(userRole)) {
+            return Mono.just(ResponseEntity.status(HttpStatus.FORBIDDEN).build());
+        }
         return artesanoService.getArtesano(id)
                 .map(ResponseEntity::ok)
                 .defaultIfEmpty(ResponseEntity.notFound().build());

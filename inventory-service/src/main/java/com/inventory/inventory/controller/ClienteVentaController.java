@@ -9,6 +9,7 @@ import com.stripe.exception.StripeException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -57,7 +58,7 @@ public class ClienteVentaController {
     public Flux<VentaResponse> mias(
             @RequestHeader(value = "X-User-Id", defaultValue = "") String userId) {
         if (userId.isEmpty()) {
-            return Flux.empty();
+            return Flux.error(new ResponseStatusException(HttpStatus.UNAUTHORIZED));
         }
         return ventaService.getVentasByUserAccountId(UUID.fromString(userId));
     }

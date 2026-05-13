@@ -1,0 +1,146 @@
+<section class="review-page">
+  <header class="review-header">
+    <div>
+      <span>Taller personalizado</span>
+      <h1>Disenos IA</h1>
+      <p>Revisa solicitudes creadas por clientes, ajusta su estado y prepara las piezas que pasaran a catalogo o cotizacion final.</p>
+    </div>
+    <div class="review-metrics">
+      <article>
+        <strong>{{ pendingCount() }}</strong>
+        <span>Pendientes</span>
+      </article>
+      <article>
+        <strong>{{ approvedCount() }}</strong>
+        <span>Aprobadas</span>
+      </article>
+    </div>
+  </header>
+
+  @if (loading()) {
+    <div class="state-panel">
+      <mat-progress-spinner diameter="34" mode="indeterminate"></mat-progress-spinner>
+      <p>Cargando solicitudes...</p>
+    </div>
+  } @else if (error(); as msg) {
+    <div class="state-panel">
+      <mat-icon>error_outline</mat-icon>
+      <p>{{ msg }}</p>
+      <button mat-stroked-button type="button" (click)="load()">Reintentar</button>
+    </div>
+  } @else if (!designs().length) {
+    <div class="state-panel">
+      <mat-icon>view_in_ar</mat-icon>
+      <p>No hay solicitudes personalizadas todavia.</p>
+    </div>
+  } @else {
+    <div class="review-layout">
+      <aside class="request-list">
+        @for (design of designs(); track design.id) {
+          <button type="button" class="request-card" [class.is-active]="selected()?.id === design.id" (click)="select(design)">
+            <span [class]="statusClass(design.status)">{{ statusLabel(design.status) }}</span>
+            <strong>{{ design.title }}</strong>
+            <small>{{ design.createdAt | date:'d MMM y, HH:mm' }} · #{{ design.id.slice(0, 8) }}</small>
+          </button>
+        }
+      </aside>
+
+      @if (selected(); as design) {
+        <article class="detail-panel">
+          <div class="detail-head">
+            <div>
+              <span>{{ design.spec.territory }}</span>
+              <h2>{{ design.title }}</h2>
+            </div>
+            <div class="detail-head__side">
+              <strong>{{ formatCurrency(design.estimatedPrice) }}</strong>
+              <a mat-stroked-button [routerLink]="['/disenos-personalizados', design.id]">
+                <mat-icon>open_in_new</mat-icon>
+                Ver ficha
+              </a>
+            </div>
+          </div>
+
+          <p class="story">{{ design.spec.artisanStory }}</p>
+
+          <dl class="spec-grid">
+            <div>
+              <dt>Material</dt>
+              <dd>{{ design.spec.primaryMaterial }}</dd>
+            </div>
+            <div>
+              <dt>Acabado</dt>
+              <dd>{{ design.spec.finish }}</dd>
+            </div>
+            <div>
+              <dt>Complejidad</dt>
+              <dd>{{ design.spec.complexity }}</dd>
+            </div>
+            <div>
+              <dt>Taller</dt>
+              <dd>{{ design.estimatedDays }} dias</dd>
+            </div>
+          </dl>
+
+          <section class="price-box">
+            <h3>Desglose</h3>
+            <div>
+              <span>Base</span><strong>{{ formatCurrency(design.priceBreakdown.basePrice) }}</strong>
+              <span>Materiales</span><strong>{{ formatCurrency(design.priceBreakdown.materialCost) }}</strong>
+              <span>Complejidad</span><strong>{{ formatCurrency(design.priceBreakdown.complexityCost) }}</strong>
+              <span>Tamano</span><strong>{{ formatCurrency(design.priceBreakdown.sizeCost) }}</strong>
+              <span>Acabado</span><strong>{{ formatCurrency(design.priceBreakdown.finishCost) }}</strong>
+            </div>
+          </section>
+
+          @if (design.customerNotes) {
+            <section class="notes-box">
+              <h3>Notas del cliente</h3>
+              <p>{{ design.customerNotes }}</p>
+            </section>
+          }
+
+          <section class="review-form">
+            <mat-form-field appearance="outline">
+              <mat-label>Estado</mat-label>
+              <mat-select [formControl]="statusControl">
+                @for (status of statuses; track status.value) {
+                  <mat-option [value]="status.value">{{ status.label }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Respuesta del taller</mat-label>
+              <textarea matInput rows="4" [formControl]="reviewNotes"></textarea>
+              <mat-hint>Motivo, ajustes solicitados o siguiente paso.</mat-hint>
+            </mat-form-field>
+
+            <div class="actions">
+              <button mat-stroked-button type="button" (click)="copyProductDraft(design)">
+                <mat-icon>content_copy</mat-icon>
+                Copiar ficha
+              </button>
+              <button
+                mat-stroked-button
+                type="button"
+                (click)="createProductFromDesign(design)"
+                [disabled]="design.status !== 'APPROVED_FOR_PRODUCT'">
+                <mat-icon>add_business</mat-icon>
+                Crear producto
+              </button>
+              <button mat-flat-button color="primary" type="button" (click)="saveStatus()" [disabled]="savingId() === design.id || reviewNotes.invalid">
+                @if (savingId() === design.id) {
+                  <mat-progress-spinner diameter="18" mode="indeterminate"></mat-progress-spinner>
+                } @else {
+                  <mat-icon>save</mat-icon>
+                }
+                Guardar revision
+              </button>
+            </div>
+          </section>
+        </article>
+      }
+    </div>
+  }
+</section>

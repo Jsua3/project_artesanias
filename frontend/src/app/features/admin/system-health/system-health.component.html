@@ -1,0 +1,135 @@
+<section class="health-page">
+  <header class="health-hero">
+    <div>
+      <span class="eyebrow">Release interno</span>
+      <h1>Salud del sistema</h1>
+      <p>Estado de servicios, integraciones y checklist tecnico antes de desplegar.</p>
+    </div>
+    <button mat-flat-button type="button" (click)="reload()" [disabled]="loading()">
+      <mat-icon>refresh</mat-icon>
+      Actualizar
+    </button>
+  </header>
+
+  @if (loading() && !snapshot()) {
+    <div class="loading-card">
+      <mat-spinner diameter="40"></mat-spinner>
+      <span>Consultando cabina de control...</span>
+    </div>
+  } @else if (error()) {
+    <div class="error-card">
+      <mat-icon>warning</mat-icon>
+      <span>{{ error() }}</span>
+    </div>
+  } @else if (snapshot(); as health) {
+    <div class="summary-grid">
+      <article class="summary-card main" [ngClass]="statusClass(health.overallStatus)">
+        <span>Semaforo general</span>
+        <strong>{{ statusLabel(health.overallStatus) }}</strong>
+        <small>Version {{ health.gatewayVersion }}</small>
+      </article>
+      <article class="summary-card">
+        <span>Servicios arriba</span>
+        <strong>{{ upServices() }}/{{ totalServices() }}</strong>
+        <small>Healthchecks HTTP</small>
+      </article>
+      <article class="summary-card">
+        <span>Integraciones listas</span>
+        <strong>{{ readyIntegrations() }}/{{ health.integrations.length }}</strong>
+        <small>OpenAI y Stripe</small>
+      </article>
+      <article class="summary-card" [class.is-bad]="failedChecks() > 0">
+        <span>Bloqueos release</span>
+        <strong>{{ failedChecks() }}</strong>
+        <small>{{ health.generatedAt | date:'medium' }}</small>
+      </article>
+    </div>
+
+    <div class="content-grid">
+      <section class="glass-panel services-panel">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">Infraestructura</span>
+            <h2>Servicios</h2>
+          </div>
+          @if (loading()) {
+            <mat-spinner diameter="22"></mat-spinner>
+          }
+        </div>
+
+        <div class="service-list">
+          @for (service of health.services; track trackByName($index, service)) {
+            <article class="service-row" [ngClass]="statusClass(service.status)">
+              <div class="service-icon">
+                <mat-icon>{{ serviceIcon(service) }}</mat-icon>
+              </div>
+              <div class="service-main">
+                <div class="service-title">
+                  <strong>{{ service.name }}</strong>
+                  <span>{{ service.kind }}</span>
+                </div>
+                <p>{{ service.message }}</p>
+                <code>{{ service.url }}</code>
+              </div>
+              <div class="service-meta">
+                <span class="status-pill">{{ statusLabel(service.status) }}</span>
+                <small>{{ service.httpStatus || 'sin HTTP' }} · {{ service.responseTimeMs }}ms</small>
+              </div>
+            </article>
+          }
+        </div>
+      </section>
+
+      <aside class="side-stack">
+        <section class="glass-panel">
+          <div class="section-head compact">
+            <div>
+              <span class="eyebrow">Integraciones</span>
+              <h2>Llaves y pagos</h2>
+            </div>
+          </div>
+
+          <div class="integration-list">
+            @for (integration of health.integrations; track trackByName($index, integration)) {
+              <article class="integration-card" [ngClass]="statusClass(integration.status)">
+                <div class="integration-top">
+                  <strong>{{ integration.name }}</strong>
+                  <span class="status-pill">{{ integration.configured ? 'Configurado' : 'Pendiente' }}</span>
+                </div>
+                <p>{{ integration.detail }}</p>
+                @if (integrationMeta(integration).length) {
+                  <ul>
+                    @for (meta of integrationMeta(integration); track meta) {
+                      <li>{{ meta }}</li>
+                    }
+                  </ul>
+                }
+              </article>
+            }
+          </div>
+        </section>
+
+        <section class="glass-panel">
+          <div class="section-head compact">
+            <div>
+              <span class="eyebrow">Checklist</span>
+              <h2>Release</h2>
+            </div>
+          </div>
+
+          <div class="check-list">
+            @for (check of health.releaseChecklist; track trackById($index, check)) {
+              <article class="check-row" [ngClass]="statusClass(check.status)">
+                <mat-icon>{{ checkIcon(check) }}</mat-icon>
+                <div>
+                  <strong>{{ check.label }}</strong>
+                  <p>{{ check.detail }}</p>
+                </div>
+              </article>
+            }
+          </div>
+        </section>
+      </aside>
+    </div>
+  }
+</section>

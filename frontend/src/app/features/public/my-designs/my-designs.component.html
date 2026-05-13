@@ -1,0 +1,102 @@
+<main class="my-designs-page">
+  <header class="my-designs-hero">
+    <a routerLink="/" class="back-link">
+      <mat-icon>arrow_back</mat-icon>
+      Volver a Rebeca
+    </a>
+    <div>
+      <span>Encargos personalizados</span>
+      <h1>Mis disenos</h1>
+      <p>Consulta las piezas que creaste con el agente 3D y su estado de revision en el taller.</p>
+    </div>
+    <a mat-flat-button color="primary" routerLink="/disena-tu-pieza">
+      <mat-icon>add</mat-icon>
+      Nuevo diseno
+    </a>
+  </header>
+
+  @if (loading()) {
+    <section class="state-card">
+      <mat-progress-spinner diameter="34" mode="indeterminate"></mat-progress-spinner>
+      <p>Cargando tus disenos...</p>
+    </section>
+  } @else if (error(); as msg) {
+    <section class="state-card">
+      <mat-icon>error_outline</mat-icon>
+      <p>{{ msg }}</p>
+      <button mat-stroked-button type="button" (click)="load()">Reintentar</button>
+    </section>
+  } @else if (!designs().length) {
+    <section class="state-card">
+      <mat-icon>view_in_ar</mat-icon>
+      <p>Aun no tienes disenos personalizados.</p>
+      <a mat-stroked-button routerLink="/disena-tu-pieza">Crear primera pieza</a>
+    </section>
+  } @else {
+    @if (notifications().length) {
+      <section class="notifications-panel">
+        <div class="notifications-panel__head">
+          <div>
+            <span>Novedades del taller</span>
+            <strong>{{ unreadCount() }} sin leer</strong>
+          </div>
+          @if (unreadCount() > 0) {
+            <button mat-stroked-button type="button" (click)="markAllRead()">Marcar leidas</button>
+          }
+        </div>
+        <div class="notification-list">
+          @for (notification of notifications().slice(0, 3); track notification.id) {
+            <a [routerLink]="notificationLink(notification)" class="notification-item" [class.is-unread]="!notification.read">
+              <mat-icon>{{ notification.read ? 'mark_email_read' : 'notifications_active' }}</mat-icon>
+              <div>
+                <strong>{{ notification.title }}</strong>
+                <p>{{ notification.message }}</p>
+                <small>{{ notification.createdAt | date:'d MMM y, HH:mm' }}</small>
+              </div>
+            </a>
+          }
+        </div>
+      </section>
+    }
+
+    <section class="design-list">
+      @for (design of designs(); track design.id) {
+        <article class="design-row">
+          @if (design.previewImageBase64) {
+            <img class="mini-preview mini-preview--image" [src]="'data:' + (design.previewMimeType || 'image/png') + ';base64,' + design.previewImageBase64" alt="Boceto del diseno">
+          } @else {
+            <div class="mini-preview" [style.--shape-color]="design.spec.threeD.materialColor" [style.--shape-accent]="design.spec.threeD.accentColor">
+              <span></span>
+            </div>
+          }
+          <div class="design-main">
+            <div class="design-main__top">
+              <span>{{ design.createdAt | date:'d MMM y, HH:mm' }}</span>
+              <strong [class]="statusClass(design.status)">{{ statusLabel(design.status) }}</strong>
+            </div>
+            <h2>{{ design.title }}</h2>
+            <p>{{ design.spec.primaryMaterial }} - {{ design.spec.finish }} - {{ design.spec.territory }}</p>
+            @if (hasCustomerAlert(design)) {
+              <small class="alert-line">
+                <mat-icon>notifications_active</mat-icon>
+                Hay novedades del taller
+              </small>
+            }
+            @if (design.customerNotes) {
+              <small>Notas: {{ design.customerNotes }}</small>
+            }
+            @if (design.reviewNotes) {
+              <small>Respuesta del taller: {{ design.reviewNotes }}</small>
+            }
+          </div>
+          <div class="design-price">
+            <strong>{{ formatCurrency(design.estimatedPrice) }}</strong>
+            <span>{{ design.estimatedDays }} dias</span>
+            <code>#{{ design.id.slice(0, 8) }}</code>
+            <a mat-stroked-button [routerLink]="['/mis-disenos', design.id]">Ver ficha</a>
+          </div>
+        </article>
+      }
+    </section>
+  }
+</main>

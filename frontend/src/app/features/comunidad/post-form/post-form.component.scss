@@ -1,4 +1,6 @@
 /* ─── Variables ────────────────────────────────────────────────────────── */
+@use 'sass:color';
+
 $terracota: #A67C52;
 $crema:     #F5F0E8;
 $dark:      #2d2a26;
@@ -114,7 +116,7 @@ $warn:      #c87b2a;
 
   &::placeholder { color: rgba(107, 98, 89, 0.45); }
 
-  &.has-error { color: lighten($error, 10%); }
+  &.has-error { color: color.adjust($error, $lightness: 10%); }
 
   &:focus ~ .textarea-border { opacity: 1; transform: scaleX(1); }
 }
@@ -267,7 +269,7 @@ $warn:      #c87b2a;
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: linear-gradient(135deg, $terracota 0%, darken($terracota, 12%) 100%) !important;
+  background: linear-gradient(135deg, $terracota 0%, color.adjust($terracota, $lightness: -12%) 100%) !important;
   color: #fff !important;
   border-radius: 999px !important;
   height: 40px !important;

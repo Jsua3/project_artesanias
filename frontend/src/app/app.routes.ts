@@ -24,6 +24,21 @@ const PUBLIC_ROUTES: Routes = [
     loadComponent: () => import('./features/public/checkout/checkout.component').then(m => m.CheckoutComponent)
   },
   {
+    path: 'disena-tu-pieza',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/public/ai-designer/ai-designer.component').then(m => m.AiDesignerComponent)
+  },
+  {
+    path: 'mis-disenos',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/public/my-designs/my-designs.component').then(m => m.MyDesignsComponent)
+  },
+  {
+    path: 'mis-disenos/:id',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/custom-designs/custom-design-detail.component').then(m => m.CustomDesignDetailComponent)
+  },
+  {
     path: 'mis-pedidos',
     canActivate: [authGuard],
     loadComponent: () => import('./features/public/mis-pedidos/mis-pedidos-list.component').then(m => m.MisPedidosListComponent)
@@ -70,6 +85,16 @@ const SHELL_ROUTES: Routes = [
     path: 'products',
     canActivate: [roleGuard(['ADMIN', 'ARTESANO'])],
     loadComponent: () => import('./features/products/product-list/product-list.component').then(m => m.ProductListComponent)
+  },
+  {
+    path: 'disenos-personalizados',
+    canActivate: [roleGuard(['ADMIN', 'ARTESANO'])],
+    loadComponent: () => import('./features/custom-designs/custom-design-review.component').then(m => m.CustomDesignReviewComponent)
+  },
+  {
+    path: 'disenos-personalizados/:id',
+    canActivate: [roleGuard(['ADMIN', 'ARTESANO'])],
+    loadComponent: () => import('./features/custom-designs/custom-design-detail.component').then(m => m.CustomDesignDetailComponent)
   },
   {
     path: 'categories',
@@ -190,6 +215,10 @@ const SHELL_ROUTES: Routes = [
       {
         path: 'moderacion',
         loadComponent: () => import('./features/comunidad/moderacion/moderacion.component').then(m => m.ModeracionComponent)
+      },
+      {
+        path: 'system-health',
+        loadComponent: () => import('./features/admin/system-health/system-health.component').then(m => m.SystemHealthComponent)
       },
       {
         path: 'database',

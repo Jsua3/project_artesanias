@@ -35,8 +35,10 @@ for i in $(seq 1 30); do
 done
 
 # ----------------------------------------------------------------------------
-# 2. Registrar usuarios (si no existen). El endpoint POST /api/auth/register
-#    es público y acepta el campo "role" tal cual viene en el body.
+# 2. Registrar usuarios (si no existen). Los clientes y maestros pasan por el
+#    endpoint público para validar el flujo real. El admin se siembra directo
+#    en auth_db porque la app bloquea correctamente el registro público de
+#    administradores.
 # ----------------------------------------------------------------------------
 register_user() {
     username="$1"
@@ -65,9 +67,50 @@ register_user() {
 }
 
 log "Registrando usuarios..."
-register_user "seed.admin"   "admin123"   "ADMIN"    "Admin Seed"
 register_user "seed.cliente" "cliente123" "CLIENTE"  "Cliente Seed"
 register_user "seed.maestro" "maestro123" "MAESTRO"  "Maestro Seed"
+
+ensure_admin_user() {
+    admin_id=$(cat /proc/sys/kernel/random/uuid)
+    admin_hash='$2a$10$6HxHpkDQ/6skjmzxikVihe8o8yZDk/mUE6nmUpleoGOMziCmpl./m'
+
+    psql -d auth_db -v ON_ERROR_STOP=1 <<EOSQL
+INSERT INTO user_accounts (
+    id,
+    username,
+    password_hash,
+    role,
+    approval_status,
+    display_name,
+    created_at,
+    approved_at,
+    profile_complete
+)
+VALUES (
+    '$admin_id',
+    'seed.admin',
+    '$admin_hash',
+    'ADMIN',
+    'APPROVED',
+    'Admin Seed',
+    NOW(),
+    NOW(),
+    TRUE
+)
+ON CONFLICT (username) DO UPDATE
+SET
+    password_hash = EXCLUDED.password_hash,
+    role = 'ADMIN',
+    approval_status = 'APPROVED',
+    display_name = COALESCE(user_accounts.display_name, EXCLUDED.display_name),
+    approved_at = COALESCE(user_accounts.approved_at, NOW()),
+    profile_complete = TRUE;
+EOSQL
+
+    log "  seed.admin (ADMIN) asegurado en auth_db."
+}
+
+ensure_admin_user
 
 # ----------------------------------------------------------------------------
 # 3. Leer UUIDs reales desde auth_db.
@@ -120,9 +163,9 @@ cat <<EOF
 ==================================================================
  Seed OK. Credenciales de prueba:
 
-   admin    / admin123     (rol ADMIN)
-   cliente  / cliente123   (rol CLIENTE)
-   maestro  / maestro123   (rol MAESTRO, vinculado a 1 artesano)
+   seed.admin   / admin123     (rol ADMIN)
+   seed.cliente / cliente123   (rol CLIENTE)
+   seed.maestro / maestro123   (rol MAESTRO, vinculado a 1 artesano)
 
  Frontend: http://localhost
  Gateway : http://localhost:8080

@@ -106,11 +106,10 @@
       >
         @if (submitting) {
           <mat-progress-spinner mode="indeterminate" diameter="18" />
-          Publicando…
         } @else {
           <mat-icon>send</mat-icon>
-          Publicar
         }
+        <span>{{ submitting ? 'Publicando...' : 'Publicar' }}</span>
       </button>
     </div>
   </div>

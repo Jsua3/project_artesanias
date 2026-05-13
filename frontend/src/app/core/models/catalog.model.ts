@@ -3,15 +3,11 @@ export interface Product {
   id: string;
   name: string;
   description?: string | null;
-  sku?: string | null;
   price: number;
   imageUrl?: string | null;
-  stockMinimo?: number | null;
   categoryId?: string | null;
+  categoryIds?: string[];
   artesanoId?: string | null;
-  active: boolean;
-  createdAt?: string;
-  updatedAt?: string;
 }
 
 /** Respuesta de /api/categories (público, GET). */
@@ -26,13 +22,9 @@ export interface Category {
 export interface Artesano {
   id: string;
   nombre: string;
-  telefono?: string | null;
-  email?: string | null;
   especialidad?: string | null;
   ubicacion?: string | null;
   imageUrl?: string | null;
-  active?: boolean;
-  createdAt?: string;
 }
 
 /** Respuesta de /api/stock/{productId}. */

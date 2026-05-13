@@ -6,6 +6,7 @@ import com.inventory.inventory.service.ClienteService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -25,7 +26,7 @@ public class ClienteController {
     public Flux<ClienteResponse> getAllClientes(
             @RequestHeader(value = "X-User-Role", defaultValue = "") String userRole) {
         if (!"ADMIN".equals(userRole)) {
-            return Flux.empty();
+            return Flux.error(new ResponseStatusException(HttpStatus.FORBIDDEN));
         }
         return clienteService.getAllClientes();
     }

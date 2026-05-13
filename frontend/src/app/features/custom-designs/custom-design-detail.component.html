@@ -1,0 +1,150 @@
+<main class="design-detail-page">
+  <a mat-stroked-button [routerLink]="backLink()" class="back-link">
+    <mat-icon>arrow_back</mat-icon>
+    Volver
+  </a>
+
+  @if (loading()) {
+    <section class="state-panel">
+      <mat-progress-spinner diameter="34" mode="indeterminate"></mat-progress-spinner>
+      <p>Cargando detalle...</p>
+    </section>
+  } @else if (error(); as msg) {
+    <section class="state-panel">
+      <mat-icon>error_outline</mat-icon>
+      <p>{{ msg }}</p>
+    </section>
+  } @else if (design(); as item) {
+    <section class="detail-hero">
+      <div>
+        <span class="eyebrow">{{ item.spec.territory }}</span>
+        <h1>{{ item.title }}</h1>
+        <p>{{ item.spec.artisanStory }}</p>
+        <div class="hero-meta">
+          <strong [class]="statusClass(item.status)">{{ statusLabel(item.status) }}</strong>
+          <code>#{{ item.id.slice(0, 8) }}</code>
+          <span>{{ item.createdAt | date:'d MMM y, HH:mm' }}</span>
+        </div>
+      </div>
+      <aside class="quote-card">
+        <span>Cotizacion estimada</span>
+        <strong>{{ formatCurrency(item.estimatedPrice) }}</strong>
+        <small>{{ item.estimatedDays }} dias de taller</small>
+      </aside>
+    </section>
+
+    @if (customerAlert(item); as alert) {
+      <section class="customer-alert">
+        <mat-icon>notifications_active</mat-icon>
+        <span>{{ alert }}</span>
+      </section>
+    }
+
+    <section class="detail-grid">
+      <article class="preview-panel">
+        @if (previewDataUrl(item); as image) {
+          <img [src]="image" alt="Boceto visual del encargo">
+        } @else {
+          <div class="preview-stage">
+            <div class="preview-floor"></div>
+            <div [class]="previewClass(item)" [ngStyle]="previewStyle(item)">
+              <span class="preview-object__band preview-object__band--top"></span>
+              <span class="preview-object__band preview-object__band--middle"></span>
+              <span class="preview-object__band preview-object__band--bottom"></span>
+            </div>
+          </div>
+        }
+        @if (item.previewPrompt) {
+          <p class="preview-prompt">{{ item.previewPrompt }}</p>
+        }
+      </article>
+
+      <article class="info-panel">
+        <h2>Ficha tecnica</h2>
+        <dl class="spec-grid">
+          <div>
+            <dt>Tipo</dt>
+            <dd>{{ item.productType }}</dd>
+          </div>
+          <div>
+            <dt>Material principal</dt>
+            <dd>{{ item.spec.primaryMaterial }}</dd>
+          </div>
+          <div>
+            <dt>Materiales secundarios</dt>
+            <dd>{{ item.spec.secondaryMaterials.join(', ') || 'Sin secundarios' }}</dd>
+          </div>
+          <div>
+            <dt>Acabado</dt>
+            <dd>{{ item.spec.finish }}</dd>
+          </div>
+          <div>
+            <dt>Patron</dt>
+            <dd>{{ item.spec.pattern }}</dd>
+          </div>
+          <div>
+            <dt>Complejidad</dt>
+            <dd>{{ item.spec.complexity }}</dd>
+          </div>
+        </dl>
+
+        <h3>Medidas</h3>
+        <dl class="measure-grid">
+          <div><dt>Alto</dt><dd>{{ item.spec.dimensions.heightCm }} cm</dd></div>
+          <div><dt>Ancho</dt><dd>{{ item.spec.dimensions.widthCm }} cm</dd></div>
+          <div><dt>Fondo</dt><dd>{{ item.spec.dimensions.depthCm }} cm</dd></div>
+          <div><dt>Diametro</dt><dd>{{ item.spec.dimensions.diameterCm }} cm</dd></div>
+        </dl>
+
+        <h3>Paleta</h3>
+        <div class="swatches">
+          @for (color of item.spec.colorPalette; track color) {
+            <span [style.background]="color" [title]="color"></span>
+          }
+        </div>
+      </article>
+    </section>
+
+    <section class="lower-grid">
+      <article class="price-panel">
+        <h2>Desglose completo</h2>
+        <ul>
+          @for (price of priceItems(item); track price.label) {
+            <li>
+              <span>{{ price.label }}</span>
+              <strong>{{ formatCurrency(price.value) }}</strong>
+            </li>
+          }
+          <li class="total">
+            <span>Total estimado</span>
+            <strong>{{ formatCurrency(item.priceBreakdown.total) }}</strong>
+          </li>
+        </ul>
+        @for (note of item.priceBreakdown.pricingNotes; track note) {
+          <p>{{ note }}</p>
+        }
+      </article>
+
+      <article class="steps-panel">
+        <h2>Ruta de fabricacion</h2>
+        <ol>
+          @for (step of item.spec.makingSteps; track step) {
+            <li>{{ step }}</li>
+          }
+        </ol>
+      </article>
+
+      <article class="notes-panel">
+        <h2>Notas</h2>
+        <div>
+          <span>Cliente</span>
+          <p>{{ item.customerNotes || 'Sin notas del cliente.' }}</p>
+        </div>
+        <div>
+          <span>Taller</span>
+          <p>{{ item.reviewNotes || 'El taller aun no ha dejado respuesta.' }}</p>
+        </div>
+      </article>
+    </section>
+  }
+</main>

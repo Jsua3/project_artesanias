@@ -1,0 +1,190 @@
+<main class="designer-page">
+  <section class="designer-hero">
+    <a routerLink="/" class="back-link">
+      <mat-icon>arrow_back</mat-icon>
+      Volver a Rebeca
+    </a>
+    <a routerLink="/mis-disenos" class="my-designs-link">
+      <mat-icon>inventory_2</mat-icon>
+      Mis disenos
+    </a>
+    <div class="designer-hero__copy">
+      <span class="eyebrow">Agente de diseño 3D</span>
+      <h1>Diseña una pieza artesanal a tu medida.</h1>
+      <p>
+        Conversa con el taller inteligente de Rebeca. El agente convierte tu idea en una ficha fabricable,
+        una historia de oficio y un preview 3D parametrico para cotizar con artesanos.
+      </p>
+    </div>
+  </section>
+
+  <section class="designer-workbench">
+    <aside class="chat-panel">
+      <div class="chat-panel__messages">
+        @for (message of messages(); track trackMessage($index)) {
+          <article class="message" [class.message--client]="message.role === 'cliente'">
+            <span>{{ message.role === 'cliente' ? 'Tu' : 'Agente Rebecca' }}</span>
+            <p>{{ message.text }}</p>
+          </article>
+        }
+      </div>
+
+      <div class="suggestions">
+        <button type="button" (click)="useSuggestion('Quiero una vasija de barro negro para comedor, sobria, con detalles dorados.')">
+          Vasija sobria
+        </button>
+        <button type="button" (click)="useSuggestion('Diseña una bandeja de madera y fique para servir cafe, inspirada en Salento.')">
+          Bandeja cafetera
+        </button>
+        <button type="button" (click)="useSuggestion('Quiero una matera artesanal pequeña para escritorio, con patron de palma de cera.')">
+          Matera pequena
+        </button>
+      </div>
+
+      <div class="composer">
+        <mat-form-field appearance="outline">
+          <mat-label>Describe tu pieza</mat-label>
+          <textarea matInput rows="4" [formControl]="prompt"></textarea>
+          <mat-hint>Material, uso, tamaño, color, presupuesto o territorio.</mat-hint>
+        </mat-form-field>
+        <button mat-flat-button color="primary" type="button" (click)="send()" [disabled]="loading() || prompt.invalid">
+          @if (loading()) {
+            <mat-spinner diameter="18"></mat-spinner>
+          } @else {
+            <mat-icon>auto_awesome</mat-icon>
+          }
+          Diseñar
+        </button>
+      </div>
+
+      @if (error(); as msg) {
+        <p class="error-text">{{ msg }}</p>
+      }
+    </aside>
+
+    <section class="preview-panel">
+      <div class="preview-stage">
+        @if (previewImage(); as image) {
+          <img class="generated-preview" [src]="image" alt="Boceto generado por IA">
+        } @else {
+          <div class="preview-floor"></div>
+          <div [class]="previewClass()" [ngStyle]="previewStyle()">
+            <span class="preview-object__band preview-object__band--top"></span>
+            <span class="preview-object__band preview-object__band--middle"></span>
+            <span class="preview-object__band preview-object__band--bottom"></span>
+          </div>
+        }
+      </div>
+
+      @if (spec(); as design) {
+        <div class="design-card">
+          <div class="design-card__head">
+            <span>{{ design.territory }}</span>
+            <strong>{{ previewSource() === 'openai' ? 'OpenAI' : 'Modo local' }}</strong>
+          </div>
+          <h2>{{ design.title }}</h2>
+          <p>{{ design.artisanStory }}</p>
+
+          <div class="swatches">
+            @for (color of design.colorPalette; track color) {
+              <span [style.background]="color"></span>
+            }
+          </div>
+
+          <dl class="spec-grid">
+            <div>
+              <dt>Material</dt>
+              <dd>{{ design.primaryMaterial }}</dd>
+            </div>
+            <div>
+              <dt>Acabado</dt>
+              <dd>{{ design.finish }}</dd>
+            </div>
+            <div>
+              <dt>Medidas</dt>
+              <dd>{{ design.dimensions.heightCm }} x {{ design.dimensions.widthCm }} cm</dd>
+            </div>
+            <div>
+              <dt>Estimado</dt>
+              <dd>{{ priceLabel() }}</dd>
+            </div>
+            <div>
+              <dt>Complejidad</dt>
+              <dd>{{ design.complexity }}</dd>
+            </div>
+            <div>
+              <dt>Taller</dt>
+              <dd>{{ design.estimatedDays }} dias</dd>
+            </div>
+          </dl>
+
+          @if (design.priceBreakdown; as price) {
+            <div class="price-breakdown">
+              <div class="price-breakdown__head">
+                <span>Precio variable</span>
+                <strong>{{ formatCurrency(price.total) }}</strong>
+              </div>
+              <ul>
+                @for (item of priceItems(); track item.label) {
+                  <li>
+                    <span>{{ item.label }}</span>
+                    <strong>{{ formatCurrency(item.value) }}</strong>
+                  </li>
+                }
+              </ul>
+              <p>{{ price.pricingNotes[0] }}</p>
+            </div>
+          }
+
+          <div class="steps">
+            <h3>Ruta de fabricación</h3>
+            <ol>
+              @for (step of design.makingSteps; track step) {
+                <li>{{ step }}</li>
+              }
+            </ol>
+          </div>
+
+          <button mat-stroked-button type="button" (click)="generatePreview()" [disabled]="previewLoading()">
+            @if (previewLoading()) {
+              <mat-spinner diameter="18"></mat-spinner>
+            } @else {
+              <mat-icon>image</mat-icon>
+            }
+            Generar boceto visual
+          </button>
+
+          <div class="confirm-box">
+            <mat-form-field appearance="outline">
+              <mat-label>Notas para el taller</mat-label>
+              <textarea matInput rows="3" [formControl]="customerNotes"></textarea>
+              <mat-hint>Presupuesto, uso, fecha ideal o cambios finales.</mat-hint>
+            </mat-form-field>
+
+            @if (savedDesign(); as saved) {
+              <div class="saved-state">
+                <mat-icon>task_alt</mat-icon>
+                <span>Producto personalizado {{ saved.id.slice(0, 8) }} creado para cotizacion.</span>
+              </div>
+            } @else {
+              <button mat-flat-button color="primary" type="button" (click)="confirmDesign()" [disabled]="confirming() || customerNotes.invalid">
+                @if (confirming()) {
+                  <mat-spinner diameter="18"></mat-spinner>
+                } @else {
+                  <mat-icon>add_shopping_cart</mat-icon>
+                }
+                Crear producto personalizado
+              </button>
+            }
+          </div>
+        </div>
+      } @else {
+        <div class="empty-state">
+          <mat-icon>view_in_ar</mat-icon>
+          <h2>Tu preview aparecera aqui</h2>
+          <p>Empieza con una idea. El agente generara forma, materiales, color y dimensiones.</p>
+        </div>
+      }
+    </section>
+  </section>
+</main>

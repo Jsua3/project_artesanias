@@ -100,7 +100,7 @@ export class PublicLandingComponent implements OnInit, AfterViewInit, OnDestroy 
     {
       src: '/assets/territorio/filandia/filandia4.jpg',
       position: 'center 50%',
-      caption: { place: 'Mirador de Filandia', sub: 'montana, viento y camino' }
+      caption: { place: 'Mirador de Filandia', sub: 'montaña, viento y camino' }
     },
     {
       src: '/assets/territorio/filandia/filandia5.jpeg',
@@ -115,7 +115,7 @@ export class PublicLandingComponent implements OnInit, AfterViewInit, OnDestroy 
     {
       src: '/assets/territorio/salento/salento1.jpg',
       position: 'center 48%',
-      caption: { place: 'Salento, Quindio', sub: 'neblina, cafe y palma' }
+      caption: { place: 'Salento, Quindío', sub: 'neblina, café y palma' }
     },
     {
       src: '/assets/territorio/salento/salento2.jpg',
@@ -138,11 +138,11 @@ export class PublicLandingComponent implements OnInit, AfterViewInit, OnDestroy 
   /** Piezas finalmente mostradas: empiezan como mock y se sustituyen por las del API si existen. */
   readonly piezas = signal<Pieza[]>([
     { id: 'mock-1', name: 'Vasija de barro quemado', maestro: 'Doña Rosa Elvira', town: 'Pijao',    price: 180000, category: 'Alfarería', img: '/assets/placeholder-vasija.svg', status: 'available', description: 'Barro local trabajado a torno y terminado con fuego lento.' },
-    { id: 'mock-2', name: 'Ruana de lana virgen',    maestro: 'Dña Carmen Tulia',  town: 'Salento',  price: 320000, category: 'Tejido',    img: '/assets/placeholder-tejido.svg', status: 'lowstock', description: 'Lana tejida en telar familiar, pensada para clima de montana.' },
+    { id: 'mock-2', name: 'Ruana de lana virgen',    maestro: 'Doña Carmen Tulia', town: 'Salento',  price: 320000, category: 'Tejido',    img: '/assets/placeholder-tejido.svg', status: 'lowstock', description: 'Lana tejida en telar familiar, pensada para clima de montaña.' },
     { id: 'mock-3', name: 'Cesto en fique y guadua', maestro: 'Don Hernán Ospina', town: 'Filandia', price: 145000, category: 'Guadua',    img: '/assets/placeholder-vasija.svg', status: 'available', description: 'Fibras firmes de uso diario con ensambles hechos a mano.' },
     { id: 'mock-4', name: 'Camino de mesa tejido',   maestro: 'Doña Ana Lucía',    town: 'Circasia', price:  95000, category: 'Textil',    img: '/assets/placeholder-tejido.svg', status: 'available', description: 'Trama textil para vestir la mesa con color cafetero.' },
     { id: 'mock-5', name: 'Cuenco torneado',         maestro: 'Don Javier Correa', town: 'Calarcá',  price:  72000, category: 'Madera',    img: '/assets/placeholder-vasija.svg', status: 'available', description: 'Madera pulida y sellada para conservar su veta natural.' },
-    { id: 'mock-6', name: 'Tapete urdido a mano',    maestro: 'Doña Gloria Mejía', town: 'Armenia',  price: 420000, category: 'Textil',    img: '/assets/placeholder-tejido.svg', status: 'sold', description: 'Pieza de telar con urdimbre densa y patron unico.' }
+    { id: 'mock-6', name: 'Tapete urdido a mano',    maestro: 'Doña Gloria Mejía', town: 'Armenia',  price: 420000, category: 'Textil',    img: '/assets/placeholder-tejido.svg', status: 'sold', description: 'Pieza de telar con urdimbre densa y patrón único.' }
   ]);
 
   readonly maestros = signal<Maestro[]>([
@@ -169,17 +169,17 @@ export class PublicLandingComponent implements OnInit, AfterViewInit, OnDestroy 
       material: 'Barro',
       title: 'Pulso y fuego',
       text: 'Arcilla modelada despacio, secada al aire y terminada con quemas que dejan marcas irrepetibles.',
-      meta: 'Alfareria'
+      meta: 'Alfarería'
     },
     {
       material: 'Fique',
       title: 'Fibra que sostiene',
       text: 'Tramas firmes para canastos, bolsos y piezas utilitarias nacidas de manos campesinas.',
-      meta: 'Cesteria'
+      meta: 'Cestería'
     },
     {
       material: 'Guadua',
-      title: 'Arquitectura pequena',
+      title: 'Arquitectura pequeña',
       text: 'Cortes, ensambles y curvaturas que convierten una planta del paisaje en objeto de casa.',
       meta: 'Talla y estructura'
     },
@@ -282,7 +282,6 @@ export class PublicLandingComponent implements OnInit, AfterViewInit, OnDestroy 
       const artTown = new Map(artesanos.map(a => [a.id, a.ubicacion ?? '']));
 
       const mapped: Pieza[] = products
-        .filter(p => p.active)
         .map(p => {
           const category = (p.categoryId && catName.get(p.categoryId)) || 'Otras';
           const maestro  = (p.artesanoId && artName.get(p.artesanoId)) || '—';

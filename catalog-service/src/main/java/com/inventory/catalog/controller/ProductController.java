@@ -3,10 +3,12 @@ package com.inventory.catalog.controller;
 import com.inventory.catalog.dto.ProductRequest;
 import com.inventory.catalog.dto.ProductResponse;
 import com.inventory.catalog.dto.ProductStatusUpdateRequest;
+import com.inventory.catalog.dto.PublicProductResponse;
 import com.inventory.catalog.service.ProductService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -23,8 +25,8 @@ public class ProductController {
     }
 
     @GetMapping
-    public Flux<ProductResponse> getAllProducts() {
-        return productService.getAllProducts();
+    public Flux<PublicProductResponse> getAllProducts() {
+        return productService.getAllPublicProducts();
     }
 
     @GetMapping("/admin/all")
@@ -32,7 +34,7 @@ public class ProductController {
             @RequestHeader(value = "X-User-Role", defaultValue = "") String userRole,
             @RequestHeader(value = "X-User-Id", required = false) String userId) {
         if (!canManageProducts(userRole)) {
-            return Flux.empty();
+            return Flux.error(new ResponseStatusException(HttpStatus.FORBIDDEN));
         }
         if ("ARTESANO".equals(userRole) && userId != null) {
             return productService.getAllProductsForArtesano(UUID.fromString(userId));
@@ -41,20 +43,20 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public Mono<ResponseEntity<ProductResponse>> getProduct(@PathVariable UUID id) {
-        return productService.getProduct(id)
+    public Mono<ResponseEntity<PublicProductResponse>> getProduct(@PathVariable UUID id) {
+        return productService.getPublicProduct(id)
                 .map(ResponseEntity::ok)
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/category/{categoryId}")
-    public Flux<ProductResponse> getProductsByCategory(@PathVariable UUID categoryId) {
-        return productService.getProductsByCategory(categoryId);
+    public Flux<PublicProductResponse> getProductsByCategory(@PathVariable UUID categoryId) {
+        return productService.getPublicProductsByCategory(categoryId);
     }
 
     @GetMapping("/artesano/{artesanoId}")
-    public Flux<ProductResponse> getProductsByArtesano(@PathVariable UUID artesanoId) {
-        return productService.getProductsByArtesano(artesanoId);
+    public Flux<PublicProductResponse> getProductsByArtesano(@PathVariable UUID artesanoId) {
+        return productService.getPublicProductsByArtesano(artesanoId);
     }
 
     @GetMapping("/admin/artesano/{artesanoId}")
@@ -62,7 +64,7 @@ public class ProductController {
             @PathVariable UUID artesanoId,
             @RequestHeader(value = "X-User-Role", defaultValue = "") String userRole) {
         if (!canManageProducts(userRole)) {
-            return Flux.empty();
+            return Flux.error(new ResponseStatusException(HttpStatus.FORBIDDEN));
         }
         return productService.getProductsByArtesanoForManagement(artesanoId);
     }

@@ -1,0 +1,80 @@
+server:
+  port: 8085
+
+spring:
+  application:
+    name: ai-service
+  r2dbc:
+    url: r2dbc:postgresql://${DB_HOST:localhost}:5432/ai_db
+    username: ${DB_USER:postgres}
+    password: ${DB_PASSWORD}
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:db/schema.sql
+
+security:
+  jwt:
+    internal-token: ${INTERNAL_TOKEN}
+
+openai:
+  api-key: ${OPENAI_API_KEY:}
+  model: ${OPENAI_DESIGN_MODEL:gpt-5-mini}
+  image-model: ${OPENAI_IMAGE_MODEL:gpt-image-1}
+  base-url: ${OPENAI_BASE_URL:https://api.openai.com/v1}
+
+pricing:
+  design:
+    secondary-material-factor: ${AI_PRICING_SECONDARY_FACTOR:0.35}
+    size-multiplier: ${AI_PRICING_SIZE_MULTIPLIER:900}
+    max-size-cost: ${AI_PRICING_MAX_SIZE_COST:95000}
+    base-prices:
+      lamp: ${AI_PRICE_BASE_LAMP:90000}
+      lampara: ${AI_PRICE_BASE_LAMP:90000}
+      basket: ${AI_PRICE_BASE_BASKET:60000}
+      canasto: ${AI_PRICE_BASE_BASKET:60000}
+      cesto: ${AI_PRICE_BASE_BASKET:60000}
+      planter: ${AI_PRICE_BASE_PLANTER:65000}
+      matera: ${AI_PRICE_BASE_PLANTER:65000}
+      jewelry: ${AI_PRICE_BASE_JEWELRY:45000}
+      joya: ${AI_PRICE_BASE_JEWELRY:45000}
+      collar: ${AI_PRICE_BASE_JEWELRY:45000}
+      arete: ${AI_PRICE_BASE_JEWELRY:45000}
+      tray: ${AI_PRICE_BASE_TRAY:55000}
+      bandeja: ${AI_PRICE_BASE_TRAY:55000}
+      mural: ${AI_PRICE_BASE_MURAL:100000}
+      centerpiece: ${AI_PRICE_BASE_MURAL:100000}
+      "centro de mesa": ${AI_PRICE_BASE_MURAL:100000}
+    material-costs:
+      guadua: ${AI_PRICE_MATERIAL_GUADUA:45000}
+      barro: ${AI_PRICE_MATERIAL_BARRO:35000}
+      ceramica: ${AI_PRICE_MATERIAL_CERAMICA:50000}
+      fique: ${AI_PRICE_MATERIAL_FIQUE:30000}
+      iraca: ${AI_PRICE_MATERIAL_IRACA:35000}
+      madera: ${AI_PRICE_MATERIAL_MADERA:55000}
+      lana: ${AI_PRICE_MATERIAL_LANA:45000}
+      filamento: ${AI_PRICE_MATERIAL_FILAMENTO:25000}
+      dorado: ${AI_PRICE_MATERIAL_FILAMENTO:25000}
+    complexity-costs:
+      baja: ${AI_PRICE_COMPLEXITY_BAJA:20000}
+      media: ${AI_PRICE_COMPLEXITY_MEDIA:60000}
+      alta: ${AI_PRICE_COMPLEXITY_ALTA:120000}
+    finish-costs:
+      dorado: ${AI_PRICE_FINISH_DORADO:35000}
+      metal: ${AI_PRICE_FINISH_DORADO:35000}
+      tallado: ${AI_PRICE_FINISH_TALLADO:45000}
+      relieve: ${AI_PRICE_FINISH_TALLADO:45000}
+      brillante: ${AI_PRICE_FINISH_BRILLANTE:25000}
+      esmalt: ${AI_PRICE_FINISH_BRILLANTE:25000}
+      mate: ${AI_PRICE_FINISH_MATE:15000}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://${EUREKA_HOST:localhost}:8761/eureka/
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics

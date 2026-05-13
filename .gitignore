@@ -26,6 +26,7 @@ id_ed25519
 # ============================================================
 .idea/
 .vscode/
+.claude/settings.local.json
 *.iml
 *.suo
 *.user
@@ -39,13 +40,8 @@ id_ed25519
 **/target/
 **/node_modules/
 
-# dist: ignorar todo EXCEPTO el bundle compilado del frontend
+# dist: artefactos generados. El frontend se construye dentro de Docker.
 **/dist/
-!frontend/dist/
-!frontend/dist/frontend/
-!frontend/dist/frontend/browser/
-!frontend/dist/frontend/browser/**
-frontend/dist/frontend/prerendered-routes.json
 
 # Maven wrapper cache
 .mvn/wrapper/maven-wrapper.jar

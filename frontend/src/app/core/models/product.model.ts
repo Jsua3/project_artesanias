@@ -25,3 +25,18 @@ export interface ProductRequest {
   artesanoId?: string;
   stockMinimo?: number;
 }
+
+export interface ProductDraft {
+  name: string;
+  description?: string;
+  price: number;
+  stockMinimo?: number;
+  categoryIds?: string[];
+  artesanoId?: string;
+  sourceLabel?: string;
+}
+
+export interface ProductFormData {
+  product?: Product | null;
+  draft?: ProductDraft | null;
+}

@@ -1,12 +1,15 @@
 package com.inventory.inventory.controller;
 
 import com.inventory.inventory.dto.DeliveryTrackingUpdateRequest;
+import com.inventory.inventory.dto.PaymentConfigStatusResponse;
 import com.inventory.inventory.dto.VentaRequest;
 import com.inventory.inventory.dto.VentaResponse;
+import com.inventory.inventory.service.StripeService;
 import com.inventory.inventory.service.VentaService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -17,16 +20,18 @@ import java.util.UUID;
 public class VentaController {
 
     private final VentaService ventaService;
+    private final StripeService stripeService;
 
-    public VentaController(VentaService ventaService) {
+    public VentaController(VentaService ventaService, StripeService stripeService) {
         this.ventaService = ventaService;
+        this.stripeService = stripeService;
     }
 
     @GetMapping
     public Flux<VentaResponse> getAllVentas(
             @RequestHeader(value = "X-User-Role", defaultValue = "") String userRole) {
         if (!hasAnyRole(userRole, "ADMIN", "ARTESANO")) {
-            return Flux.empty();
+            return Flux.error(new ResponseStatusException(HttpStatus.FORBIDDEN));
         }
         return ventaService.getAllVentas();
     }
@@ -36,15 +41,15 @@ public class VentaController {
             @RequestHeader(value = "X-User-Role", defaultValue = "") String userRole,
             @RequestHeader(value = "X-User-Id", defaultValue = "") String userId) {
         if (!hasAnyRole(userRole, "ADMIN", "DOMICILIARIO")) {
-            return Flux.empty();
+            return Flux.error(new ResponseStatusException(HttpStatus.FORBIDDEN));
         }
         if (userId.isEmpty()) {
-            return Flux.empty();
+            return Flux.error(new ResponseStatusException(HttpStatus.UNAUTHORIZED));
         }
         return ventaService.getDeliveriesForUser(normalizeRole(userRole), UUID.fromString(userId));
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{id:[0-9a-fA-F\\-]{36}}")
     public Mono<ResponseEntity<VentaResponse>> getVenta(@PathVariable UUID id) {
         return ventaService.getVenta(id)
                 .map(ResponseEntity::ok)
@@ -54,6 +59,15 @@ public class VentaController {
     @GetMapping("/cliente/{clienteId}")
     public Flux<VentaResponse> getVentasByCliente(@PathVariable UUID clienteId) {
         return ventaService.getVentasByCliente(clienteId);
+    }
+
+    @GetMapping("/admin/payment-status")
+    public Mono<PaymentConfigStatusResponse> paymentStatus(
+            @RequestHeader(value = "X-User-Role", defaultValue = "") String userRole) {
+        if (!hasAnyRole(userRole, "ADMIN")) {
+            return Mono.error(new ResponseStatusException(HttpStatus.FORBIDDEN));
+        }
+        return Mono.just(stripeService.configStatus());
     }
 
     @PostMapping

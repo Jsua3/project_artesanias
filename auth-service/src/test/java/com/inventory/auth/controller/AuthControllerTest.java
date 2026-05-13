@@ -20,7 +20,13 @@ import java.util.UUID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-@WebFluxTest(AuthController.class)
+@WebFluxTest(
+        controllers = AuthController.class,
+        properties = {
+                "security.jwt.secret=test-secret-with-at-least-32-characters",
+                "security.jwt.internal-token=test-internal-token"
+        }
+)
 @org.springframework.context.annotation.Import({
         com.inventory.auth.config.WebSecurityConfig.class,
         com.inventory.auth.exception.GlobalExceptionHandler.class
@@ -32,6 +38,9 @@ class AuthControllerTest {
 
     @MockBean
     private AuthService authService;
+
+    @MockBean
+    private com.inventory.auth.service.GoogleAuthService googleAuthService;
 
     @MockBean
     private com.inventory.auth.repository.UserAccountRepository userRepository;

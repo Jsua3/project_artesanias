@@ -21,6 +21,7 @@
         <module>catalog-service</module>
         <module>inventory-service</module>
         <module>report-service</module>
+        <module>ai-service</module>
     </modules>
 
     <properties>

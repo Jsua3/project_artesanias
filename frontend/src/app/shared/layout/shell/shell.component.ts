@@ -54,6 +54,7 @@ export class ShellComponent {
       items: [
         { label: 'Maestros Artesanos', icon: 'person_pin', route: '/artesanos', roles: ['ADMIN'] },
         { label: 'Tipos de Artesanía', icon: 'category', route: '/categories', roles: ['ADMIN'] },
+        { label: 'Diseños IA', icon: 'view_in_ar', route: '/disenos-personalizados', roles: ['ADMIN', 'ARTESANO'] },
         { label: 'Mis Piezas', icon: 'palette', route: '/products', roles: ['ADMIN', 'ARTESANO'] }
       ]
     },
@@ -95,6 +96,7 @@ export class ShellComponent {
         { label: 'Usuarios del Sistema', icon: 'manage_accounts', route: '/admin/usuarios', roles: ['ADMIN'] },
         { label: 'Solicitudes de Registro', icon: 'verified_user', route: '/admin/aprobaciones', roles: ['ADMIN'] },
         { label: 'Moderación', icon: 'shield', route: '/admin/moderacion', roles: ['ADMIN'] },
+        { label: 'Salud del Sistema', icon: 'health_and_safety', route: '/admin/system-health', roles: ['ADMIN'] },
         { label: 'Base de Datos', icon: 'storage', route: '/admin/database', roles: ['ADMIN'] }
       ]
     }

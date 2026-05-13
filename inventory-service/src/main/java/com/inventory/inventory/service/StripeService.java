@@ -1,6 +1,7 @@
 package com.inventory.inventory.service;
 
 import com.inventory.inventory.config.StripeProperties;
+import com.inventory.inventory.dto.PaymentConfigStatusResponse;
 import com.inventory.inventory.model.Venta;
 import com.inventory.inventory.model.VentaDetalle;
 import com.inventory.inventory.repository.VentaDetalleRepository;
@@ -49,6 +50,25 @@ public class StripeService {
     /** true si el servicio esta configurado; si no, los endpoints deben responder 503. */
     public boolean isConfigured() {
         return props.getSecretKey() != null && !props.getSecretKey().isBlank();
+    }
+
+    public PaymentConfigStatusResponse configStatus() {
+        boolean configured = isConfigured();
+        boolean webhookConfigured = props.getWebhookSecret() != null && !props.getWebhookSecret().isBlank();
+        boolean successUrlConfigured = props.getSuccessUrl() != null && !props.getSuccessUrl().isBlank();
+        boolean cancelUrlConfigured = props.getCancelUrl() != null && !props.getCancelUrl().isBlank();
+        String detail = configured
+                ? "Stripe Checkout esta listo para crear sesiones de pago."
+                : "STRIPE_SECRET_KEY no esta configurado; checkout devolvera 503.";
+        return new PaymentConfigStatusResponse(
+                configured,
+                webhookConfigured,
+                configured ? "READY" : "WARN",
+                detail,
+                props.getCurrency(),
+                successUrlConfigured,
+                cancelUrlConfigured
+        );
     }
 
     /**

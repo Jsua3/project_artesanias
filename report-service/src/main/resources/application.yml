@@ -7,7 +7,11 @@ spring:
   r2dbc:
     url: r2dbc:postgresql://${DB_HOST:localhost}:5432/report_db
     username: ${DB_USER:postgres}
-    password: ${DB_PASSWORD:postgres}
+    password: ${DB_PASSWORD}
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:db/schema.sql
   kafka:
     bootstrap-servers: ${KAFKA_HOST:localhost}:9092
     consumer:
@@ -23,7 +27,7 @@ eureka:
 
 security:
   jwt:
-    internal-token: ${INTERNAL_TOKEN:my-super-secret-internal-token}
+    internal-token: ${INTERNAL_TOKEN}
 
 management:
   endpoints:

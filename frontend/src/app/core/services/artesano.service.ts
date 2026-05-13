@@ -7,6 +7,7 @@ import { Artesano, ArtesanoRequest } from '../models/artesano.model';
 @Injectable({ providedIn: 'root' })
 export class ArtesanoService {
   private readonly API = `${environment.apiUrl}/api/artesanos`;
+  private readonly MANAGEMENT_API = `${this.API}/admin`;
   private http = inject(HttpClient);
 
   private _artesanos = signal<Artesano[]>([]);
@@ -27,7 +28,7 @@ export class ArtesanoService {
 
   loadAll(): void {
     this._loading.set(true);
-    this.http.get<Artesano[]>(this.API).subscribe({
+    this.http.get<Artesano[]>(`${this.MANAGEMENT_API}/all`).subscribe({
       next: data => {
         this._artesanos.set(data);
         this._loading.set(false);
@@ -37,11 +38,11 @@ export class ArtesanoService {
   }
 
   getAll(): Observable<Artesano[]> {
-    return this.http.get<Artesano[]>(this.API);
+    return this.http.get<Artesano[]>(`${this.MANAGEMENT_API}/all`);
   }
 
   getById(id: string): Observable<Artesano> {
-    return this.http.get<Artesano>(`${this.API}/${id}`);
+    return this.http.get<Artesano>(`${this.MANAGEMENT_API}/${id}`);
   }
 
   create(req: ArtesanoRequest): Observable<Artesano> {

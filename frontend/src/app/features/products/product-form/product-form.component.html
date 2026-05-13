@@ -1,8 +1,7 @@
-<h2 mat-dialog-title>{{ data ? 'Editar Artesanía' : 'Nueva Artesanía' }}</h2>
+<h2 mat-dialog-title>{{ product ? 'Editar Artesanía' : (draft ? 'Crear desde diseño IA' : 'Nueva Artesanía') }}</h2>
 
 <mat-dialog-content>
   <form [formGroup]="form" class="dialog-form">
-    <!-- Image Upload -->
     <app-image-upload
       [currentImage]="imageSignal"
       placeholder="Foto de la artesanía"
@@ -15,13 +14,17 @@
       <input matInput formControlName="name" />
     </mat-form-field>
 
-    @if (data) {
-      <p class="sku-readonly"><strong>SKU:</strong> <code>{{ data.sku }}</code></p>
+    @if (draft?.sourceLabel) {
+      <p class="sku-readonly"><strong>Origen:</strong> <code>{{ draft?.sourceLabel }}</code></p>
+    }
+
+    @if (product) {
+      <p class="sku-readonly"><strong>SKU:</strong> <code>{{ product.sku }}</code></p>
     }
 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Descripción</mat-label>
-      <textarea matInput formControlName="description" rows="3"
+      <textarea matInput formControlName="description" rows="5"
                 placeholder="Describe la artesanía, materiales, técnica..."></textarea>
     </mat-form-field>
 
@@ -49,18 +52,20 @@
       <mat-hint>Selecciona una o más categorías</mat-hint>
     </mat-form-field>
 
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Artesano creador</mat-label>
-      <mat-select formControlName="artesanoId">
-        <mat-option [value]="''">— Sin asignar —</mat-option>
-        @for (a of artesanos(); track a.id) {
-          <mat-option [value]="a.id">
-            {{ a.nombre }}
-            @if (a.especialidad) { <small> — {{ a.especialidad }}</small> }
-          </mat-option>
-        }
-      </mat-select>
-    </mat-form-field>
+    @if (auth.isAdmin()) {
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Artesano creador</mat-label>
+        <mat-select formControlName="artesanoId">
+          <mat-option [value]="''">Sin asignar</mat-option>
+          @for (a of artesanos(); track a.id) {
+            <mat-option [value]="a.id">
+              {{ a.nombre }}
+              @if (a.especialidad) { <small> - {{ a.especialidad }}</small> }
+            </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    }
   </form>
 </mat-dialog-content>
 

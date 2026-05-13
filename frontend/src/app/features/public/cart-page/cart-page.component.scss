@@ -1,4 +1,6 @@
 /* ─── Variables ────────────────────────────────────────────────────────── */
+@use 'sass:color';
+
 $terracota: #A67C52;
 $crema: #F5F0E8;
 $dark: #2d2a26;
@@ -413,7 +415,7 @@ $sage: #8a9e8d;
 .full-w { width: 100%; }
 
 .checkout-btn {
-  background: linear-gradient(135deg, $terracota 0%, darken($terracota, 10%) 100%) !important;
+  background: linear-gradient(135deg, $terracota 0%, color.adjust($terracota, $lightness: -10%) 100%) !important;
   color: #fff !important;
   border-radius: 999px !important;
   height: 48px !important;

@@ -2,6 +2,7 @@ package com.inventory.catalog.service;
 
 import com.inventory.catalog.dto.ArtesanoRequest;
 import com.inventory.catalog.dto.ArtesanoResponse;
+import com.inventory.catalog.dto.PublicArtesanoResponse;
 import com.inventory.catalog.dto.SyncArtesanoRequest;
 import com.inventory.catalog.model.Artesano;
 import com.inventory.catalog.repository.ArtesanoRepository;
@@ -46,10 +47,18 @@ public class ArtesanoService {
                 .map(this::toResponse);
     }
 
+    public Mono<PublicArtesanoResponse> getPublicArtesano(UUID id) {
+        return getArtesano(id).map(this::toPublicResponse);
+    }
+
     public Flux<ArtesanoResponse> getAllArtesanos() {
         return artesanoRepository.findAll()
                 .filter(a -> Boolean.TRUE.equals(a.active()))
                 .map(this::toResponse);
+    }
+
+    public Flux<PublicArtesanoResponse> getAllPublicArtesanos() {
+        return getAllArtesanos().map(this::toPublicResponse);
     }
 
     @Transactional
@@ -158,6 +167,16 @@ public class ArtesanoService {
                 artesano.active(),
                 artesano.userAccountId(),
                 artesano.createdAt()
+        );
+    }
+
+    private PublicArtesanoResponse toPublicResponse(ArtesanoResponse artesano) {
+        return new PublicArtesanoResponse(
+                artesano.id(),
+                artesano.nombre(),
+                artesano.especialidad(),
+                artesano.ubicacion(),
+                artesano.imageUrl()
         );
     }
 }

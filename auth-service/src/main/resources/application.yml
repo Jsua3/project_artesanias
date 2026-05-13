@@ -7,7 +7,7 @@ spring:
   r2dbc:
     url: r2dbc:postgresql://${DB_HOST:localhost}:5432/auth_db
     username: ${DB_USER:postgres}
-    password: ${DB_PASSWORD:postgres}
+    password: ${DB_PASSWORD}
   sql:
     init:
       mode: always
@@ -15,10 +15,10 @@ spring:
 
 security:
   jwt:
-    secret: ${JWT_SECRET:32-character-long-secret-key-for-jwt-generation-and-validation}
+    secret: ${JWT_SECRET}
     expiration: 3600000
     refresh-expiration: 86400000
-    internal-token: ${INTERNAL_TOKEN:my-super-secret-internal-token}
+    internal-token: ${INTERNAL_TOKEN}
 
 google:
   client-id: ${GOOGLE_CLIENT_ID:}

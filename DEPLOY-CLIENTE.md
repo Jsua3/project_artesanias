@@ -16,6 +16,7 @@ Quedan FUERA de esta fase (Fase 2): carrito / Stripe, wishlist, ratings y favori
 
 ### 1.1 auth-service
 
+
 Archivos tocados:
 
 - `model/UserRole.java` → se añadió `CLIENTE` al enum.

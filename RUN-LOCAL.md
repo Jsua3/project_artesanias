@@ -23,9 +23,10 @@ dentro de cada `Dockerfile`.
 # 1. Copiá el archivo de variables de entorno
 cp .env.example .env
 
-# 2. (Opcional pero recomendado) editá .env para poner tus claves de Stripe
-#    en modo test. Sin ellas, el checkout devuelve 503 pero el resto anda.
-#    Ver "Stripe en local" más abajo.
+# 2. Editá .env si querés cambiar los secretos locales.
+#    DB_PASSWORD, JWT_SECRET e INTERNAL_TOKEN son obligatorios.
+#    Stripe sigue siendo opcional: sin claves, el checkout devuelve 503
+#    pero el resto anda. Ver "Stripe en local" más abajo.
 
 # 3. Levantá los 8 servicios principales
 docker compose up -d --build
@@ -47,7 +48,7 @@ URLs disponibles:
 | Frontend     | http://localhost           | Angular (tienda + admin)      |
 | Gateway      | http://localhost:8080      | REST pública                  |
 | Eureka       | http://localhost:8761      | Dashboard de discovery        |
-| Postgres     | localhost:5432             | `postgres / postgres`         |
+| Postgres     | localhost:5432             | `postgres / DB_PASSWORD`      |
 | auth-service | http://localhost:8080/api/auth/... | via gateway           |
 
 ## 3. Credenciales sembradas
@@ -130,8 +131,8 @@ docker compose --profile seed up seeder
 
 | Variable                | Por qué                                                            |
 | ----------------------- | ------------------------------------------------------------------ |
-| `DB_PASSWORD`           | Default `postgres` es público, cualquiera con puerto 5432 entra.   |
-| `JWT_SECRET`            | Si no lo cambiás, cualquiera firma JWTs válidos en tu backend.     |
+| `DB_PASSWORD`           | El valor de ejemplo es solo local; en producción debe ser único y fuerte. |
+| `JWT_SECRET`            | Si usás un valor conocido, cualquiera puede firmar JWTs válidos.   |
 | `INTERNAL_TOKEN`        | Header que autentica llamadas gateway→servicio; si se filtra, todo tu `/internal/**` queda abierto. |
 | `STRIPE_SECRET_KEY`     | En prod usar `sk_live_...`, nunca la `sk_test_...`.                |
 | `STRIPE_WEBHOOK_SECRET` | El del endpoint de prod del dashboard de Stripe, no el del CLI.    |

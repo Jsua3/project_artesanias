@@ -11,7 +11,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ProductService } from '../../../core/services/product.service';
 import { CategoryService } from '../../../core/services/category.service';
 import { ArtesanoService } from '../../../core/services/artesano.service';
-import { Product, ProductRequest } from '../../../core/models/product.model';
+import { AuthService } from '../../../core/services/auth.service';
+import { Product, ProductDraft, ProductFormData, ProductRequest } from '../../../core/models/product.model';
 import { ImageUploadComponent } from '../../../shared/components/image-upload/image-upload.component';
 
 @Component({
@@ -58,9 +59,12 @@ export class ProductFormComponent implements OnInit {
   private productService = inject(ProductService);
   private categoryService = inject(CategoryService);
   private artesanoService = inject(ArtesanoService);
+  auth = inject(AuthService);
   private dialogRef = inject(MatDialogRef<ProductFormComponent>);
   private snackBar = inject(MatSnackBar);
-  data: Product | null = inject(MAT_DIALOG_DATA);
+  rawData: Product | ProductFormData | null = inject(MAT_DIALOG_DATA);
+  product = this.resolveProduct(this.rawData);
+  draft = this.resolveDraft(this.rawData);
 
   readonly categories = this.categoryService.categories;
   readonly artesanos = this.artesanoService.artesanos;
@@ -78,23 +82,37 @@ export class ProductFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.categoryService.loadAll();
-    this.artesanoService.loadAll();
+    if (this.auth.isAdmin()) {
+      this.artesanoService.loadAll();
+    }
 
-    if (this.data) {
-      const existingCategoryIds = this.data.categoryIds?.length
-        ? this.data.categoryIds
-        : (this.data.categoryId ? [this.data.categoryId] : []);
+    if (this.product) {
+      const existingCategoryIds = this.product.categoryIds?.length
+        ? this.product.categoryIds
+        : (this.product.categoryId ? [this.product.categoryId] : []);
       this.form.patchValue({
-        name: this.data.name,
-        description: this.data.description ?? '',
-        price: this.data.price,
-        stockMinimo: this.data.stockMinimo ?? 5,
+        name: this.product.name,
+        description: this.product.description ?? '',
+        price: this.product.price,
+        stockMinimo: this.product.stockMinimo ?? 5,
         categoryIds: existingCategoryIds,
-        artesanoId: this.data.artesanoId ?? ''
+        artesanoId: this.product.artesanoId ?? ''
       });
-      if (this.data.imageUrl) {
-        this.imageSignal.set(this.data.imageUrl);
+      if (this.product.imageUrl) {
+        this.imageSignal.set(this.product.imageUrl);
       }
+      return;
+    }
+
+    if (this.draft) {
+      this.form.patchValue({
+        name: this.draft.name,
+        description: this.draft.description ?? '',
+        price: this.draft.price,
+        stockMinimo: this.draft.stockMinimo ?? 1,
+        categoryIds: this.draft.categoryIds ?? [],
+        artesanoId: this.draft.artesanoId ?? ''
+      });
     }
   }
 
@@ -121,18 +139,18 @@ export class ProductFormComponent implements OnInit {
     const selectedCategoryIds = (this.form.value.categoryIds ?? []) as string[];
     const req: ProductRequest = {
       name: this.form.value.name!,
-      sku: this.data ? this.data.sku : undefined,
+      sku: this.product ? this.product.sku : undefined,
       description: this.form.value.description || undefined,
       price: this.form.value.price!,
       imageUrl: this.imageSignal() || undefined,
       stockMinimo: this.form.value.stockMinimo ?? 5,
       categoryIds: selectedCategoryIds,
       categoryId: selectedCategoryIds[0] || undefined,
-      artesanoId: this.form.value.artesanoId || undefined
+      artesanoId: this.auth.isAdmin() ? this.form.value.artesanoId || undefined : undefined
     };
 
-    const op = this.data
-      ? this.productService.update(this.data.id, req)
+    const op = this.product
+      ? this.productService.update(this.product.id, req)
       : this.productService.create(req);
 
     op.subscribe({
@@ -142,5 +160,20 @@ export class ProductFormComponent implements OnInit {
         this.snackBar.open(error?.error?.message || 'No fue posible guardar la artesania.', 'OK', { duration: 3500 });
       }
     });
+  }
+
+  private resolveProduct(data: Product | ProductFormData | null): Product | null {
+    if (!data) return null;
+    if (this.isProductFormData(data)) return data.product ?? null;
+    return data;
+  }
+
+  private resolveDraft(data: Product | ProductFormData | null): ProductDraft | null {
+    if (!data || !this.isProductFormData(data)) return null;
+    return data.draft ?? null;
+  }
+
+  private isProductFormData(data: Product | ProductFormData): data is ProductFormData {
+    return 'product' in data || 'draft' in data;
   }
 }

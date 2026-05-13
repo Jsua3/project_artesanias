@@ -77,7 +77,7 @@ spring:
         - id: catalog-service-management
           uri: ${CATALOG_SERVICE_URL:http://localhost:8082}
           predicates:
-            - Path=/api/products/admin/**
+            - Path=/api/products/admin/**, /api/artesanos/admin/**
           filters:
             - JwtAuth
 
@@ -132,10 +132,19 @@ spring:
           filters:
             - JwtAuth
 
+        # AI Service (diseÃ±ador 3D personalizado) â€” protegido por JWT.
+        # El ai-service valida que solo CLIENTE/ADMIN puedan usarlo.
+        - id: ai-service
+          uri: ${AI_SERVICE_URL:http://localhost:8085}
+          predicates:
+            - Path=/api/ai/**
+          filters:
+            - JwtAuth
+
 security:
   jwt:
-    secret: ${JWT_SECRET:32-character-long-secret-key-for-jwt-generation-and-validation}
-    internal-token: ${INTERNAL_TOKEN:my-super-secret-internal-token}
+    secret: ${JWT_SECRET}
+    internal-token: ${INTERNAL_TOKEN}
 
 eureka:
   client:

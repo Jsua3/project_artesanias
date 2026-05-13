@@ -1,4 +1,6 @@
 /* ─── Variables ────────────────────────────────────────────────────────── */
+@use 'sass:color';
+
 $terracota: #A67C52;
 $crema:     #F5F0E8;
 $dark:      #2d2a26;
@@ -134,7 +136,7 @@ $success:   #4caf8a;
   border: 1px dashed $border;
   text-align: center;
 
-  mat-icon { font-size: 40px; width: 40px; height: 40px; color: darken($border, 10%); }
+  mat-icon { font-size: 40px; width: 40px; height: 40px; color: color.adjust($border, $lightness: -10%); }
 }
 
 /* ─── Tarjeta de pedido ─────────────────────────────────────────────────── */
@@ -192,7 +194,7 @@ $success:   #4caf8a;
 
 .chip-available {
   background: rgba(76, 175, 138, 0.12);
-  color: darken($success, 10%);
+  color: color.adjust($success, $lightness: -10%);
 }
 
 .chip-mine {

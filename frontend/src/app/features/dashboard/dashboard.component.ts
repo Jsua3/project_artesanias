@@ -253,7 +253,7 @@ export class DashboardComponent implements OnInit {
       return;
     }
 
-    this.productService.loadAll();
+    this.productService.loadForManagement();
     this.categoryService.loadAll();
     this.stockService.loadAll();
     if (this.auth.canAccessReports()) {

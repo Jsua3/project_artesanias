@@ -2,7 +2,7 @@
 
 Sistema de gestión, venta y exhibición de artesanías colombianas. Combina una tienda pública para clientes con un backoffice por roles para administradores, artesanos y domiciliarios.
 
-**URL pública:** `http://56.126.102.113`
+**URL pública:** `http://56.126.102.113.nip.io`
 
 ---
 
@@ -210,7 +210,9 @@ curl http://localhost:8080/api/reports/alerts \
 
 ## Variables de entorno requeridas
 
-El archivo `.env` en la raíz del proyecto (no se versiona) debe contener:
+El archivo `.env` en la raíz del proyecto (no se versiona) debe contener estos valores.
+`docker compose` falla al arrancar si falta `DB_PASSWORD`, `JWT_SECRET` o `INTERNAL_TOKEN`;
+usa `.env.example` solo como plantilla y cambia los valores antes de producción.
 
 ```bash
 # Base de datos

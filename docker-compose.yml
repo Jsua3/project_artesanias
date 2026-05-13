@@ -8,8 +8,8 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${DB_USER:-postgres}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
-      POSTGRES_MULTIPLE_DATABASES: auth_db,catalog_db,inventory_db,report_db
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
+      POSTGRES_MULTIPLE_DATABASES: auth_db,catalog_db,inventory_db,report_db,ai_db
     ports:
       - "5432:5432"
     volumes:
@@ -97,8 +97,10 @@ services:
       - CATALOG_SERVICE_URL=http://catalog-service:8082
       - INVENTORY_SERVICE_URL=http://inventory-service:8083
       - REPORT_SERVICE_URL=http://report-service:8084
-      - JWT_SECRET=${JWT_SECRET:-32-character-long-secret-key-for-jwt-generation-and-validation}
-      - INTERNAL_TOKEN=${INTERNAL_TOKEN:-my-super-secret-internal-token}
+      - AI_SERVICE_URL=http://ai-service:8085
+      - FRONTEND_URL=http://frontend
+      - JWT_SECRET=${JWT_SECRET:?JWT_SECRET is required}
+      - INTERNAL_TOKEN=${INTERNAL_TOKEN:?INTERNAL_TOKEN is required}
       - JAVA_TOOL_OPTIONS=-Xmx128m -Xms64m
     networks:
       - inventory-network
@@ -127,10 +129,10 @@ services:
     environment:
       - DB_HOST=postgres
       - DB_USER=${DB_USER:-postgres}
-      - DB_PASSWORD=${DB_PASSWORD:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:?DB_PASSWORD is required}
       - EUREKA_HOST=discovery-server
-      - JWT_SECRET=${JWT_SECRET:-32-character-long-secret-key-for-jwt-generation-and-validation}
-      - INTERNAL_TOKEN=${INTERNAL_TOKEN:-my-super-secret-internal-token}
+      - JWT_SECRET=${JWT_SECRET:?JWT_SECRET is required}
+      - INTERNAL_TOKEN=${INTERNAL_TOKEN:?INTERNAL_TOKEN is required}
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
       - CATALOG_SERVICE_URL=http://catalog-service:8082
       - JAVA_TOOL_OPTIONS=-Xmx128m -Xms64m
@@ -161,9 +163,9 @@ services:
     environment:
       - DB_HOST=postgres
       - DB_USER=${DB_USER:-postgres}
-      - DB_PASSWORD=${DB_PASSWORD:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:?DB_PASSWORD is required}
       - EUREKA_HOST=discovery-server
-      - INTERNAL_TOKEN=${INTERNAL_TOKEN:-my-super-secret-internal-token}
+      - INTERNAL_TOKEN=${INTERNAL_TOKEN:?INTERNAL_TOKEN is required}
       - JAVA_TOOL_OPTIONS=-Xmx128m -Xms64m
     networks:
       - inventory-network
@@ -194,10 +196,10 @@ services:
     environment:
       - DB_HOST=postgres
       - DB_USER=${DB_USER:-postgres}
-      - DB_PASSWORD=${DB_PASSWORD:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:?DB_PASSWORD is required}
       - KAFKA_HOST=kafka
       - EUREKA_HOST=discovery-server
-      - INTERNAL_TOKEN=${INTERNAL_TOKEN:-my-super-secret-internal-token}
+      - INTERNAL_TOKEN=${INTERNAL_TOKEN:?INTERNAL_TOKEN is required}
       # Fase 2c: inventory-service llama a catalog-service via WebClient
       # para resolver productId -> artesanoId y userAccountId -> artesano.
       - CATALOG_SERVICE_URL=${CATALOG_SERVICE_URL:-http://catalog-service:8082}
@@ -238,10 +240,10 @@ services:
     environment:
       - DB_HOST=postgres
       - DB_USER=${DB_USER:-postgres}
-      - DB_PASSWORD=${DB_PASSWORD:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:?DB_PASSWORD is required}
       - KAFKA_HOST=kafka
       - EUREKA_HOST=discovery-server
-      - INTERNAL_TOKEN=${INTERNAL_TOKEN:-my-super-secret-internal-token}
+      - INTERNAL_TOKEN=${INTERNAL_TOKEN:?INTERNAL_TOKEN is required}
       - JAVA_TOOL_OPTIONS=-Xmx128m -Xms64m
     networks:
       - inventory-network
@@ -251,6 +253,40 @@ services:
       timeout: 10s
       retries: 5
       start_period: 40s
+    deploy:
+      resources:
+        limits:
+          memory: 192M
+
+  ai-service:
+    build:
+      context: .
+      dockerfile: ai-service/Dockerfile
+    container_name: ai-service
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      discovery-server:
+        condition: service_started
+    environment:
+      - DB_HOST=postgres
+      - DB_USER=${DB_USER:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:?DB_PASSWORD is required}
+      - EUREKA_HOST=discovery-server
+      - INTERNAL_TOKEN=${INTERNAL_TOKEN:?INTERNAL_TOKEN is required}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - OPENAI_DESIGN_MODEL=${OPENAI_DESIGN_MODEL:-gpt-5-mini}
+      - OPENAI_IMAGE_MODEL=${OPENAI_IMAGE_MODEL:-gpt-image-1}
+      - JAVA_TOOL_OPTIONS=-Xmx128m -Xms64m
+    networks:
+      - inventory-network
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8085/actuator/health || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
     deploy:
       resources:
         limits:
@@ -302,7 +338,7 @@ services:
       - GATEWAY_URL=http://api-gateway:8080
       - PGHOST=postgres
       - PGUSER=${DB_USER:-postgres}
-      - PGPASSWORD=${DB_PASSWORD:-postgres}
+      - PGPASSWORD=${DB_PASSWORD:?DB_PASSWORD is required}
     volumes:
       - ./docker/seed/seed.sh:/seed.sh:ro
       - ./docker/seed/catalog-seed.sql:/catalog-seed.sql:ro

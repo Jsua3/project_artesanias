@@ -2,6 +2,7 @@ package com.inventory.catalog.service;
 
 import com.inventory.catalog.dto.ProductRequest;
 import com.inventory.catalog.dto.ProductResponse;
+import com.inventory.catalog.dto.PublicProductResponse;
 import com.inventory.catalog.model.Product;
 import com.inventory.catalog.model.ProductCategory;
 import com.inventory.catalog.repository.ArtesanoRepository;
@@ -95,6 +96,19 @@ public class ProductService {
         );
     }
 
+    private PublicProductResponse toPublicResponse(ProductResponse product) {
+        return new PublicProductResponse(
+                product.id(),
+                product.name(),
+                product.description(),
+                product.price(),
+                product.imageUrl(),
+                product.categoryId(),
+                product.categoryIds(),
+                product.artesanoId()
+        );
+    }
+
     // ── Create ────────────────────────────────────────────────────────────────
 
     @Transactional
@@ -137,9 +151,17 @@ public class ProductService {
                 .flatMap(this::enrichWithCategories);
     }
 
+    public Mono<PublicProductResponse> getPublicProduct(UUID id) {
+        return getProduct(id).map(this::toPublicResponse);
+    }
+
     public Flux<ProductResponse> getAllProducts() {
         return productRepository.findByActiveTrue()
                 .flatMap(this::enrichWithCategories);
+    }
+
+    public Flux<PublicProductResponse> getAllPublicProducts() {
+        return getAllProducts().map(this::toPublicResponse);
     }
 
     public Flux<ProductResponse> getAllProductsForManagement() {
@@ -162,10 +184,18 @@ public class ProductService {
                 .flatMap(this::enrichWithCategories);
     }
 
+    public Flux<PublicProductResponse> getPublicProductsByCategory(UUID categoryId) {
+        return getProductsByCategory(categoryId).map(this::toPublicResponse);
+    }
+
     public Flux<ProductResponse> getProductsByArtesano(UUID artesanoId) {
         return productRepository.findByArtesanoId(artesanoId)
                 .filter(p -> Boolean.TRUE.equals(p.active()))
                 .flatMap(this::enrichWithCategories);
+    }
+
+    public Flux<PublicProductResponse> getPublicProductsByArtesano(UUID artesanoId) {
+        return getProductsByArtesano(artesanoId).map(this::toPublicResponse);
     }
 
     public Flux<ProductResponse> getProductsByArtesanoForManagement(UUID artesanoId) {

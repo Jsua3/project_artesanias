@@ -70,19 +70,19 @@ export class ProductService {
 
   create(req: ProductRequest): Observable<Product> {
     return this.http.post<Product>(this.API, req).pipe(
-      tap(() => this.loadAll())
+      tap(() => this.loadForManagement())
     );
   }
 
   update(id: string, req: ProductRequest): Observable<Product> {
     return this.http.put<Product>(`${this.API}/${id}`, req).pipe(
-      tap(() => this.loadAll())
+      tap(() => this.loadForManagement())
     );
   }
 
   delete(id: string): Observable<void> {
     return this.http.delete<void>(`${this.API}/${id}`).pipe(
-      tap(() => this.loadAll())
+      tap(() => this.loadForManagement())
     );
   }
 
