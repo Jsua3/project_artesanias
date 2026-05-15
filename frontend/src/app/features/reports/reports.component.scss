@@ -7,3 +7,50 @@
   color: var(--danger);
   font-size: 1.1rem;
 }
+
+// Rebecca V1.1 phase 3B
+.tab-content {
+  padding: clamp(16px, 2.4vw, 24px) 0;
+}
+
+.desktop-table {
+  overflow-x: auto;
+  border-radius: 26px;
+}
+
+.desktop-table mat-card {
+  min-width: 760px;
+  border-radius: 26px;
+}
+
+.full-width {
+  min-width: 760px;
+}
+
+.data-card-header {
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.data-card-title,
+.data-card-subtitle,
+.data-card-row .value {
+  overflow-wrap: anywhere;
+}
+
+.status-badge {
+  min-height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 520px) {
+  .data-card-header {
+    flex-direction: column;
+  }
+
+  .status-badge {
+    width: 100%;
+  }
+}

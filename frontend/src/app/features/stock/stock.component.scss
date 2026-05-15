@@ -20,3 +20,49 @@
     mask-image: radial-gradient(ellipse at top right, black 20%, transparent 70%);
   }
 }
+
+// Rebecca V1.1 phase 3B
+.page-header {
+  margin-bottom: clamp(18px, 3vw, 28px);
+}
+
+.desktop-table {
+  overflow-x: auto;
+  border-radius: 26px;
+}
+
+.desktop-table mat-card {
+  min-width: 680px;
+  border-radius: 26px;
+}
+
+.full-width {
+  min-width: 680px;
+}
+
+.data-card-header {
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.data-card-title {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.status-badge {
+  min-height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 430px) {
+  .data-card-header {
+    flex-direction: column;
+  }
+
+  .status-badge {
+    width: 100%;
+  }
+}

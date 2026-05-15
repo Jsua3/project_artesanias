@@ -43,4 +43,34 @@ class DesignAgentServiceTest {
                 })
                 .verifyComplete();
     }
+
+    @Test
+    void fallbackKeepsRequestedMaterialColorsAndPattern() {
+        DesignAgentService service = new DesignAgentService(
+                WebClient.builder().baseUrl("http://localhost").build(),
+                new OpenAiProperties("", "gpt-5-mini", "gpt-image-1", "https://api.openai.com/v1"),
+                new ObjectMapper(),
+                new PricingService(new PricingRulesProperties(null, null, null, null, null, null, null)),
+                mock(CustomDesignRequestRepository.class),
+                mock(CustomDesignNotificationRepository.class)
+        );
+
+        StepVerifier.create(service.nextTurn("public", new DesignTurnRequest(
+                "Quiero una lampara de bejuco color azul, con detalles circulares en rojo y maximo 35 cm",
+                null
+        )))
+                .assertNext(response -> {
+                    assertThat(response.reply()).containsIgnoringCase("bejuco");
+                    assertThat(response.reply()).containsIgnoringCase("azul");
+                    assertThat(response.reply()).containsIgnoringCase("rojo");
+                    assertThat(response.spec().productType()).isEqualTo("lamp");
+                    assertThat(response.spec().primaryMaterial()).isEqualTo("bejuco");
+                    assertThat(response.spec().pattern()).isEqualTo("aros_circulares");
+                    assertThat(response.spec().colorPalette()).contains("#2F5F8F", "#B84A3A");
+                    assertThat(response.spec().dimensions().heightCm()).isEqualTo(35);
+                    assertThat(response.spec().threeD().materialColor()).isEqualTo("#2F5F8F");
+                    assertThat(response.spec().threeD().accentColor()).isEqualTo("#B84A3A");
+                })
+                .verifyComplete();
+    }
 }

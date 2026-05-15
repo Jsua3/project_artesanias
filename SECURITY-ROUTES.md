@@ -18,6 +18,8 @@ Estas rutas existen para la vitrina publica y no deben exponer datos internos.
 | `/api/categories/**` | GET | Categorias visibles |
 | `/api/products/**` | GET | Producto publico: `id`, `name`, `description`, `price`, `imageUrl`, `categoryId`, `categoryIds`, `artesanoId` |
 | `/api/artesanos/**` | GET | Artesano publico: `id`, `nombre`, `especialidad`, `ubicacion`, `imageUrl` |
+| `/api/ai/design/message` | POST | Genera ficha artesanal y parametros 3D sin guardar datos privados |
+| `/api/ai/design/preview` | POST | Genera/describe boceto visual desde la ficha enviada |
 | `/api/stripe/**` | POST | Webhook Stripe; la autenticidad depende de la firma del webhook |
 
 ## Privado con login
@@ -44,7 +46,7 @@ Estas rutas deben exigir JWT. Las rutas proxy usan el filtro `JwtAuth`; las ruta
 | `/api/cliente-ventas/**` | Pedidos del cliente autenticado |
 | `/api/maestro-ventas/**` | Ventas del maestro autenticado |
 | `/api/reports/**` | Reportes |
-| `/api/ai/**` | Agente de diseno personalizado, preview, confirmacion de producto personalizado y solicitudes propias; requiere usuario autenticado y rol permitido |
+| `/api/ai/**` | Confirmacion de producto personalizado, solicitudes propias, notificaciones y revision de taller/admin; requiere usuario autenticado y rol permitido. Excepcion publica: `POST /api/ai/design/message` y `POST /api/ai/design/preview` |
 
 ## Campos que no deben salir en catalogo publico
 
@@ -62,4 +64,5 @@ Rutas funcionales del flujo:
 
 - Cliente: `/disena-tu-pieza` crea la ficha y `/mis-disenos` lista sus solicitudes.
 - Taller/admin: `/disenos-personalizados` revisa solicitudes, deja notas y actualiza estado.
+- API publica de exploracion: `POST /api/ai/design/message`, `POST /api/ai/design/preview`.
 - API privada: `POST /api/ai/design/confirm`, `GET /api/ai/design/mine`, `GET /api/ai/design/review`, `PATCH /api/ai/design/{id}/status`.

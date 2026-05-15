@@ -437,11 +437,261 @@
   background:
     radial-gradient(circle at 10% 0%, rgba(201, 162, 83, 0.16), transparent 28rem),
     radial-gradient(circle at 88% 18%, rgba(138, 154, 123, 0.16), transparent 24rem),
+    linear-gradient(118deg, rgba(255, 255, 255, 0.18), transparent 38%, rgba(58, 53, 48, 0.035)),
+    var(--rb-premium-noise),
     linear-gradient(180deg, rgba(248, 245, 238, 0.92) 0%, rgba(245, 240, 230, 0.90) 100%),
     url('/assets/imagenes/paisaje1.jpeg') center / cover fixed;
+  background-size: auto, auto, 180px 180px, auto, cover;
   overflow-y: auto;
 
   &.mobile {
     padding-top: var(--toolbar-height);
+  }
+}
+
+// ===== REBECCA V1.1 PHASE 2: PREMIUM SHELL CONTRACT =====
+:host {
+  --shell-glass-light: rgba(255, 255, 255, 0.58);
+  --shell-glass-mid: rgba(245, 240, 230, 0.38);
+  --shell-border-light: rgba(255, 255, 255, 0.46);
+  --shell-shadow: 0 22px 58px rgba(38, 31, 25, 0.16);
+}
+
+.mobile-toolbar {
+  top: max(10px, env(safe-area-inset-top));
+  left: max(12px, env(safe-area-inset-left));
+  right: max(12px, env(safe-area-inset-right));
+  height: 58px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--shell-border-light);
+  border-bottom-color: rgba(255, 255, 255, 0.36);
+  background:
+    linear-gradient(118deg, rgba(255, 255, 255, 0.76), rgba(255, 255, 255, 0.28) 42%, rgba(245, 240, 230, 0.52)),
+    var(--shell-glass-mid) !important;
+  box-shadow:
+    var(--shell-shadow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.78),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.2);
+
+  .menu-btn,
+  .toolbar-theme-btn {
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+    border-radius: 50% !important;
+    background: rgba(255, 255, 255, 0.36) !important;
+    border: 1px solid rgba(255, 255, 255, 0.44);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  }
+
+  .toolbar-brand {
+    margin-left: 0;
+    font-size: clamp(1.04rem, 4vw, 1.22rem);
+    letter-spacing: clamp(1.8px, 0.72vw, 3px);
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .toolbar-user,
+  .toolbar-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.34);
+  }
+}
+
+.mobile-backdrop {
+  background: rgba(38, 31, 25, 0.34);
+  backdrop-filter: blur(12px) saturate(1.14);
+  -webkit-backdrop-filter: blur(12px) saturate(1.14);
+}
+
+.sidenav-container {
+  height: 100svh;
+}
+
+.sidenav {
+  width: min(var(--sidebar-width), calc(100vw - 32px));
+  border-right: 1px solid rgba(255, 255, 255, 0.12) !important;
+
+  &.mobile {
+    width: min(304px, calc(100vw - 24px));
+    height: calc(100svh - 24px) !important;
+    margin: 12px 0 12px 12px;
+    border-radius: 28px;
+    border: 1px solid rgba(255, 255, 255, 0.14) !important;
+    overflow: hidden;
+    box-shadow:
+      24px 0 70px rgba(20, 16, 12, 0.24),
+      inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  }
+
+  .brand {
+    min-height: 88px;
+    padding: 24px 18px 18px;
+  }
+
+  .brand-icon {
+    border-radius: 16px;
+    padding: 8px;
+    background:
+      linear-gradient(118deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.03)),
+      rgba(201, 162, 83, 0.10);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+  }
+
+  .nav-scroll {
+    padding: 2px 10px 10px;
+  }
+
+  .nav-section {
+    padding: 18px 14px 7px;
+    letter-spacing: 0.2em;
+  }
+
+  mat-nav-list a {
+    height: 48px !important;
+    margin: 3px 0;
+    border-radius: 16px;
+    padding-inline: 6px;
+    border: 1px solid transparent;
+    overflow: hidden;
+
+    ::ng-deep .mdc-list-item__content {
+      min-width: 0;
+    }
+
+    ::ng-deep .mdc-list-item__primary-text,
+    ::ng-deep .mat-mdc-list-item-unscoped-content {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    mat-icon {
+      width: 22px;
+      height: 22px;
+      font-size: 22px;
+      margin-right: 10px;
+      flex: 0 0 22px;
+    }
+
+    &.active-link {
+      border-color: rgba(201, 162, 83, 0.24);
+    }
+  }
+}
+
+.back-to-store-btn {
+  min-height: 44px;
+  justify-content: center;
+  margin: 8px 14px 6px;
+  color: var(--cream);
+}
+
+.sidenav-footer {
+  padding: 12px;
+
+  .user-card {
+    min-height: 58px;
+    padding: 10px;
+    border-radius: 18px;
+  }
+
+  .user-info {
+    min-width: 0;
+  }
+
+  .footer-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .theme-btn,
+  .logout-btn {
+    min-height: 42px;
+    justify-content: center;
+    margin: 0;
+    border-radius: 14px !important;
+    background:
+      linear-gradient(118deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02)),
+      rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+  }
+}
+
+.main-content {
+  min-height: 100svh;
+  scroll-behavior: smooth;
+
+  &.mobile {
+    padding-top: calc(58px + max(22px, env(safe-area-inset-top)));
+  }
+}
+
+@media (max-width: 520px) {
+  .mobile-toolbar {
+    left: 10px;
+    right: 10px;
+    height: 56px;
+    padding-inline: 8px;
+
+    .toolbar-brand {
+      max-width: 42vw;
+    }
+  }
+
+  .sidenav.mobile {
+    width: min(300px, calc(100vw - 20px));
+    height: calc(100svh - 20px) !important;
+    margin: 10px;
+    border-radius: 24px;
+  }
+
+  .sidenav {
+    .brand {
+      min-height: 80px;
+      padding-inline: 16px;
+    }
+
+    mat-nav-list a {
+      height: 46px !important;
+      border-radius: 15px;
+    }
+  }
+}
+
+@media (max-width: 380px) {
+  .mobile-toolbar {
+    .toolbar-brand {
+      font-size: 0.98rem;
+      letter-spacing: 1.6px;
+      max-width: 36vw;
+    }
+
+    .menu-btn,
+    .toolbar-theme-btn {
+      width: 40px !important;
+      height: 40px !important;
+      min-width: 40px !important;
+      min-height: 40px !important;
+    }
+
+    .toolbar-user,
+    .toolbar-avatar {
+      width: 36px;
+      height: 36px;
+    }
+  }
+
+  .sidenav.mobile {
+    width: calc(100vw - 18px);
+    margin: 9px;
   }
 }

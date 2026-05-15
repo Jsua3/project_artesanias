@@ -304,3 +304,102 @@ dd {
     grid-template-columns: 1fr;
   }
 }
+
+// Rebecca V1.1 phase 3
+.review-page {
+  padding: clamp(16px, 3vw, 28px);
+}
+
+.review-header {
+  align-items: flex-end;
+}
+
+.review-metrics {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.review-metrics article {
+  min-width: 128px;
+  border-radius: 22px;
+}
+
+.review-layout {
+  grid-template-columns: minmax(250px, 0.34fr) minmax(0, 1fr);
+}
+
+.request-list {
+  min-width: 0;
+}
+
+.request-card,
+.detail-panel {
+  border-radius: clamp(20px, 2.2vw, 28px);
+}
+
+.request-card strong,
+.request-card small,
+.detail-head h2,
+.story,
+dd,
+.notes-box p {
+  overflow-wrap: anywhere;
+}
+
+.detail-head {
+  min-width: 0;
+}
+
+.detail-head__side {
+  min-width: min(100%, 180px);
+}
+
+.spec-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
+}
+
+.price-box div {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.actions {
+  flex-wrap: wrap;
+}
+
+@media (max-width: 760px) {
+  .review-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .review-metrics {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .review-metrics article {
+    min-width: 0;
+  }
+
+  .review-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .actions > * {
+    flex: 1 1 min(220px, 100%);
+  }
+}
+
+@media (max-width: 420px) {
+  .review-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-panel {
+    padding: 16px;
+  }
+
+  .price-box div {
+    grid-template-columns: 1fr;
+  }
+}

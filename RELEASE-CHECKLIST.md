@@ -54,6 +54,18 @@ Verificar que `/api/artesanos` no incluya `telefono`, `email`, `userAccountId`, 
 
 Verificar que `/api/products` no incluya `sku`, `stockMinimo`, `active`, `createdAt` ni `updatedAt`.
 
+El agente publico de diseno 3D debe responder sin token para visitantes/clientes:
+
+```bash
+curl -i -X POST http://56.126.102.113.nip.io/api/ai/design/message \
+  -H "Content-Type: application/json" \
+  -d '{"message":"Quiero una lampara de guadua para sala, inspirada en Salento, maximo 35 cm."}'
+
+curl -i -X POST http://56.126.102.113.nip.io/api/ai/design/preview \
+  -H "Content-Type: application/json" \
+  -d '{"type":"lampara","material":"guadua","color":"azul calido","heightCm":35}'
+```
+
 ## Smoke tests sin login que deben fallar
 
 Estas rutas deben responder `401` sin token:
@@ -65,7 +77,6 @@ curl -i http://56.126.102.113.nip.io/api/stock
 curl -i http://56.126.102.113.nip.io/api/ventas
 curl -i http://56.126.102.113.nip.io/api/reports/summary
 curl -i http://56.126.102.113.nip.io/api/artesanos/admin/all
-curl -i http://56.126.102.113.nip.io/api/ai/design/message
 curl -i http://56.126.102.113.nip.io/api/ai/design/mine
 curl -i http://56.126.102.113.nip.io/api/ai/design/review
 ```
@@ -98,6 +109,20 @@ curl -i http://56.126.102.113.nip.io/api/ai/design/review
 - `DOMICILIARIO`
   - Puede ver panel de entregas.
   - No puede crear productos, ver reportes ni admin DB.
+
+## Checklist visual V1.1
+
+Antes de desplegar cambios que toquen landing, shell, botones globales, panel privado o disenador 3D:
+
+- Ejecutar `cd frontend && npm run build` y confirmar que no hay warnings de bundle ni fuentes.
+- Confirmar que el bundle inicial productivo queda por debajo del presupuesto configurado.
+- Repetir capturas de landing publica en:
+  `360x780`, `390x844`, `430x932`, `768x1024`, `1024x768`, `1366x768` y `1440x900`.
+- Revisar una muestra del nuevo apartado `Artesania 3D` y confirmar que el CTA a `/disena-tu-pieza` no queda tapado por bottom nav.
+- Revisar una muestra autenticada de panel admin/artesano/domiciliario y confirmar que las tarjetas Liquid Glass tienen hover/foco accesible sin solaparse.
+- Verificar que `Pasa al taller`, `Disena tu pieza 3D`, metricas y bottom nav viven en zonas separadas en movil.
+- Verificar que la textura de fondo sea visible pero sobria en modo claro y oscuro.
+- Si se usan librerias pesadas nuevas, cargarlas desde rutas lazy; no registrarlas en `app.config.ts` salvo que sean necesarias en el arranque.
 
 ## Despues del deploy
 

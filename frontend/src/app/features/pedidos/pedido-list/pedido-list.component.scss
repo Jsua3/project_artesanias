@@ -230,3 +230,95 @@
     grid-template-columns: 1fr;
   }
 }
+
+// Rebecca V1.1 phase 3
+.page-container {
+  width: min(100%, 1320px);
+  padding: clamp(18px, 3vw, 34px);
+}
+
+.page-actions {
+  justify-content: flex-end;
+}
+
+.pedido-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 430px), 1fr));
+  gap: clamp(16px, 2vw, 24px);
+}
+
+.pedido-card {
+  border-radius: clamp(20px, 2.2vw, 28px);
+}
+
+.pedido-card-header > div:first-child,
+.summary-item {
+  min-width: 0;
+}
+
+.pedido-card-header h3,
+.pedido-meta,
+.summary-value {
+  overflow-wrap: anywhere;
+}
+
+.pedido-status-wrap {
+  flex: 0 0 auto;
+}
+
+.pedido-summary {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
+}
+
+.summary-item {
+  border-radius: 18px;
+}
+
+.pedido-steps {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.step-pill {
+  min-height: 40px;
+  padding-inline: 10px;
+  text-align: center;
+}
+
+@media (max-width: 720px) {
+  .page-actions {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .pedido-card-header,
+  .pedido-progress-caption {
+    align-items: stretch;
+  }
+
+  .pedido-status-wrap {
+    align-items: stretch;
+    flex-direction: row;
+  }
+
+  .status-chip,
+  .stage-chip {
+    flex: 1 1 0;
+  }
+
+  .pedido-steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 420px) {
+  .pedido-card {
+    padding: 16px;
+  }
+
+  .pedido-status-wrap,
+  .pedido-steps {
+    grid-template-columns: 1fr;
+    flex-direction: column;
+  }
+}

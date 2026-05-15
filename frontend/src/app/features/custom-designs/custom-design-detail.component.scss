@@ -353,3 +353,96 @@ dd {
     grid-template-columns: 1fr;
   }
 }
+
+// Rebecca V1.1 phase 3
+.design-detail-page {
+  padding: clamp(16px, 3vw, 28px);
+}
+
+.detail-hero {
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 300px);
+  gap: clamp(16px, 2vw, 24px);
+}
+
+.detail-hero > div,
+.quote-card,
+.info-panel,
+.price-panel,
+.notes-panel,
+.steps-panel {
+  min-width: 0;
+}
+
+h1,
+h2,
+h3,
+.preview-prompt,
+dd,
+.price-panel li,
+.notes-panel p,
+.steps-panel li {
+  overflow-wrap: anywhere;
+}
+
+.quote-card,
+.preview-panel,
+.info-panel,
+.price-panel,
+.steps-panel,
+.notes-panel,
+.customer-alert {
+  border-radius: clamp(20px, 2.2vw, 28px);
+}
+
+.detail-grid {
+  grid-template-columns: minmax(300px, 0.82fr) minmax(0, 1.18fr);
+}
+
+.lower-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.preview-stage {
+  min-height: clamp(280px, 38vw, 420px);
+}
+
+.measure-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 126px), 1fr));
+}
+
+.spec-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr));
+}
+
+.price-panel li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+@media (max-width: 900px) {
+  .detail-hero,
+  .detail-grid,
+  .lower-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .quote-card {
+    max-width: 420px;
+  }
+}
+
+@media (max-width: 520px) {
+  .customer-alert {
+    align-items: flex-start;
+  }
+
+  .quote-card {
+    max-width: none;
+  }
+
+  .price-panel li {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+}

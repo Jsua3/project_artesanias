@@ -114,3 +114,87 @@
 
 .value.gold { color: var(--rb-terracota-700, #7A4A2E); font-weight: 700; }
 .value.small { font-size: 0.82rem; }
+
+// Rebecca V1.1 phase 3B
+.kpi-row {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr));
+  gap: clamp(12px, 1.8vw, 18px);
+}
+
+.kpi-card,
+.filter-card {
+  border-radius: clamp(20px, 2.2vw, 28px);
+}
+
+.kpi-value {
+  overflow-wrap: anywhere;
+}
+
+.filter-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: start;
+}
+
+.filter-clear-btn {
+  min-height: 56px;
+  height: auto;
+}
+
+.desktop-table {
+  overflow-x: auto;
+  border-radius: 26px;
+}
+
+.desktop-table mat-card {
+  min-width: 820px;
+  border-radius: 26px;
+}
+
+.productos-cell {
+  min-width: 220px;
+}
+
+.estado-badge {
+  min-height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 100%;
+  text-align: center;
+}
+
+.data-card-header {
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.data-card-title,
+.data-card-row .value {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 860px) {
+  .filter-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .filter-clear-btn {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 520px) {
+  .filter-row,
+  .kpi-row {
+    grid-template-columns: 1fr;
+  }
+
+  .data-card-header {
+    flex-direction: column;
+  }
+
+  .estado-badge {
+    width: 100%;
+  }
+}

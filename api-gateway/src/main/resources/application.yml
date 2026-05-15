@@ -133,7 +133,15 @@ spring:
             - JwtAuth
 
         # AI Service (diseÃ±ador 3D personalizado) â€” protegido por JWT.
-        # El ai-service valida que solo CLIENTE/ADMIN puedan usarlo.
+        # Guardar solicitudes, notificaciones y revision siguen protegidas abajo.
+        - id: ai-service-public-design
+          uri: ${AI_SERVICE_URL:http://localhost:8085}
+          predicates:
+            - Path=/api/ai/design/message, /api/ai/design/preview
+            - Method=POST
+          filters:
+            - AddRequestHeader=X-Internal-Token, ${security.jwt.internal-token}
+
         - id: ai-service
           uri: ${AI_SERVICE_URL:http://localhost:8085}
           predicates:

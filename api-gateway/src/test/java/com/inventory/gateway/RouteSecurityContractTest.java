@@ -18,7 +18,8 @@ class RouteSecurityContractTest {
             "auth-service-public",
             "catalog-service-public-eventos",
             "catalog-service-public",
-            "inventory-service-stripe-webhook"
+            "inventory-service-stripe-webhook",
+            "ai-service-public-design"
     );
 
     private static final Set<String> SENSITIVE_ROUTES = Set.of(
@@ -32,6 +33,11 @@ class RouteSecurityContractTest {
             "inventory-service",
             "report-service",
             "ai-service"
+    );
+
+    private static final Set<String> PUBLIC_AI_PATHS = Set.of(
+            "/api/ai/design/message",
+            "/api/ai/design/preview"
     );
 
     @Test
@@ -69,6 +75,28 @@ class RouteSecurityContractTest {
         assertThat(routes.get(managementIndex).predicates())
                 .anyMatch(predicate -> predicate.contains("/api/products/admin/**")
                         && predicate.contains("/api/artesanos/admin/**"));
+    }
+
+    @Test
+    void publicAiRouteOnlyExposesDesignerMessageAndPreview() throws IOException {
+        Map<String, Route> routes = loadRoutes();
+        Route route = routes.get("ai-service-public-design");
+
+        assertThat(route.filters()).doesNotContain("JwtAuth");
+        assertThat(route.filters()).anyMatch(filter -> filter.startsWith("AddRequestHeader=X-Internal-Token"));
+        assertThat(route.predicates()).anyMatch(predicate ->
+                PUBLIC_AI_PATHS.stream().allMatch(predicate::contains)
+                        && !predicate.contains("/api/ai/**")
+                        && !predicate.contains("/api/ai/design/confirm")
+                        && !predicate.contains("/api/ai/design/review"));
+        assertThat(route.predicates()).contains("Method=POST");
+    }
+
+    @Test
+    void publicAiRouteIsMatchedBeforePrivateAiWildcard() throws IOException {
+        List<Route> routes = loadRoutesInOrder();
+
+        assertThat(indexOf(routes, "ai-service-public-design")).isLessThan(indexOf(routes, "ai-service"));
     }
 
     @SuppressWarnings("unchecked")

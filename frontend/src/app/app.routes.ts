@@ -25,7 +25,6 @@ const PUBLIC_ROUTES: Routes = [
   },
   {
     path: 'disena-tu-pieza',
-    canActivate: [authGuard],
     loadComponent: () => import('./features/public/ai-designer/ai-designer.component').then(m => m.AiDesignerComponent)
   },
   {

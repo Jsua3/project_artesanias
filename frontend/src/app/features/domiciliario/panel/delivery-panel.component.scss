@@ -573,3 +573,152 @@ $success:   #4caf8a;
 
   mat-icon { font-size: 16px; width: 16px; height: 16px; }
 }
+
+// Rebecca V1.1 phase 3B
+.panel-shell {
+  width: min(100%, 1320px);
+  padding: clamp(18px, 3vw, 34px) clamp(14px, 3vw, 24px) 64px;
+}
+
+.panel-header {
+  min-height: 86px;
+  padding: clamp(16px, 2.4vw, 24px);
+  border-radius: clamp(22px, 2.6vw, 30px);
+}
+
+.panel-header__left {
+  min-width: 0;
+}
+
+.panel-header h1,
+.header-sub,
+.order-id,
+.order-card__row span,
+.route-copy p,
+.info-value,
+.step-label,
+.step-desc {
+  overflow-wrap: anywhere;
+}
+
+.panel-layout {
+  grid-template-columns: minmax(300px, 0.34fr) minmax(0, 1fr);
+  gap: clamp(16px, 2vw, 26px);
+}
+
+.orders-list,
+.order-detail {
+  min-width: 0;
+}
+
+.order-card,
+.order-detail,
+.detail-info-card,
+.route-placeholder,
+.phase-card,
+.checklist-step,
+.loading-wrap,
+.empty-orders {
+  border-radius: clamp(18px, 2vw, 26px);
+}
+
+.order-card__top {
+  align-items: flex-start;
+}
+
+.order-chip {
+  flex: 0 0 auto;
+  max-width: 48%;
+  text-align: center;
+  white-space: normal;
+}
+
+.detail-info-row {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+}
+
+.route-placeholder {
+  grid-template-columns: minmax(220px, 0.72fr) minmax(0, 1fr);
+}
+
+.phase-flow {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr));
+}
+
+.phase-card {
+  min-height: 0;
+}
+
+.step-body {
+  min-width: 0;
+}
+
+.step-top {
+  align-items: flex-start;
+}
+
+.close-detail {
+  z-index: 3;
+}
+
+@media (max-width: 900px) {
+  .panel-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .panel-layout.has-selected .orders-list {
+    display: none;
+  }
+}
+
+@media (max-width: 620px) {
+  .panel-header__left {
+    align-items: flex-start;
+  }
+
+  .panel-header h1 {
+    font-size: clamp(24px, 8vw, 32px);
+  }
+
+  .order-tabs {
+    grid-template-columns: 1fr;
+  }
+
+  .order-card__top,
+  .progress-header,
+  .step-top {
+    flex-direction: column;
+  }
+
+  .order-chip {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .order-detail {
+    padding: 20px 16px;
+  }
+
+  .close-detail {
+    position: static;
+    align-self: flex-end;
+  }
+
+  .route-placeholder {
+    grid-template-columns: 1fr;
+  }
+
+  .checklist-step {
+    grid-template-columns: 34px 1fr;
+    gap: 0 10px;
+  }
+
+  .step-connector {
+    display: none;
+  }
+
+  .step-icon-wrap {
+    width: 34px;
+    height: 34px;
+  }
+}

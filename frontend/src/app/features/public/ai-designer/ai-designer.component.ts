@@ -1,6 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -8,6 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AiDesignService } from '../../../core/services/ai-design.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { CustomDesignResponse, DesignSpec } from '../../../core/models/ai-design.model';
 
 interface ChatMessage {
@@ -33,6 +34,8 @@ interface ChatMessage {
 })
 export class AiDesignerComponent {
   private readonly ai = inject(AiDesignService);
+  private readonly auth = inject(AuthService);
+  private readonly router = inject(Router);
 
   readonly prompt = new FormControl(
     'Quiero una lampara de guadua para sala, inspirada en Filandia, con tonos calidos y maximo 35 cm.',
@@ -59,6 +62,7 @@ export class AiDesignerComponent {
   readonly savedDesign = signal<CustomDesignResponse | null>(null);
 
   readonly hasSpec = computed(() => this.spec() !== null);
+  readonly isLoggedIn = computed(() => this.auth.isLoggedIn());
   readonly priceLabel = computed(() => {
     const price = this.spec()?.estimatedPrice ?? 0;
     return '$ ' + price.toLocaleString('es-CO');
@@ -146,6 +150,11 @@ export class AiDesignerComponent {
   confirmDesign(): void {
     const current = this.spec();
     if (!current || this.confirming()) return;
+    if (!this.auth.isLoggedIn()) {
+      this.error.set('Para enviar la solicitud al taller, inicia sesion como cliente. Puedes seguir explorando el diseno 3D sin iniciar sesion.');
+      this.router.navigate(['/login']);
+      return;
+    }
 
     this.confirming.set(true);
     this.error.set(null);

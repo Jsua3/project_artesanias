@@ -75,3 +75,79 @@
     padding: 16px;
   }
 }
+
+// Rebecca V1.1 phase 3B
+.page-header {
+  align-items: center;
+  border-radius: clamp(22px, 2.6vw, 30px);
+  gap: 16px;
+}
+
+.page-title {
+  line-height: 1;
+}
+
+.ventas-table-card {
+  border-radius: clamp(22px, 2.4vw, 30px) !important;
+}
+
+.full-width {
+  min-width: 780px;
+}
+
+.delivery-cell {
+  min-width: 190px;
+  max-width: 260px;
+}
+
+.delivery-label,
+.delivery-cell small {
+  overflow-wrap: anywhere;
+}
+
+.status-badge {
+  min-height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.data-card-header {
+  gap: 12px;
+}
+
+.data-card-header > div {
+  min-width: 0;
+}
+
+.data-card-title,
+.data-card-subtitle,
+.data-card-row .value {
+  overflow-wrap: anywhere;
+}
+
+.data-card-row.delivery-row {
+  align-items: start;
+}
+
+@media (max-width: 720px) {
+  .page-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .page-header button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 430px) {
+  .data-card-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .status-badge {
+    width: 100%;
+  }
+}

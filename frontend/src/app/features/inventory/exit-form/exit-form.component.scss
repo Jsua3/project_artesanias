@@ -1,1 +1,21 @@
 // Exit form uses global shared styles from styles.scss
+
+// Rebecca V1.1 phase 3B
+.page-container {
+  display: grid;
+  justify-items: start;
+}
+
+.form-page-card {
+  width: min(100%, 640px);
+}
+
+.form-grid {
+  gap: 12px;
+}
+
+@media (max-width: 640px) {
+  .page-container {
+    justify-items: stretch;
+  }
+}

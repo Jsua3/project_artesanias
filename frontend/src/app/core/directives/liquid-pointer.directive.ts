@@ -59,6 +59,21 @@ export class LiquidPointerDirective implements OnInit, OnDestroy {
     this.resetSurface();
   }
 
+  @HostListener('focusin')
+  onFocusIn(): void {
+    if (!this.motionAllowed()) return;
+
+    this.renderer.setStyle(this.el.nativeElement, '--glow-intensity', '0.82');
+  }
+
+  @HostListener('focusout')
+  onFocusOut(): void {
+    this.lastPointer = null;
+    this.cancelFrame();
+    this.clearHoverTimer();
+    this.resetSurface();
+  }
+
   private scheduleFrame(): void {
     if (this.rafId || typeof window === 'undefined') return;
 
@@ -108,5 +123,11 @@ export class LiquidPointerDirective implements OnInit, OnDestroy {
 
     window.clearTimeout(this.hoverTimer);
     this.hoverTimer = 0;
+  }
+
+  private motionAllowed(): boolean {
+    if (typeof window === 'undefined') return false;
+
+    return !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   }
 }

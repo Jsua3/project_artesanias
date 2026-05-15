@@ -173,7 +173,7 @@
                 } @else {
                   <mat-icon>add_shopping_cart</mat-icon>
                 }
-                Crear producto personalizado
+                {{ isLoggedIn() ? 'Crear producto personalizado' : 'Iniciar sesion para enviar al taller' }}
               </button>
             }
           </div>

@@ -147,7 +147,6 @@
       </p>
       <div class="hero__ctas">
         <a href="#coleccion" class="btn btn--primary">Pasa al taller</a>
-        <a routerLink="/disena-tu-pieza" class="btn btn--text btn--text-light">Diseña tu pieza 3D</a>
         <a href="#maestros" class="btn btn--text btn--text-light">Conoce a los maestros →</a>
       </div>
     </div>
@@ -199,9 +198,45 @@
     </div>
   </div>
 
+  <section id="artesania-3d" class="craft-3d-section story-reveal">
+    <div class="craft-3d-section__inner">
+      <div class="craft-3d-section__copy">
+        <span class="eyebrow">Artesanía 3D</span>
+        <h2>Imagina una pieza y deja que Rebecca la vuelva forma.</h2>
+        <p>Una lámpara de guadua, una bandeja cafetera o una matera de bejuco: el agente convierte la idea en ficha artesanal y preview 3D para conversar con el taller.</p>
+        <div class="craft-3d-section__actions">
+          <a routerLink="/disena-tu-pieza" class="btn btn--primary">Diseñar pieza 3D</a>
+          <a href="#coleccion" class="btn btn--text">Ver piezas reales</a>
+        </div>
+      </div>
+
+      <div class="craft-3d-card liquid-glass liquid-glass--solid" appLiquidPointer [liquidTiltStrength]="3">
+        <div class="craft-3d-card__stage" aria-hidden="true">
+          <div class="craft-3d-model">
+            <span class="craft-3d-model__ring craft-3d-model__ring--top"></span>
+            <span class="craft-3d-model__ring craft-3d-model__ring--mid"></span>
+            <span class="craft-3d-model__ring craft-3d-model__ring--low"></span>
+          </div>
+          <div class="craft-3d-card__shadow"></div>
+        </div>
+        <div class="craft-3d-card__body">
+          <div>
+            <span class="eyebrow">Preview inicial</span>
+            <h3>Lámpara de guadua</h3>
+          </div>
+          <div class="craft-3d-card__specs">
+            <span>35 cm</span>
+            <span>Azul cálido</span>
+            <span>Detalles rojos</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- ========= PANEL ARTESANO / ADMIN (visible solo si no es CLIENTE) ========= -->
   @if (auth.isLoggedIn() && !auth.isCliente()) {
-    <section class="artesano-panel story-reveal">
+    <section id="panel-roles" class="artesano-panel story-reveal">
       <div class="artesano-panel__bg" aria-hidden="true"></div>
       <div class="artesano-panel__inner">
         <div class="artesano-panel__copy">
@@ -210,7 +245,7 @@
           <p>Gestiona tus artesanías, revisa movimientos y sigue el estado de tus pedidos desde el backoffice.</p>
         </div>
         <div class="artesano-panel__cards">
-          <a class="panel-card liquid-glass liquid-glass--solid" (click)="goToPanel()">
+          <a class="panel-card liquid-glass liquid-glass--solid" appLiquidPointer [liquidTiltStrength]="2.5" (click)="goToPanel()">
             <div class="panel-card__icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
             </div>
@@ -220,7 +255,7 @@
             </div>
             <svg class="panel-card__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
           </a>
-          <a class="panel-card liquid-glass liquid-glass--solid" routerLink="/products">
+          <a class="panel-card liquid-glass liquid-glass--solid" appLiquidPointer [liquidTiltStrength]="2.5" routerLink="/products">
             <div class="panel-card__icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14 2 9.27l6.91-1.01z"/></svg>
             </div>
@@ -230,13 +265,23 @@
             </div>
             <svg class="panel-card__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
           </a>
-          <a class="panel-card liquid-glass liquid-glass--solid" routerLink="/movimientos">
+          <a class="panel-card liquid-glass liquid-glass--solid" appLiquidPointer [liquidTiltStrength]="2.5" routerLink="/movimientos">
             <div class="panel-card__icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3h18v18H3zM8 12h8M12 8v8"/></svg>
             </div>
             <div class="panel-card__body">
               <strong>Movimientos</strong>
               <span>Ventas y reportes</span>
+            </div>
+            <svg class="panel-card__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+          <a class="panel-card liquid-glass liquid-glass--solid panel-card--ai" appLiquidPointer [liquidTiltStrength]="2.5" routerLink="/disena-tu-pieza">
+            <div class="panel-card__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2 4 6v12l8 4 8-4V6l-8-4Z"/><path d="M4 6l8 4 8-4M12 10v12"/></svg>
+            </div>
+            <div class="panel-card__body">
+              <strong>Diseñador 3D</strong>
+              <span>Crear pieza personalizada</span>
             </div>
             <svg class="panel-card__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
           </a>

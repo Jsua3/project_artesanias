@@ -30,26 +30,26 @@ public class DesignAgentController {
 
     @PostMapping("/message")
     public Mono<DesignTurnResponse> message(
-            @RequestHeader("X-User-Id") String userId,
-            @RequestHeader("X-User-Role") String role,
+            @RequestHeader(value = "X-User-Id", required = false) String userId,
+            @RequestHeader(value = "X-User-Role", required = false) String role,
             @Valid @RequestBody DesignTurnRequest request
     ) {
-        if (!"CLIENTE".equals(role) && !"ADMIN".equals(role)) {
+        if (role != null && !"CLIENTE".equals(role) && !"ADMIN".equals(role)) {
             return Mono.error(new ResponseStatusException(HttpStatus.FORBIDDEN));
         }
-        return designAgentService.nextTurn(userId, request);
+        return designAgentService.nextTurn(userId == null ? "public" : userId, request);
     }
 
     @PostMapping("/preview")
     public Mono<PreviewResponse> preview(
-            @RequestHeader("X-User-Id") String userId,
-            @RequestHeader("X-User-Role") String role,
+            @RequestHeader(value = "X-User-Id", required = false) String userId,
+            @RequestHeader(value = "X-User-Role", required = false) String role,
             @Valid @RequestBody PreviewRequest request
     ) {
-        if (!"CLIENTE".equals(role) && !"ADMIN".equals(role)) {
+        if (role != null && !"CLIENTE".equals(role) && !"ADMIN".equals(role)) {
             return Mono.error(new ResponseStatusException(HttpStatus.FORBIDDEN));
         }
-        return designAgentService.generatePreview(userId, request.spec());
+        return designAgentService.generatePreview(userId == null ? "public" : userId, request.spec());
     }
 
     @PostMapping("/confirm")

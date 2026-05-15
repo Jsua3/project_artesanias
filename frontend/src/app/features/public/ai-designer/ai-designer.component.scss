@@ -483,3 +483,147 @@ dd {
     animation: none;
   }
 }
+
+/* Rebecca V1.1 — responsive designer hardening */
+@media (max-width: 700px) {
+  :host {
+    background:
+      radial-gradient(circle at 82% 4%, rgba(138, 154, 123, 0.14), transparent 18rem),
+      radial-gradient(circle at 10% 0%, rgba(201, 162, 83, 0.16), transparent 18rem),
+      linear-gradient(135deg, #f5f0e8 0%, #ede4d3 58%, #d8c9b0 100%);
+  }
+
+  .designer-page {
+    padding: 18px 14px calc(env(safe-area-inset-bottom, 0px) + 28px);
+  }
+
+  .designer-hero {
+    gap: 16px;
+    margin-bottom: 18px;
+  }
+
+  .back-link,
+  .my-designs-link {
+    min-height: 42px;
+    border-radius: 999px;
+  }
+
+  .my-designs-link {
+    justify-self: stretch;
+    justify-content: center;
+  }
+
+  h1 {
+    font-size: clamp(38px, 13vw, 58px);
+    line-height: 0.96;
+    text-wrap: balance;
+  }
+
+  .designer-hero p,
+  .empty-state p,
+  .design-card p {
+    font-size: 15px;
+    line-height: 1.58;
+  }
+
+  .designer-workbench {
+    gap: 14px;
+  }
+
+  .chat-panel,
+  .preview-panel {
+    border-radius: 18px;
+  }
+
+  .chat-panel {
+    min-height: auto;
+    padding: 14px;
+    grid-template-rows: auto auto auto;
+  }
+
+  .chat-panel__messages {
+    max-height: min(58svh, 480px);
+  }
+
+  .message {
+    max-width: 94%;
+    padding: 12px 13px;
+  }
+
+  .suggestions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .suggestions button {
+    min-height: 40px;
+    text-align: left;
+  }
+
+  .composer button,
+  .design-card button {
+    width: 100%;
+    min-height: 46px;
+  }
+
+  .preview-panel {
+    grid-template-rows: auto auto;
+  }
+
+  .preview-stage {
+    min-height: clamp(300px, 58vw, 380px);
+  }
+
+  .preview-object {
+    max-width: 64vw;
+    max-height: 270px;
+  }
+
+  .preview-floor {
+    bottom: 42px;
+    width: 70%;
+  }
+
+  .design-card,
+  .empty-state {
+    padding: 18px;
+  }
+
+  .design-card__head {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .spec-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .price-breakdown__head,
+  .price-breakdown li {
+    align-items: flex-start;
+  }
+
+  .steps ol {
+    padding-left: 18px;
+  }
+}
+
+@media (max-width: 380px) {
+  .designer-page {
+    padding-inline: 10px;
+  }
+
+  .chat-panel,
+  .preview-panel {
+    border-radius: 16px;
+  }
+
+  .message {
+    max-width: 100%;
+  }
+
+  .preview-stage {
+    min-height: 286px;
+  }
+}

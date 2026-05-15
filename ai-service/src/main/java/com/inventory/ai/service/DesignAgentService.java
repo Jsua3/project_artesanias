@@ -26,10 +26,15 @@ import reactor.core.publisher.Mono;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.text.Normalizer;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class DesignAgentService {
@@ -420,58 +425,57 @@ public class DesignAgentService {
     }
 
     private DesignTurnResponse fallbackTurn(DesignTurnRequest request) {
-        String message = request.message().toLowerCase();
-        String type = pickType(message);
-        String material = pickMaterial(message, type);
-        String title = switch (type) {
-            case "lamp" -> "Lampara de guadua con neblina cafetera";
-            case "basket" -> "Canasto tejido para mesa de bienvenida";
-            case "planter" -> "Matera artesanal de barro y guadua";
-            case "jewelry" -> "Collar artesanal de filamento dorado";
-            case "tray" -> "Bandeja cafetera de madera y fique";
-            default -> "Vasija territorial de barro quemado";
-        };
+        String message = normalizeText(request.message());
+        DesignSpec current = request.currentSpec();
+        String type = pickType(message, current);
+        String material = pickPrimaryMaterial(message, type);
+        String territory = pickTerritory(message, current);
+        String pattern = pickPattern(message, type, current);
+        String finish = pickFinish(message, current);
+        List<String> palette = pickPalette(message, current);
+        List<String> secondaryMaterials = pickSecondaryMaterials(message, material, current);
+        DesignSpec.Dimensions dimensions = pickDimensions(message, type, current);
+        String complexity = pickComplexity(message, pattern, secondaryMaterials, current);
+        String title = buildFallbackTitle(type, material, pattern, palette);
 
         DesignSpec spec = new DesignSpec(
                 type,
                 title,
-                "Una pieza pensada como encargo personal: nace del paisaje cafetero, mezcla oficio manual y una silueta contemporanea para llevar territorio a casa.",
-                message.contains("salento") ? "Salento, Quindio" : "Filandia, Quindio",
+                buildArtisanStory(material, territory, pattern),
+                territory,
                 material,
-                List.of("fique", "madera sellada", "filamento dorado"),
-                REBECCA_PALETTE,
-                new DesignSpec.Dimensions(35, 22, 22, 18),
-                message.contains("cafe") || message.contains("cafetal") ? "cafetal_neblina" : "guadua_tramada",
-                "mate artesanal",
-                "media",
+                secondaryMaterials,
+                palette,
+                dimensions,
+                pattern,
+                finish,
+                complexity,
                 BigDecimal.ZERO,
                 null,
                 0,
-                List.of(
-                        "Validar medidas y uso esperado con el cliente.",
-                        "Seleccionar material principal y preparar corte/secado.",
-                        "Construir forma base segun plantilla 3D.",
-                        "Aplicar patron y acabado mate.",
-                        "Revisar estabilidad, empaque y entrega."
-                ),
+                makingSteps(type, material, pattern, finish),
                 new DesignSpec.ThreeDParameters(
                         type,
-                        type.equals("lamp") ? 1.25 : 1.0,
-                        type.equals("jewelry") ? 0.38 : 0.62,
-                        0.18,
-                        0.22,
-                        "#704A2E",
-                        "#C9A253",
-                        message.contains("cafe") ? "cafetal_neblina" : "guadua_tramada",
-                        8
+                        heightParameter(type, dimensions),
+                        radiusParameter(type, dimensions),
+                        taperParameter(type),
+                        curvatureParameter(pattern),
+                        palette.get(0),
+                        palette.size() > 1 ? palette.get(1) : "#C9A253",
+                        pattern,
+                        repeatCount(pattern)
                 )
         );
 
         String reply = "Te propongo una base inicial: " + title
                 + ". La pense en " + material
-                + ", con acabado mate y detalles inspirados en "
-                + spec.territory()
-                + ". Puedes pedirme que sea mas alta, mas sobria, mas colorida o mas cercana a un objeto funcional.";
+                + secondaryMaterialsPhrase(secondaryMaterials)
+                + ", con acabado " + finish
+                + ", patron " + pattern.replace('_', ' ')
+                + " y paleta " + palettePhrase(palette)
+                + ". El preview 3D queda ajustado a " + dimensions.heightCm() + " x " + dimensions.widthCm()
+                + " cm e inspirado en " + territory
+                + ". Puedes pedirme cambios de forma, color, material, medidas o presupuesto.";
 
         return new DesignTurnResponse(reply, spec, buildPreviewPrompt(spec), "fallback");
     }
@@ -496,6 +500,228 @@ public class DesignAgentService {
             case "jewelry" -> "madera y filamento dorado";
             default -> "barro";
         };
+    }
+
+    private String pickType(String message, DesignSpec current) {
+        if (message.contains("lampara") || message.contains("luz") || message.contains("pantalla")) return "lamp";
+        if (message.contains("canasto") || message.contains("cesto")) return "basket";
+        if (message.contains("matera") || message.contains("planta")) return "planter";
+        if (message.contains("collar") || message.contains("arete") || message.contains("joya")) return "jewelry";
+        if (message.contains("bandeja")) return "tray";
+        if (message.contains("mural")) return "mural";
+        if (current != null && current.productType() != null && !current.productType().isBlank()) return current.productType();
+        return "vase";
+    }
+
+    private String pickPrimaryMaterial(String message, String type) {
+        if (message.contains("guadua")) return "guadua";
+        if (message.contains("bejuco")) return "bejuco";
+        if (message.contains("barro") || message.contains("ceram")) return "barro";
+        if (message.contains("fique")) return "fique";
+        if (message.contains("iraca")) return "iraca";
+        if (message.contains("madera")) return "madera";
+        if (message.contains("lana")) return "lana";
+        return switch (type) {
+            case "lamp" -> "guadua";
+            case "basket" -> "fique";
+            case "jewelry" -> "madera y filamento dorado";
+            case "tray" -> "madera";
+            default -> "barro";
+        };
+    }
+
+    private String pickTerritory(String message, DesignSpec current) {
+        if (message.contains("salento") || message.contains("cocora")) return "Salento, Quindio";
+        if (message.contains("filandia")) return "Filandia, Quindio";
+        if (message.contains("pijao")) return "Pijao, Quindio";
+        if (message.contains("circasia")) return "Circasia, Quindio";
+        if (message.contains("armenia")) return "Armenia, Quindio";
+        if (current != null && current.territory() != null && !current.territory().isBlank()) return current.territory();
+        return "Filandia, Quindio";
+    }
+
+    private String pickPattern(String message, String type, DesignSpec current) {
+        if (message.contains("circular") || message.contains("circulo") || message.contains("redondo")) return "aros_circulares";
+        if (message.contains("geometr")) return "geometria_cafetera";
+        if (message.contains("palma")) return "palma_de_cera";
+        if (message.contains("cafetal") || message.contains("cafe")) return "cafetal_neblina";
+        if (message.contains("trenz") || message.contains("tejid")) return "trama_tejida";
+        if (current != null && current.pattern() != null && !current.pattern().isBlank()) return current.pattern();
+        return type.equals("lamp") ? "guadua_tramada" : "territorio_sutil";
+    }
+
+    private String pickFinish(String message, DesignSpec current) {
+        if (message.contains("brillante") || message.contains("esmalt")) return "brillante artesanal";
+        if (message.contains("dorado") || message.contains("metal")) return "mate con acento dorado";
+        if (message.contains("tallado") || message.contains("relieve")) return "tallado en bajo relieve";
+        if (message.contains("mate")) return "mate artesanal";
+        if (current != null && current.finish() != null && !current.finish().isBlank()) return current.finish();
+        return "mate artesanal";
+    }
+
+    private List<String> pickPalette(String message, DesignSpec current) {
+        LinkedHashSet<String> colors = new LinkedHashSet<>();
+        if (message.contains("azul")) colors.add("#2F5F8F");
+        if (message.contains("rojo")) colors.add("#B84A3A");
+        if (message.contains("verde")) colors.add("#5A6B4A");
+        if (message.contains("dorado") || message.contains("oro")) colors.add("#C9A253");
+        if (message.contains("negro")) colors.add("#2E2620");
+        if (message.contains("blanco") || message.contains("crema")) colors.add("#F5F0E8");
+        if (message.contains("calido") || message.contains("terracota")) colors.add("#A67C52");
+        if (colors.isEmpty() && current != null && current.colorPalette() != null && !current.colorPalette().isEmpty()) {
+            colors.addAll(current.colorPalette());
+        }
+        for (String color : REBECCA_PALETTE) {
+            if (colors.size() >= 3) break;
+            colors.add(color);
+        }
+        return new ArrayList<>(colors);
+    }
+
+    private List<String> pickSecondaryMaterials(String message, String primaryMaterial, DesignSpec current) {
+        LinkedHashSet<String> materials = new LinkedHashSet<>();
+        addMaterialIfMentioned(materials, message, "guadua", primaryMaterial);
+        addMaterialIfMentioned(materials, message, "bejuco", primaryMaterial);
+        addMaterialIfMentioned(materials, message, "barro", primaryMaterial);
+        addMaterialIfMentioned(materials, message, "fique", primaryMaterial);
+        addMaterialIfMentioned(materials, message, "iraca", primaryMaterial);
+        addMaterialIfMentioned(materials, message, "madera", primaryMaterial);
+        addMaterialIfMentioned(materials, message, "lana", primaryMaterial);
+        if (materials.isEmpty() && current != null && current.secondaryMaterials() != null) {
+            materials.addAll(current.secondaryMaterials());
+            materials.remove(primaryMaterial);
+        }
+        if (materials.isEmpty()) {
+            if (!"fique".equals(primaryMaterial)) materials.add("fique");
+            if (!"madera".equals(primaryMaterial)) materials.add("madera sellada");
+        }
+        return new ArrayList<>(materials).stream().limit(3).toList();
+    }
+
+    private void addMaterialIfMentioned(LinkedHashSet<String> materials, String message, String material, String primaryMaterial) {
+        if (message.contains(material) && !material.equals(primaryMaterial)) {
+            materials.add(material);
+        }
+    }
+
+    private DesignSpec.Dimensions pickDimensions(String message, String type, DesignSpec current) {
+        Integer mentioned = firstCentimeterValue(message);
+        int height = mentioned != null ? mentioned : current != null && current.dimensions() != null ? safeDimension(current.dimensions().heightCm()) : defaultHeight(type);
+        int width = switch (type) {
+            case "lamp" -> Math.max(18, Math.round(height * 0.48f));
+            case "tray" -> Math.max(30, mentioned != null ? Math.round(height * 1.45f) : 42);
+            case "jewelry" -> 8;
+            default -> Math.max(16, Math.round(height * 0.62f));
+        };
+        int depth = type.equals("tray") ? Math.max(18, Math.round(width * 0.62f)) : width;
+        int diameter = type.equals("lamp") || type.equals("vase") || type.equals("planter") ? width : 0;
+        return new DesignSpec.Dimensions(height, width, depth, diameter);
+    }
+
+    private Integer firstCentimeterValue(String message) {
+        Matcher matcher = Pattern.compile("(\\d{2,3})\\s*(cm|centimetros?)").matcher(message);
+        return matcher.find() ? Integer.parseInt(matcher.group(1)) : null;
+    }
+
+    private int defaultHeight(String type) {
+        return switch (type) {
+            case "lamp" -> 35;
+            case "tray" -> 28;
+            case "jewelry" -> 8;
+            case "basket", "planter" -> 24;
+            case "mural" -> 45;
+            default -> 30;
+        };
+    }
+
+    private String pickComplexity(String message, String pattern, List<String> secondaryMaterials, DesignSpec current) {
+        if (message.contains("simple") || message.contains("sobri")) return "baja";
+        if (message.contains("detalle") || message.contains("circular") || message.contains("relieve") || secondaryMaterials.size() > 1) return "alta";
+        if (current != null && current.complexity() != null && !current.complexity().isBlank()) return current.complexity();
+        return "media";
+    }
+
+    private String buildFallbackTitle(String type, String material, String pattern, List<String> palette) {
+        String object = switch (type) {
+            case "lamp" -> "Lampara";
+            case "basket" -> "Canasto";
+            case "planter" -> "Matera";
+            case "jewelry" -> "Joya";
+            case "tray" -> "Bandeja";
+            case "mural" -> "Mural";
+            default -> "Vasija";
+        };
+        String accent = pattern.equals("aros_circulares") ? "con aros circulares" : "con " + pattern.replace('_', ' ');
+        String color = palette.contains("#2F5F8F") ? "azul" : palette.contains("#B84A3A") ? "roja" : "cafetera";
+        return object + " de " + material + " " + color + " " + accent;
+    }
+
+    private String buildArtisanStory(String material, String territory, String pattern) {
+        return "Pieza personalizada para uso cotidiano y decorativo, pensada en " + material
+                + " con patron " + pattern.replace('_', ' ')
+                + ". Su forma toma referencias de " + territory
+                + " y traduce la solicitud del cliente en una guia fabricable para el taller.";
+    }
+
+    private List<String> makingSteps(String type, String material, String pattern, String finish) {
+        return List.of(
+                "Validar uso, medidas y paleta final con el cliente.",
+                "Seleccionar " + material + " y preparar corte, tejido o secado segun tecnica.",
+                "Construir la forma base segun plantilla 3D tipo " + type + ".",
+                "Aplicar patron " + pattern.replace('_', ' ') + " y acabado " + finish + ".",
+                "Revisar estabilidad, cableado si aplica, empaque y entrega."
+        );
+    }
+
+    private double heightParameter(String type, DesignSpec.Dimensions dimensions) {
+        double base = Math.max(0.35, safeDimension(dimensions.heightCm()) / 30.0);
+        return type.equals("jewelry") ? 0.38 : Math.min(1.85, base);
+    }
+
+    private double radiusParameter(String type, DesignSpec.Dimensions dimensions) {
+        if (type.equals("jewelry")) return 0.32;
+        return Math.max(0.32, Math.min(0.95, Math.max(safeDimension(dimensions.widthCm()), safeDimension(dimensions.diameterCm())) / 42.0));
+    }
+
+    private double taperParameter(String type) {
+        return switch (type) {
+            case "lamp" -> 0.28;
+            case "tray" -> 0.08;
+            case "basket" -> 0.16;
+            default -> 0.2;
+        };
+    }
+
+    private double curvatureParameter(String pattern) {
+        return pattern.contains("circular") ? 0.34 : pattern.contains("trama") ? 0.26 : 0.2;
+    }
+
+    private int repeatCount(String pattern) {
+        return pattern.contains("circular") ? 12 : pattern.contains("trama") ? 10 : 7;
+    }
+
+    private int safeDimension(Integer value) {
+        return value == null ? 0 : Math.max(0, value);
+    }
+
+    private String secondaryMaterialsPhrase(List<String> materials) {
+        if (materials == null || materials.isEmpty()) return "";
+        return " y apoyo en " + String.join(", ", materials);
+    }
+
+    private String palettePhrase(List<String> palette) {
+        if (palette.contains("#2F5F8F") && palette.contains("#B84A3A")) return "azul con acentos rojos";
+        if (palette.contains("#2F5F8F")) return "azul cafetero";
+        if (palette.contains("#B84A3A")) return "rojo terracota";
+        return "Rebecca";
+    }
+
+    private String normalizeText(String value) {
+        if (value == null) return "";
+        return Normalizer.normalize(value, Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "")
+                .toLowerCase()
+                .trim();
     }
 
     private String buildPreviewPrompt(DesignSpec spec) {

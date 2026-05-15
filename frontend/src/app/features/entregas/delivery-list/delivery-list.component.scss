@@ -167,3 +167,81 @@
     flex-direction: column;
   }
 }
+
+// Rebecca V1.1 phase 3B
+.page-container {
+  width: min(100%, 1320px);
+  padding: clamp(18px, 3vw, 34px);
+}
+
+.delivery-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+  gap: clamp(16px, 2vw, 24px);
+}
+
+.delivery-card {
+  border-radius: clamp(20px, 2.2vw, 28px);
+}
+
+.delivery-card-header > div:first-child {
+  min-width: 0;
+}
+
+.delivery-card-header h3,
+.delivery-meta,
+.delivery-progress-caption,
+.mat-mdc-checkbox {
+  overflow-wrap: anywhere;
+}
+
+.delivery-status-wrap {
+  flex: 0 0 auto;
+}
+
+.assignment-chip,
+.stage-chip {
+  min-height: 30px;
+  text-align: center;
+}
+
+.checklist {
+  gap: 12px;
+}
+
+.checklist mat-checkbox {
+  padding: 10px 12px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.32);
+  border: 1px solid rgba(166, 124, 82, 0.08);
+}
+
+.saving-state {
+  width: fit-content;
+  max-width: 100%;
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: rgba(166, 124, 82, 0.08);
+}
+
+@media (max-width: 720px) {
+  .delivery-card-header,
+  .delivery-progress-caption {
+    align-items: stretch;
+  }
+
+  .delivery-status-wrap {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+  }
+}
+
+@media (max-width: 420px) {
+  .delivery-card {
+    padding: 16px;
+  }
+
+  .delivery-status-wrap {
+    grid-template-columns: 1fr;
+  }
+}
