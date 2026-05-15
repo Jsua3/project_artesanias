@@ -1,6 +1,6 @@
 # Script maestro del proyecto Almacen Artesanias / Rebecca
 
-## 0. Nota canonica para IA - actualizado 2026-05-13
+## 0. Nota canonica para IA - actualizado 2026-05-15
 
 Este es el **PROMPT MAESTRO canonico** del programa Rebecca. Si existen otros prompts generales en la raiz, en `cliente/` o en `documentos/`, deben tratarse como material historico o auxiliar. La fuente principal para una IA futura debe ser este archivo:
 
@@ -16,7 +16,7 @@ Este documento unifica:
 - Reglas de roles y permisos.
 - Procedimientos de build, pruebas, smoke tests y despliegue controlado.
 - Bugs historicos que no deben reintroducirse.
-- Estado local verificado al 2026-05-13.
+- Estado local y despliegue verificados al 2026-05-15.
 - Prompts historicos: `PROMPT-MAESTRO-AWS.md`, `cliente/PROMPT-CLAUDE-DESIGN.md`, `documentos/PROMPT_CLAUDE_CODE_REBECCA.md`.
 - Documentos operativos: `README.md`, `RUN-LOCAL.md`, `DEPLOY-CLIENTE.md`, `AWS-DEPLOY-GUIDE.md`, `BUILD-BACKEND-2B.md`, `BUILD-BACKEND-2C.md`, `documentos/ENDPOINTS.md`, `documentos/requisitos.md`, `SECURITY-ROUTES.md`, `RELEASE-CHECKLIST.md`, `cliente/INTEGRACION-ANGULAR.md`, `Almacen Artesanias Design System/*`.
 
@@ -32,9 +32,12 @@ Postura obligatoria de cualquier IA que trabaje sobre este proyecto:
 - Respetar Angular 21, Spring WebFlux, R2DBC, Docker Compose, nginx y la identidad visual Rebecca.
 - Proteger siempre la frontera publica/privada del catalogo.
 
-Estado importante al 2026-05-13:
+Estado importante al 2026-05-15:
 
-- La app esta desplegada publicamente, pero los cambios locales recientes aun no deben asumirse desplegados.
+- La app esta desplegada publicamente en `http://56.126.102.113.nip.io` con el commit `e786f89` (`Release Rebecca V1.1 visual and 3D design`), verificado el 2026-05-15.
+- Rebecca V1.1 es la version visual canonica actual: base responsive, botones normalizados, header/bottom nav, hero por zonas, animaciones premium controladas y auditoria visual V1.1.1.
+- V1.1.1 cerro la interfaz principal: header simetrico, CTA del hero separado de metricas, panel privado animado con Liquid Glass, textura premium global y nuevo apartado publico de Artesania 3D.
+- V1.1.2 cerro la primera optimizacion visual: build frontend sin warnings de presupuesto, bundle inicial aproximado `802.14 kB`, fuentes externas reducidas, Chart.js fuera del root y CSS muerto eliminado.
 - Se mejoro la separacion entre datos publicos y datos internos.
 - Productos y artesanos publicos deben usar DTOs reducidos.
 - Rutas administrativas de catalogo viven bajo `/api/products/admin/**` y `/api/artesanos/admin/**`.
@@ -43,12 +46,13 @@ Estado importante al 2026-05-13:
 - Hay pruebas nuevas de contrato de rutas, DTOs publicos y guardas por rol.
 - Existe `SECURITY-ROUTES.md` como matriz de rutas publicas/privadas.
 - Existe `RELEASE-CHECKLIST.md` como checklist antes de desplegar.
-- No desplegar nada hasta organizar, probar y autorizar un release controlado.
+- El release V1.1 fue organizado, probado, autorizado y desplegado. Para releases futuros, no desplegar sin una autorizacion nueva y verificacion fresca.
 - El flujo IA de producto personalizado ya no es solo conceptual: existe agente, solicitudes, revision de taller, detalle individual, conversion a producto, notificaciones internas y persistencia de boceto visual.
+- La creacion 3D de artesanias esta disponible para visitantes y usuarios comunes en `/disena-tu-pieza`: `message` y `preview` son publicos via gateway con token interno; `confirm`, `mine`, `review`, detalle, notificaciones y cambios de estado siguen protegidos por rol.
 - El lenguaje visual Liquid Glass premium fue promovido a capa global transversal del frontend.
 - Existe panel admin `/admin/system-health` para revisar servicios, version, healthchecks, OpenAI, Stripe y checklist interno de release antes de desplegar.
 
-Verificacion local conocida al 2026-05-13:
+Verificacion conocida al 2026-05-15:
 
 ```bash
 mvn -q -pl catalog-service,inventory-service test
@@ -59,11 +63,19 @@ cd frontend && npm run build
 docker compose config --quiet
 ```
 
+Verificacion de despliegue V1.1:
+
+- `api-gateway`, `ai-service` y `frontend` reconstruidos y levantados con Docker Compose en EC2.
+- `api-gateway` y `ai-service` quedaron healthy; `frontend` quedo sirviendo Angular por nginx.
+- Smoke publico: `/`, `/disena-tu-pieza`, `/api/categories`, `/api/products`, `/api/artesanos`, `/api/public/eventos`.
+- Smoke IA publico: `POST /api/ai/design/message` y `POST /api/ai/design/preview` respondieron `200`.
+- Smoke privado sin token: `/api/stock`, `/api/ai/design/mine` y `/api/ai/design/review` respondieron `401`.
+
 Notas:
 
 - Maven puede mostrar warnings de Mockito dynamic agent; no son bloqueo actual.
 - npm puede advertir sobre `--watch`; no fue bloqueo actual.
-- Estas verificaciones no equivalen a despliegue.
+- Los warnings previos de bundle y fuentes de V1.1 fueron corregidos en V1.1.2.
 
 ## 1. Identidad del proyecto
 
@@ -77,7 +89,7 @@ Repositorio:
 - Rama principal: `master`
 - Carpeta local actual: `D:\Sua_Files\IdeaProjects\almacen-arle`
 - Carpeta esperada en servidor: `/home/ubuntu/project_artesanias`
-- Ultimos commits desplegados documentados historicamente: `a978557` y luego `0916add`. Antes de desplegar o hacer rollback, verificar el commit real en EC2 con `git rev-parse --short HEAD`.
+- Ultimo commit desplegado y verificado: `e786f89` (`Release Rebecca V1.1 visual and 3D design`), 2026-05-15. Antes de un nuevo despliegue o rollback, verificar el commit real en EC2 con `git rev-parse --short HEAD`.
 - URL publica recomendada: `http://56.126.102.113.nip.io`
 - URL por IP directa: `http://56.126.102.113`
 - Nota Google OAuth: el origen autorizado documentado es `http://56.126.102.113.nip.io`; entrar por IP directa puede romper el boton de Google.
@@ -443,11 +455,16 @@ Redireccion post-login por rol:
 El cliente o visitante entra por la landing publica. La experiencia actual incluye:
 
 - Header tipo Liquid Glass.
+- Header V1.1 con baseline/padding simetrico en desktop, variante compacta en mobile y bottom nav con espacio real reservado para no tapar contenido.
 - Carrusel territorial con fotos en `frontend/public/assets/territorio`.
 - Se removio del carrusel publico `filandia1.jpg`; se usan `filandia3.jpg`, `filandia4.jpg`, `filandia5.jpeg`, `photo2jpg.jpg`, `salento1.jpg`, `salento2.jpg`.
 - Scrollytelling ligero con narrativa: territorio, maestros, artesanias, oficio y compra.
 - IntersectionObserver para revelar secciones al hacer scroll.
 - Tarjetas de artesanias con glassmorphism premium.
+- Hero por zonas reales: header, contenido central, acciones y rail de metricas separado. El CTA nunca debe compartir espacio con las metricas si hay riesgo de roce visual.
+- Apartado publico `Artesania 3D` en la landing para explicar y abrir la experiencia de creacion con IA.
+- Panel privado visible para ADMIN/ARTESANO/DOMICILIARIO con tarjetas Liquid Glass, entrada escalonada, brillo por puntero, hover suave, flecha animada y foco accesible.
+- Fondo global con textura premium sobria para que el vidrio tenga refraccion visual sin ensuciar lectura.
 - `LiquidPointerDirective` para brillo radial y tilt segun cursor en desktop.
 - Reduccion de animaciones cuando aplica `prefers-reduced-motion` o dispositivos tactiles.
 - Artesanos destacados usando campos reales del backend: `nombre`, `especialidad`, `ubicacion`, `imageUrl`.
@@ -455,18 +472,18 @@ El cliente o visitante entra por la landing publica. La experiencia actual inclu
 - Botones para agregar al carrito sin login.
 - Login obligatorio al confirmar checkout.
 - Mis pedidos con estados y progreso.
-- `/disena-tu-pieza`: agente de diseno 3D para CLIENTE/ADMIN. El cliente conversa, configura materiales, medidas, patron, acabado y complejidad. La app muestra preview parametrico, puede pedir boceto visual con OpenAI y permite crear una solicitud de producto personalizado.
+- `/disena-tu-pieza`: agente de diseno 3D publico para visitantes, usuarios comunes y roles internos. Cualquier visitante puede conversar, configurar materiales, medidas, patron, acabado y complejidad, ver preview parametrico y pedir boceto visual; para confirmar/guardar encargos propios se requiere autenticacion.
 
 ### Agente de diseno 3D y productos personalizados
 
-El agente vive en `ai-service` y entra por el gateway en `/api/ai/**`. No se llama OpenAI desde Angular. La API key debe estar solo en `.env`/variables del servidor como `OPENAI_API_KEY`; si esta vacia, el servicio usa fallback local para que la app siga funcionando.
+El agente vive en `ai-service` y entra por el gateway en `/api/ai/**`. No se llama OpenAI desde Angular. La API key debe estar solo en `.env`/variables del servidor como `OPENAI_API_KEY`; si esta vacia, el servicio usa fallback local para que la app siga funcionando. El gateway inyecta `X-Internal-Token`; los endpoints publicos del agente no deben abrir acceso directo al microservicio.
 
 Endpoints actuales:
 
-- `POST /api/ai/design/message`: recibe mensaje del cliente y `currentSpec`; devuelve `DesignTurnResponse`.
-- `POST /api/ai/design/preview`: genera prompt/imagen para boceto visual. Si OpenAI falla, conserva el preview 3D local.
-- `POST /api/ai/design/confirm`: convierte la configuracion actual en solicitud privada de producto personalizado.
-- `GET /api/ai/design/mine`: lista solicitudes del cliente autenticado.
+- `POST /api/ai/design/message`: publico sin JWT; recibe mensaje y `currentSpec`; devuelve `DesignTurnResponse`.
+- `POST /api/ai/design/preview`: publico sin JWT; genera prompt/imagen para boceto visual. Si OpenAI falla, conserva el preview 3D local.
+- `POST /api/ai/design/confirm`: privado CLIENTE/ADMIN; convierte la configuracion actual en solicitud privada de producto personalizado.
+- `GET /api/ai/design/mine`: privado CLIENTE/ADMIN; lista solicitudes del cliente autenticado.
 - `GET /api/ai/design/review`: lista solicitudes para ADMIN/ARTESANO.
 - `PATCH /api/ai/design/{id}/status`: permite a ADMIN/ARTESANO actualizar estado y notas de revision.
 
@@ -591,12 +608,13 @@ Jerarquia historica de referencia:
 
 ### Glassmorphism / Liquid Glass
 
-Estado canonico al 2026-05-13: Liquid Glass ya no es un adorno puntual. Es el lenguaje visual transversal de Rebecca, aplicado a cliente y backoffice con distinta intensidad. Debe sentirse premium, fluido y artesanal, como vidrio liquido sobre una base territorial, sin perder legibilidad ni velocidad operativa.
+Estado canonico al 2026-05-15: Liquid Glass ya no es un adorno puntual. Es el lenguaje visual transversal de Rebecca, aplicado a cliente y backoffice con distinta intensidad. Debe sentirse premium, fluido y artesanal, como vidrio liquido sobre una base territorial, sin perder legibilidad ni velocidad operativa. V1.1 agrego una capa responsive base, botones normalizados y texturas globales para que el vidrio funcione de forma consistente en mobile, tablet y desktop.
 
 Uso correcto y obligatorio:
 
 - Header publico.
 - Hero/landing.
+- Apartado publico de Artesania 3D.
 - Tarjetas de productos destacadas.
 - Carrito, checkout, mis pedidos.
 - Dialogos premium.
@@ -628,11 +646,13 @@ Implementacion vigente:
 
 - Capa global en `frontend/src/styles.scss` bajo el bloque `LIQUID GLASS PERMEATION LAYER`.
 - Tokens: `--glass-refraction`, `--glass-highlight`, `--glass-inner-shadow`, `--rb-liquid-surface`, `--rb-liquid-border`, `--rb-liquid-shadow`.
+- Tokens V1.1: breakpoints 360/480/640/768/1024/1280, espacios `--space-1` a `--space-8`, radios, sombras, blur, safe areas y alturas minimas de botones 44px mobile / 48px desktop.
+- Sistema de botones V1.1: `rb-button`, `rb-button--primary`, `rb-button--ghost`, `rb-button--text`, `rb-icon-button`, `rb-action-row`. Ningun boton debe tapar metricas, texto, nav o contenido.
 - Animaciones: `rb-page-rise`, `rb-card-rise`, `rb-liquid-sheen`, `rb-shimmer`, `rb-glass-in`, `rb-pulse-oro`.
 - Selectores globales cubren cards, filtros, KPIs, tablas Material, paginadores, menus, selects, pedidos, productos, perfiles, paneles, notificaciones y superficies de detalle.
 - `frontend/src/app/shared/layout/shell.component.scss` adapta sidebar, topbar y toolbar mobile al vidrio oscuro premium.
 - `ai-designer`, `my-designs`, `custom-design-review` y `custom-design-detail` tienen refuerzo local para que el flujo IA sea una experiencia premium completa.
-- Siempre respetar `prefers-reduced-motion`; en mobile reducir blur, movimiento y sombras pesadas.
+- Siempre respetar `prefers-reduced-motion`; en mobile reducir blur, movimiento y sombras pesadas. Evitar animar layout, blur pesado o propiedades caras en mobile.
 
 ### Composicion
 
@@ -1191,12 +1211,14 @@ Carpeta raiz `imagenes`:
 
 ## 20. Liquid Glass / Glassmorphism
 
-La app implementa Liquid Glass como lenguaje visual transversal. Al 2026-05-13 ya no debe limitarse a landing o cliente: permea toda la aplicacion con diferentes niveles de intensidad.
+La app implementa Liquid Glass como lenguaje visual transversal. Al 2026-05-15 no debe limitarse a landing o cliente: permea toda la aplicacion con diferentes niveles de intensidad y se apoya en la base responsive V1.1.
 
 Superficies cubiertas:
 
 - Landing publica.
 - Header cliente.
+- Header y bottom nav V1.1.
+- Apartado publico Artesania 3D.
 - Tarjetas de artesanias.
 - Tarjetas de maestros.
 - Carrito.
@@ -1214,6 +1236,9 @@ Implementacion:
 
 - Utilidades globales en `frontend/src/styles.scss`.
 - Bloque global `LIQUID GLASS PERMEATION LAYER`.
+- Bloque responsive V1.1 con tokens de breakpoints, espacio, radio, sombra, blur, safe areas y alturas minimas.
+- Clases de botones `rb-button`, `rb-button--primary`, `rb-button--ghost`, `rb-button--text`, `rb-icon-button`, `rb-action-row`.
+- Textura premium global con ruido fino, vetas suaves y variantes claro/oscuro.
 - Clases `.liquid-glass` y `.liquid-tilt`.
 - Directiva `appLiquidPointer`.
 - CSS variables `--mx`, `--my`, `--rx`, `--ry`.
@@ -1294,7 +1319,7 @@ Comando para validar Compose:
 docker compose config --quiet
 ```
 
-Verificacion conocida al 2026-05-13:
+Verificacion conocida al 2026-05-15:
 
 - `mvn -q -pl catalog-service,inventory-service test` paso.
 - `mvn -q -pl ai-service test` paso.
@@ -1302,12 +1327,15 @@ Verificacion conocida al 2026-05-13:
 - `npm test -- --watch=false` paso.
 - `npm run build` paso.
 - `docker compose config --quiet` paso.
+- `docker compose build api-gateway ai-service frontend` paso en EC2 para V1.1.
+- Smoke tests post-deploy V1.1 pasaron en ruta publica, catalogo publico, IA publica y rutas privadas sin token.
 
-Warnings conocidos al 2026-05-13:
+Warnings conocidos al 2026-05-15:
 
 - Maven puede mostrar warnings de Mockito dynamic agent.
 - npm puede advertir sobre `--watch`.
-- Los warnings previos de Sass `lighten/darken` y Angular `NG8011` fueron corregidos en los cambios locales recientes.
+- Los warnings previos de Sass `lighten/darken` y Angular `NG8011` fueron corregidos en iteraciones ya integradas.
+- Los warnings previos de presupuesto Angular/fuentes en V1.1 fueron corregidos en V1.1.2. Bundle inicial reportado por Docker build: aproximadamente `802.14 kB`.
 
 ## 24. Correcciones de logica aplicadas (sesion 2026-04-26)
 
@@ -1628,9 +1656,9 @@ Rebecca es una plataforma de comercio y gestion artesanal con tienda publica pre
 
 La app esta desplegada y funcional en AWS EC2 (Sao Paulo, instancia de memoria limitada documentada como t3.small en este script) con Docker Compose. Incluye login con Google Identity Services (modo testing). La documentacion completa (requisitos, schema SQL, endpoints, matriz de seguridad y checklist de release) esta en la carpeta `documentos/` y en la raiz del proyecto.
 
-Ultimo despliegue historico documentado: commit `0916add`, bundle `main-YWHGDPUF.js`, 2026-04-28. Antes de cualquier despliegue nuevo, verificar el commit real en EC2 con `git rev-parse --short HEAD`.
+Ultimo despliegue verificado: commit `e786f89` (`Release Rebecca V1.1 visual and 3D design`), 2026-05-15, en `http://56.126.102.113.nip.io`. Se reconstruyeron y levantaron `api-gateway`, `ai-service` y `frontend`; healthchecks y smoke tests principales pasaron. Antes de cualquier despliegue nuevo, verificar el commit real en EC2 con `git rev-parse --short HEAD`.
 
-Estado documental actualizado al 2026-05-13: este archivo es el prompt maestro canonico. Los cambios locales recientes de seguridad, DTOs publicos, IA, disenos personalizados, notificaciones, conversion a producto, reglas de precio configurables y Liquid Glass global no deben asumirse desplegados hasta ejecutar un release controlado y autorizado.
+Estado documental actualizado al 2026-05-15: este archivo es el prompt maestro canonico. V1.1/V1.1.1/V1.1.2 estan integradas al canon: interfaz principal premium responsive, artesania 3D publica para visitantes/usuarios comunes, endpoints IA publicos solo para `message`/`preview`, rutas privadas protegidas, textura global Liquid Glass, auditoria visual y primera optimizacion de bundle/CSS.
 
 ## 31. Canon consolidado absoluto de documentos y prompts
 
@@ -1650,6 +1678,7 @@ Esta seccion existe para que una IA futura no dependa de buscar contexto en prom
 - `documentos/requisitos.md`: requisitos funcionales y criterios de aceptacion. Algunas reglas historicas de aprobacion fueron modificadas en iteraciones posteriores; este maestro documenta la decision vigente cuando exista conflicto.
 - `SECURITY-ROUTES.md`: matriz viva de rutas publicas y privadas. Debe mantenerse sincronizada con el gateway.
 - `RELEASE-CHECKLIST.md`: checklist de release controlado; obligatorio antes de desplegar.
+- `documentos/REBECCA-V1.1.md`: bitacora de fases V1.1, V1.1.1 y V1.1.2; queda absorbida por este canon.
 - `cliente/INTEGRACION-ANGULAR.md`: guia historica para migrar prototipo cliente a Angular 21, tokens SCSS, Three.js y rendimiento.
 - `Almacen Artesanias Design System/`: design system externo con tokens, UI kits cliente/admin y reglas de marca. Se considera material absorbido por las secciones visuales de este maestro.
 
@@ -1761,7 +1790,7 @@ Despliegue:
 - No sobrescribir `.env`.
 - No copiar secretos a chats, commits ni documentacion.
 - Usar `git pull --ff-only`.
-- En EC2 no compilar Angular con `ng build` dentro del contenedor por memoria. El frontend debe compilarse localmente y subirse/commitearse segun el flujo actual.
+- EC2 tiene memoria limitada; preferir builds selectivos y vigilar `free -h`. En V1.1 el frontend compilo correctamente en EC2 via `docker compose build api-gateway ai-service frontend` con swap disponible. Si vuelve a fallar por memoria, usar build local/artefacto como fallback.
 - El frontend siempre requiere `docker compose build frontend` antes de `docker compose up -d --no-deps --force-recreate frontend`.
 - Backend se reconstruye por servicios, no todo junto si se puede evitar.
 - Arranque recomendado: `postgres` -> `discovery-server` -> `api-gateway + auth-service` -> `catalog-service + inventory-service + report-service + ai-service` -> `frontend`.
@@ -1857,6 +1886,7 @@ Reglas de seguridad:
 - `/internal/**` no debe exponerse via gateway.
 - Permisos denegados deben devolver `401` o `403`; no devolver listas vacias silenciosas salvo casos de perfil incompleto documentados o filtros de propiedad.
 - Endpoints publicos de catalogo solo exponen DTOs reducidos.
+- En IA de diseno, solo `POST /api/ai/design/message` y `POST /api/ai/design/preview` son publicos para permitir creacion 3D a visitantes. El gateway aun debe inyectar `X-Internal-Token`; `confirm`, `mine`, detalle, notificaciones, `review`, status y config-status siguen privados por rol.
 
 Catalogo publico:
 
@@ -1986,8 +2016,8 @@ Reportes:
 
 AI:
 
-- `POST /api/ai/design/message` CLIENTE/ADMIN.
-- `POST /api/ai/design/preview` CLIENTE/ADMIN.
+- `POST /api/ai/design/message` publico sin JWT, via gateway con `X-Internal-Token`.
+- `POST /api/ai/design/preview` publico sin JWT, via gateway con `X-Internal-Token`.
 - `POST /api/ai/design/confirm` CLIENTE/ADMIN.
 - `GET /api/ai/design/mine` CLIENTE/ADMIN.
 - `GET /api/ai/design/{id}` CLIENTE propietario, ADMIN o ARTESANO.
@@ -2031,17 +2061,17 @@ Admin DB:
 
 ### 31.10 AI, diseno 3D y producto personalizado
 
-`ai-service` es un microservicio separado y privado tras gateway. Angular no llama OpenAI directamente.
+`ai-service` es un microservicio separado y privado tras gateway. Angular no llama OpenAI directamente. El acceso publico permitido pasa por el gateway, que inyecta `X-Internal-Token`, y se limita a conversacion/preview.
 
 Mecanica:
 
-- Cliente entra a `/disena-tu-pieza`.
-- Conversa con agente.
+- Visitante, CLIENTE o rol interno entra a `/disena-tu-pieza`.
+- Conversa con agente sin requerir login para idear y previsualizar.
 - El agente devuelve `DesignSpec`: tipo, titulo, historia, territorio, materiales, paleta, dimensiones, patron, acabado, complejidad, precio estimado, desglose, dias, pasos de fabricacion y parametros 3D.
 - Si `OPENAI_API_KEY` falta o OpenAI falla, fallback local crea una propuesta util.
 - Preview 3D local funciona sin OpenAI.
 - Boceto visual con OpenAI es opcional.
-- Al confirmar, se guarda solicitud privada en `ai_db.custom_design_requests` con `PENDING_QUOTE`.
+- Al confirmar, se requiere autenticacion CLIENTE/ADMIN y se guarda solicitud privada en `ai_db.custom_design_requests` con `PENDING_QUOTE`.
 - Si el cliente genero boceto visual, la confirmacion puede persistir `preview_prompt`, `preview_image_base64`, `preview_mime_type` y `preview_source`, para que taller y cliente vean el mismo boceto asociado al encargo.
 - Cliente ve sus encargos en `/mis-disenos` y puede abrir ficha completa en `/mis-disenos/:id`.
 - ADMIN/ARTESANO revisa en `/disenos-personalizados`, cambia estado, deja respuesta del taller y puede abrir ficha completa en `/disenos-personalizados/:id`.
@@ -2110,6 +2140,8 @@ Patrones:
 - Guards: `authGuard`, `adminGuard`, `notClienteGuard`, `roleGuard`.
 - CLIENTE no entra al backoffice.
 - Liquid Glass premium permea cliente y backoffice; en cliente puede ser mas expresivo, en backoffice debe mantener densidad operativa. No volver a superficies planas genericas; usar vidrio, blur, bordes internos, sombras calidas y animaciones suaves sin sacrificar legibilidad.
+- V1.1 exige layout responsive por zonas: header desktop/tablet/mobile, bottom nav con espacio reservado, hero sin cruces entre CTA/texto/metricas y panel privado con tarjetas animadas.
+- `/disena-tu-pieza` debe permanecer accesible desde landing y panel privado para visitantes/usuarios comunes; no esconder la creacion 3D solo en rutas admin.
 - Mantener lazy routes para no inflar bundle inicial.
 - `CartService` usa localStorage.
 - Catalogo publico tiene fallback visual si backend devuelve vacio/falla.
@@ -2157,6 +2189,10 @@ Iconografia:
 Hero/landing:
 
 - La captura inicial actual usa hero fotografico territorial con header Liquid Glass, marca Rebeca, navegacion Colecciones/Maestros/Territorio/Oficio, CTA y contadores.
+- En V1.1 el hero se organiza por zonas reales: header, contenido central, acciones y rail de metricas. El CTA `Pasa al taller` y `Disena tu pieza 3D` no deben quedar encima de texto ni metricas.
+- En mobile, header minimo y bottom nav compacto; el bottom nav reserva espacio en el layout y no puede tapar contenido.
+- Las texturas premium deben ser sobrias: ruido fino, vetas/desaturacion y profundidad suficiente para que el Liquid Glass refracte sin competir con imagenes o texto.
+- Animaciones premium permitidas: entrada escalonada, brillo por puntero en desktop, micro-movimiento de flechas, hover con elevacion minima y scroll reveal. Siempre respetar `prefers-reduced-motion`.
 - El prompt historico pedia Three.js con vasijas LatheGeometry, guaduas, palmas de cera, particulas doradas y niebla. No es obligatorio si la implementacion actual usa foto/preview, pero si se retoma debe ser sutil, no invasivo, sin OrbitControls visibles, con reduced motion.
 - Hero no debe ser landing generica SaaS.
 
@@ -2220,9 +2256,9 @@ Los requisitos funcionales vigentes cubren:
 
 Cuando un requisito historico diga que ARTESANO/DOMICILIARIO queda `PENDING` hasta aprobacion, verificar el codigo actual y la decision vigente. En este proyecto hubo iteraciones que cambiaron el flujo de aprobacion/perfil; no asumir sin revisar `auth-service`.
 
-### 31.15 Estado de recomendaciones al 2026-05-13
+### 31.15 Estado de recomendaciones al 2026-05-15
 
-Completado localmente y documentado en este canon:
+Completado y documentado en este canon:
 
 1. Prompts generales unificados en `SCRIPT_MAESTRO_PROYECTO_REBECCA.md`.
 2. Solicitud IA aprobada convertible en producto real con formulario prellenado.
@@ -2232,14 +2268,18 @@ Completado localmente y documentado en este canon:
 6. Notificaciones internas al cliente cuando taller/admin cambia estado o deja nota.
 7. Reglas de precio extraidas a configuracion `pricing.design.*` en `ai-service`, ajustables por variables de entorno.
 8. Lenguaje visual Liquid Glass premium aplicado globalmente a cliente, IA y backoffice.
+9. Rebecca V1.1: capa responsive base con tokens, botones normalizados, header/bottom nav, hero por zonas, animaciones premium controladas y safe areas.
+10. V1.1.1: auditoria/cierre visual de interfaz principal con header simetrico, CTA separado de metricas, panel privado animado, fondo texturizado y nuevo apartado publico de Artesania 3D.
+11. V1.1.2: optimizacion inicial despues de la auditoria: build sin warnings de presupuesto, bundle inicial alrededor de `802.14 kB`, fuentes reducidas, Chart.js fuera del root y CSS muerto eliminado.
+12. Release V1.1 desplegado en EC2 y verificado por smoke tests publicos/privados el 2026-05-15.
 
 Backlog recomendado despues de este punto:
 
-1. QA visual con screenshots reales en desktop/mobile de landing, catalogo, carrito, checkout, mis pedidos, disenos IA, detalle, revision admin, dashboard, productos, ventas, pedidos, stock y entregas.
-2. Pruebas E2E del flujo IA completo: crear diseno, preview, confirmar, cambiar estado, notificar, abrir detalle y convertir a producto.
+1. QA visual ampliado de rutas secundarias: catalogo, carrito, checkout, mis pedidos, detalle de disenos, revision admin, dashboard, productos, ventas, pedidos, stock y entregas.
+2. Pruebas E2E del flujo IA completo con usuario real: crear diseno, preview, confirmar, cambiar estado, notificar, abrir detalle y convertir a producto.
 3. Email o push opcional tomando `custom_design_notifications` como fuente de verdad.
 4. UI admin para editar reglas de precio sin tocar `.env`; hoy existen variables de entorno, pero no pantalla administrativa.
 5. Migraciones robustas con Flyway/Liquibase para cambios futuros de schema.
-6. Release controlado y autorizado: no desplegar hasta revisar build, pruebas, `.env`, backup y checklist.
+6. Siguiente release: no desplegar sin autorizacion nueva, build limpio, pruebas, backup, smoke tests y checklist actualizado.
 
-Regla de ejecucion: avanzar en estos puntos sin desplegar hasta que el dueno autorice release.
+Regla de ejecucion: avanzar en estos puntos sin desplegar hasta que el dueno autorice un nuevo release.
