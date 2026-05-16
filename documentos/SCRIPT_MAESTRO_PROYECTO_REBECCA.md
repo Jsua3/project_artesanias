@@ -38,7 +38,7 @@ Estado importante al 2026-05-15:
 - Rebecca V1.1 es la version visual canonica actual: base responsive, botones normalizados, header/bottom nav, hero por zonas, animaciones premium controladas y auditoria visual V1.1.1.
 - V1.1.1 cerro la interfaz principal: header simetrico, CTA del hero separado de metricas, panel privado animado con Liquid Glass, textura premium global y nuevo apartado publico de Artesania 3D.
 - V1.1.2 cerro la primera optimizacion visual: build frontend sin warnings de presupuesto, bundle inicial aproximado `802.14 kB`, fuentes externas reducidas, Chart.js fuera del root y CSS muerto eliminado.
-- V1.2 esta implementada localmente y verificada: `/disena-tu-pieza` usa un visor 3D real con Three.js, OrbitControls, geometria procedural artesanal, texturas, sombras, captura de miniatura y fallback WebGL. Pendiente despliegue controlado.
+- V1.2 esta desplegada y verificada: `/disena-tu-pieza` usa un visor 3D real con Three.js, OrbitControls, geometria procedural artesanal, texturas, sombras, captura de miniatura y fallback WebGL.
 - Se mejoro la separacion entre datos publicos y datos internos.
 - Productos y artesanos publicos deben usar DTOs reducidos.
 - Rutas administrativas de catalogo viven bajo `/api/products/admin/**` y `/api/artesanos/admin/**`.
@@ -1658,7 +1658,7 @@ Rebecca es una plataforma de comercio y gestion artesanal con tienda publica pre
 
 La app esta desplegada y funcional en AWS EC2 (Sao Paulo, instancia de memoria limitada documentada como t3.small en este script) con Docker Compose. Incluye login con Google Identity Services (modo testing). La documentacion completa (requisitos, schema SQL, endpoints, matriz de seguridad y checklist de release) esta en la carpeta `documentos/` y en la raiz del proyecto.
 
-Ultimo despliegue verificado: commit `e786f89` (`Release Rebecca V1.1 visual and 3D design`), 2026-05-15, en `http://56.126.102.113.nip.io`. Se reconstruyeron y levantaron `api-gateway`, `ai-service` y `frontend`; healthchecks y smoke tests principales pasaron. Antes de cualquier despliegue nuevo, verificar el commit real en EC2 con `git rev-parse --short HEAD`.
+Ultimo despliegue verificado: commit `a74b06b` (`Release Rebecca V1.2 3D craft designer`), 2026-05-15 America/Bogota, en `http://56.126.102.113.nip.io`. Se actualizaron fuentes en EC2, se reconstruyeron sin cache `ai-service` y `frontend`, se levantaron contenedores, `ai-service` quedo healthy y los smoke tests principales pasaron. Antes de cualquier despliegue nuevo, verificar el commit real en EC2 con `git rev-parse --short HEAD`.
 
 Estado documental actualizado al 2026-05-15: este archivo es el prompt maestro canonico. V1.1/V1.1.1/V1.1.2 estan integradas al canon: interfaz principal premium responsive, artesania 3D publica para visitantes/usuarios comunes, endpoints IA publicos solo para `message`/`preview`, rutas privadas protegidas, textura global Liquid Glass, auditoria visual y primera optimizacion de bundle/CSS.
 
@@ -1681,7 +1681,7 @@ Esta seccion existe para que una IA futura no dependa de buscar contexto en prom
 - `SECURITY-ROUTES.md`: matriz viva de rutas publicas y privadas. Debe mantenerse sincronizada con el gateway.
 - `RELEASE-CHECKLIST.md`: checklist de release controlado; obligatorio antes de desplegar.
 - `documentos/REBECCA-V1.1.md`: bitacora de fases V1.1, V1.1.1 y V1.1.2; queda absorbida por este canon.
-- `documentos/REBECCA-V1.2.md`: bitacora de la artesania 3D real con Three.js, contrato `threeD` enriquecido, QA visual y reglas de despliegue pendiente.
+- `documentos/REBECCA-V1.2.md`: bitacora de la artesania 3D real con Three.js, contrato `threeD` enriquecido, QA visual y despliegue verificado.
 - `cliente/INTEGRACION-ANGULAR.md`: guia historica para migrar prototipo cliente a Angular 21, tokens SCSS, Three.js y rendimiento.
 - `Almacen Artesanias Design System/`: design system externo con tokens, UI kits cliente/admin y reglas de marca. Se considera material absorbido por las secciones visuales de este maestro.
 
@@ -2277,13 +2277,13 @@ Completado y documentado en este canon:
 10. V1.1.1: auditoria/cierre visual de interfaz principal con header simetrico, CTA separado de metricas, panel privado animado, fondo texturizado y nuevo apartado publico de Artesania 3D.
 11. V1.1.2: optimizacion inicial despues de la auditoria: build sin warnings de presupuesto, bundle inicial alrededor de `802.14 kB`, fuentes reducidas, Chart.js fuera del root y CSS muerto eliminado.
 12. Release V1.1 desplegado en EC2 y verificado por smoke tests publicos/privados el 2026-05-15.
-13. Rebecca V1.2 implementada localmente: visor Three.js real en `/disena-tu-pieza`, `DesignSpec.threeD` enriquecido, fallback local mejorado, miniatura 3D y QA visual en `qa-screenshots/v12-3d/`.
+13. Rebecca V1.2 desplegada en EC2: visor Three.js real en `/disena-tu-pieza`, `DesignSpec.threeD` enriquecido, fallback local mejorado, miniatura 3D, QA visual en `qa-screenshots/v12-3d/` y smoke test productivo del flujo publico.
 
 Backlog recomendado despues de este punto:
 
-1. Despliegue controlado de V1.2: build Docker, smoke tests de `/disena-tu-pieza`, IA publica y rutas privadas.
-2. QA visual ampliado de rutas secundarias: catalogo, carrito, checkout, mis pedidos, detalle de disenos, revision admin, dashboard, productos, ventas, pedidos, stock y entregas.
-3. Pruebas E2E del flujo IA completo con usuario real: crear diseno, preview 3D, confirmar, cambiar estado, notificar, abrir detalle y convertir a producto.
+1. QA visual ampliado de rutas secundarias: catalogo, carrito, checkout, mis pedidos, detalle de disenos, revision admin, dashboard, productos, ventas, pedidos, stock y entregas.
+2. Pruebas E2E del flujo IA completo con usuario real: crear diseno, preview 3D, confirmar, cambiar estado, notificar, abrir detalle y convertir a producto.
+3. Optimizacion de performance posterior a V1.2: revisar bundle lazy de `ai-designer`, cache de texturas, peso CSS y presupuestos Angular.
 4. Biblioteca futura `.glb` hecha en Blender para asas, tejidos, bordes, pantallas y ornamentos artesanales.
 5. Email o push opcional tomando `custom_design_notifications` como fuente de verdad.
 6. UI admin para editar reglas de precio sin tocar `.env`; hoy existen variables de entorno, pero no pantalla administrativa.

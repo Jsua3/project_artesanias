@@ -32,9 +32,22 @@ V1.2 convierte el creador `/disena-tu-pieza` en una experiencia 3D real con Thre
 - `v12-3d-audit.json` confirma canvas presente y pixeles renderizados en todos los tamaños.
 - Prueba de interaccion guardada en `designer-3d-interaction-390x844.png`.
 
+## Despliegue
+
+- Desplegado en EC2 el 2026-05-15 America/Bogota.
+- Commit productivo: `a74b06b` (`Release Rebecca V1.2 3D craft designer`).
+- Servicios reconstruidos sin cache: `ai-service` y `frontend`.
+- `ai-service` verificado como healthy tras recrear contenedor.
+- Smoke productivo:
+  - `/`, `/disena-tu-pieza`, `/api/categories`, `/api/products`, `/api/artesanos` y `/api/public/eventos`: `200`.
+  - `/api/stock`, `/api/ai/design/mine` y `/api/ai/design/review` sin token: `401`.
+  - `POST /api/ai/design/message` publico devuelve `DesignSpec.threeD.engineVersion=v1.2`, plantilla artesanal, material preset y `parts`.
+  - `POST /api/ai/design/preview` publico responde `200`.
+- QA visual productivo en `390x844`: canvas WebGL presente, no blanco, con captura guardada en `qa-screenshots/v12-3d/prod-designer-390x844.png`.
+
 ## Nota canonica
 
 - V1.2 no usa text-to-3D externo.
 - La belleza visual depende de geometria procedural controlada y materiales artesanales; la carga `GLTFLoader` queda preparada para una futura biblioteca de modulos hechos en Blender.
 - Visitantes pueden idear y observar 3D sin login; confirmar al taller sigue exigiendo autenticacion.
-- Antes de desplegar V1.2, repetir build Docker y smoke tests sobre `/disena-tu-pieza`.
+- Para futuros despliegues de V1.2+, repetir build Docker y smoke tests sobre `/disena-tu-pieza`.
