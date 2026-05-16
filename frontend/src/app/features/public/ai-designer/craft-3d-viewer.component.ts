@@ -65,6 +65,10 @@ export class Craft3DViewerComponent implements AfterViewInit, OnChanges, OnDestr
   private resizeObserver?: ResizeObserver;
   private intersectionObserver?: IntersectionObserver;
   private animationFrame = 0;
+  private resizeFrame = 0;
+  private lastCanvasWidth = 0;
+  private lastCanvasHeight = 0;
+  private lastPixelRatio = 0;
   private visible = true;
   private ready = false;
   private readonly reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -89,6 +93,7 @@ export class Craft3DViewerComponent implements AfterViewInit, OnChanges, OnDestr
 
   ngOnDestroy(): void {
     cancelAnimationFrame(this.animationFrame);
+    cancelAnimationFrame(this.resizeFrame);
     this.resizeObserver?.disconnect();
     this.intersectionObserver?.disconnect();
     this.controls?.dispose();
@@ -149,6 +154,11 @@ export class Craft3DViewerComponent implements AfterViewInit, OnChanges, OnDestr
     this.renderer.toneMappingExposure = 1.05;
     this.renderer.shadowMap.enabled = !this.isMobile();
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    this.renderer.domElement.style.display = 'block';
+    this.renderer.domElement.style.width = '100%';
+    this.renderer.domElement.style.height = '100%';
+    this.renderer.domElement.style.maxWidth = '100%';
+    this.renderer.domElement.style.maxHeight = '100%';
     host.appendChild(this.renderer.domElement);
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
@@ -162,7 +172,7 @@ export class Craft3DViewerComponent implements AfterViewInit, OnChanges, OnDestr
 
     this.addLighting();
     this.addStudioFloor();
-    this.resizeObserver = new ResizeObserver(() => this.resize());
+    this.resizeObserver = new ResizeObserver(() => this.scheduleResize());
     this.resizeObserver.observe(host);
     this.intersectionObserver = new IntersectionObserver(([entry]) => {
       this.visible = entry?.isIntersecting ?? true;
@@ -190,10 +200,22 @@ export class Craft3DViewerComponent implements AfterViewInit, OnChanges, OnDestr
     const width = Math.max(280, host.clientWidth);
     const height = Math.max(320, host.clientHeight);
     const maxDpr = this.isMobile() ? 1.45 : 2;
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, maxDpr));
+    const pixelRatio = Math.min(window.devicePixelRatio || 1, maxDpr);
+    if (width === this.lastCanvasWidth && height === this.lastCanvasHeight && pixelRatio === this.lastPixelRatio) {
+      return;
+    }
+    this.lastCanvasWidth = width;
+    this.lastCanvasHeight = height;
+    this.lastPixelRatio = pixelRatio;
+    this.renderer.setPixelRatio(pixelRatio);
     this.renderer.setSize(width, height, false);
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
+  }
+
+  private scheduleResize(): void {
+    cancelAnimationFrame(this.resizeFrame);
+    this.resizeFrame = requestAnimationFrame(() => this.resize());
   }
 
   private animate(): void {
