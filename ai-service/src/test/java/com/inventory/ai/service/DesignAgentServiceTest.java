@@ -38,6 +38,10 @@ class DesignAgentServiceTest {
                     assertThat(response.spec().priceBreakdown().total()).isEqualByComparingTo(response.spec().estimatedPrice());
                     assertThat(response.spec().estimatedDays()).isGreaterThan(0);
                     assertThat(response.spec().threeD().template()).isEqualTo("lamp");
+                    assertThat(response.spec().threeD().engineVersion()).isEqualTo("v1.2");
+                    assertThat(response.spec().threeD().materialPreset()).isEqualTo("guadua");
+                    assertThat(response.spec().threeD().surfaceTexture()).isEqualTo("fibra");
+                    assertThat(response.spec().threeD().parts()).isNotEmpty();
                     assertThat(response.previewPrompt()).contains("Product design render");
                     assertThat(response.source()).isEqualTo("fallback");
                 })
@@ -70,6 +74,9 @@ class DesignAgentServiceTest {
                     assertThat(response.spec().dimensions().heightCm()).isEqualTo(35);
                     assertThat(response.spec().threeD().materialColor()).isEqualTo("#2F5F8F");
                     assertThat(response.spec().threeD().accentColor()).isEqualTo("#B84A3A");
+                    assertThat(response.spec().threeD().ornamentStyle()).isEqualTo("aros_circulares");
+                    assertThat(response.spec().threeD().parts())
+                            .anySatisfy(part -> assertThat(part.kind()).isEqualTo("perforation"));
                 })
                 .verifyComplete();
     }

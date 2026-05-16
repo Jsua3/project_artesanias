@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -10,6 +10,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AiDesignService } from '../../../core/services/ai-design.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { CustomDesignResponse, DesignSpec } from '../../../core/models/ai-design.model';
+import { Craft3DCapture, Craft3DViewerComponent } from './craft-3d-viewer.component';
 
 interface ChatMessage {
   role: 'cliente' | 'agente';
@@ -27,12 +28,15 @@ interface ChatMessage {
     MatIconModule,
     MatInputModule,
     MatFormFieldModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    Craft3DViewerComponent
   ],
   templateUrl: './ai-designer.component.html',
   styleUrl: './ai-designer.component.scss'
 })
 export class AiDesignerComponent {
+  @ViewChild(Craft3DViewerComponent) private readonly craftViewer?: Craft3DViewerComponent;
+
   private readonly ai = inject(AiDesignService);
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
@@ -50,7 +54,7 @@ export class AiDesignerComponent {
   readonly messages = signal<ChatMessage[]>([
     {
       role: 'agente',
-      text: 'Cuéntame que pieza quieres imaginar: uso, material, tamaño, color, territorio o presupuesto. Yo la convierto en una ficha de diseño artesanal y un preview 3D.'
+      text: 'Cuéntame que pieza quieres imaginar: uso, material, tamaño, color, territorio o presupuesto. Yo la convierto en una ficha artesanal y un modelo 3D real para observar desde todos los angulos.'
     }
   ]);
   readonly spec = signal<DesignSpec | null>(null);
@@ -59,6 +63,8 @@ export class AiDesignerComponent {
   readonly previewMimeType = signal<string | null>(null);
   readonly previewPrompt = signal<string | null>(null);
   readonly previewSource = signal<string | null>(null);
+  readonly modelPreviewBase64 = signal<string | null>(null);
+  readonly modelPreviewMimeType = signal<string | null>(null);
   readonly savedDesign = signal<CustomDesignResponse | null>(null);
 
   readonly hasSpec = computed(() => this.spec() !== null);
@@ -78,18 +84,6 @@ export class AiDesignerComponent {
       { label: 'Acabado', value: breakdown.finishCost },
     ];
   });
-  readonly previewStyle = computed(() => {
-    const p = this.spec()?.threeD;
-    return {
-      '--shape-height': `${Math.max(150, (p?.height ?? 1) * 180)}px`,
-      '--shape-width': `${Math.max(110, (p?.radius ?? 0.6) * 220)}px`,
-      '--shape-color': p?.materialColor ?? '#704A2E',
-      '--shape-accent': p?.accentColor ?? '#C9A253',
-      '--shape-curve': `${Math.round((p?.curvature ?? 0.2) * 36)}px`,
-    };
-  });
-  readonly previewClass = computed(() => `preview-object preview-object--${this.spec()?.threeD.template || 'vase'}`);
-
   send(): void {
     if (this.loading()) return;
     this.prompt.markAsTouched();
@@ -109,6 +103,8 @@ export class AiDesignerComponent {
         this.previewMimeType.set(null);
         this.previewPrompt.set(response.previewPrompt);
         this.previewSource.set(response.source);
+        this.modelPreviewBase64.set(null);
+        this.modelPreviewMimeType.set(null);
         this.messages.update(items => [...items, { role: 'agente', text: response.reply }]);
         this.prompt.setValue('');
         this.loading.set(false);
@@ -118,6 +114,12 @@ export class AiDesignerComponent {
         this.loading.set(false);
       }
     });
+  }
+
+  onModelCaptured(capture: Craft3DCapture): void {
+    this.modelPreviewBase64.set(capture.imageBase64);
+    this.modelPreviewMimeType.set(capture.mimeType);
+    this.previewSource.set(capture.source);
   }
 
   useSuggestion(text: string): void {
@@ -141,13 +143,17 @@ export class AiDesignerComponent {
         this.previewLoading.set(false);
       },
       error: () => {
-        this.error.set('No pudimos generar el boceto visual. El preview 3D sigue disponible.');
+        this.error.set('No pudimos generar el boceto visual. El modelo 3D interactivo sigue disponible.');
         this.previewLoading.set(false);
       }
     });
   }
 
   confirmDesign(): void {
+    this.confirmDesignNow();
+  }
+
+  private confirmDesignNow(): void {
     const current = this.spec();
     if (!current || this.confirming()) return;
     if (!this.auth.isLoggedIn()) {
@@ -158,13 +164,24 @@ export class AiDesignerComponent {
 
     this.confirming.set(true);
     this.error.set(null);
+    if (!this.previewImageBase64() && !this.modelPreviewBase64()) {
+      const capture = this.craftViewer?.captureDataUrl();
+      if (capture) {
+        this.onModelCaptured(capture);
+      }
+    }
+
+    const imageBase64 = this.previewImageBase64() ?? this.modelPreviewBase64();
+    const mimeType = this.previewMimeType() ?? this.modelPreviewMimeType();
+    const source = this.previewImageBase64() ? this.previewSource() : imageBase64 ? 'threejs' : this.previewSource();
+
     this.ai.confirmDesign({
       spec: current,
       customerNotes: this.customerNotes.value?.trim() || null,
       previewPrompt: this.previewPrompt(),
-      previewImageBase64: this.previewImageBase64(),
-      previewMimeType: this.previewMimeType(),
-      previewSource: this.previewSource()
+      previewImageBase64: imageBase64,
+      previewMimeType: mimeType,
+      previewSource: source
     }).subscribe({
       next: response => {
         this.savedDesign.set(response);

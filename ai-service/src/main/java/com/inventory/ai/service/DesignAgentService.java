@@ -241,7 +241,7 @@ public class DesignAgentService {
 
         return """
                 Eres el Agente Diseñador 3D de Rebecca, una tienda premium de artesanias del Eje Cafetero colombiano.
-                Convierte deseos del cliente en una propuesta fabricable por artesanos locales y en parametros para un preview 3D parametrico.
+                Convierte deseos del cliente en una propuesta fabricable por artesanos locales y en parametros para una escena 3D real en Three.js.
 
                 Reglas:
                 - Responde solo JSON valido segun el schema.
@@ -249,6 +249,12 @@ public class DesignAgentService {
                 - Diseña piezas posibles: lampara, vasija, canasto, bandeja, matera, mural, joya, centro de mesa.
                 - Usa materiales coherentes: guadua, barro, fique, iraca, madera, lana, ceramica.
                 - Usa paleta Rebecca: #704A2E, #C9A253, #F5F0E8, #8A9A7B, #A88696.
+                - En threeD.template usa preferiblemente: lamp, vase, tray o planter; si el cliente pide canasto usa basket.
+                - En threeD.materialPreset usa: guadua, barro, fique, iraca, madera, ceramica o lana.
+                - En threeD.surfaceTexture usa: fibra, veta, barro, tejido, liso o esmaltado.
+                - En threeD.ornamentStyle usa: aros_circulares, trama_tejida, palma_de_cera, cafetal_neblina, geometria_cafetera o territorio_sutil.
+                - En threeD.parts describe modulos visibles: band, handle, leg, rim, weave, perforation, base o shade.
+                - Prioriza belleza artesanal observable en 3D: proporciones claras, ornamentos legibles y materiales texturizados.
                 - Si faltan detalles, infiere una propuesta inicial y sugiere ajustes, no bloquees.
                 - No prometas fabricación automática; esto crea una solicitud de diseño para cotización.
 
@@ -463,7 +469,14 @@ public class DesignAgentService {
                         palette.get(0),
                         palette.size() > 1 ? palette.get(1) : "#C9A253",
                         pattern,
-                        repeatCount(pattern)
+                        repeatCount(pattern),
+                        "v1.2",
+                        materialPreset(material),
+                        complexity,
+                        cameraPreset(type),
+                        surfaceTexture(material, pattern),
+                        pattern,
+                        buildThreeDParts(type, material, pattern, palette)
                 )
         );
 
@@ -700,6 +713,62 @@ public class DesignAgentService {
         return pattern.contains("circular") ? 12 : pattern.contains("trama") ? 10 : 7;
     }
 
+    private String materialPreset(String material) {
+        String value = normalizeText(material);
+        if (value.contains("guadua") || value.contains("bejuco")) return "guadua";
+        if (value.contains("barro")) return "barro";
+        if (value.contains("fique")) return "fique";
+        if (value.contains("iraca")) return "iraca";
+        if (value.contains("madera")) return "madera";
+        if (value.contains("lana")) return "lana";
+        if (value.contains("ceram")) return "ceramica";
+        return "barro";
+    }
+
+    private String surfaceTexture(String material, String pattern) {
+        String preset = materialPreset(material);
+        if (pattern != null && pattern.contains("trama")) return "tejido";
+        return switch (preset) {
+            case "guadua", "fique", "iraca", "lana" -> "fibra";
+            case "madera" -> "veta";
+            case "ceramica" -> "esmaltado";
+            default -> "barro";
+        };
+    }
+
+    private String cameraPreset(String type) {
+        return switch (type) {
+            case "tray" -> "top_oblique";
+            case "lamp" -> "hero_tall";
+            default -> "studio_three_quarter";
+        };
+    }
+
+    private List<DesignSpec.ThreeDPart> buildThreeDParts(String type, String material, String pattern, List<String> palette) {
+        String accent = palette != null && palette.size() > 1 ? palette.get(1) : "#C9A253";
+        String base = palette != null && !palette.isEmpty() ? palette.get(0) : "#704A2E";
+        List<DesignSpec.ThreeDPart> parts = new ArrayList<>();
+        parts.add(new DesignSpec.ThreeDPart("base", "bottom", 1, base, 1.0, 0.0));
+        parts.add(new DesignSpec.ThreeDPart("rim", "top", 1, accent, 1.0, 0.0));
+        if ("lamp".equals(type)) {
+            parts.add(new DesignSpec.ThreeDPart("shade", "top", 1, base, 1.0, 0.0));
+            parts.add(new DesignSpec.ThreeDPart("band", "middle", 3, accent, 1.0, 0.0));
+            parts.add(new DesignSpec.ThreeDPart("weave", "surface", Math.max(8, repeatCount(pattern)), accent, 0.72, 0.0));
+        } else if ("tray".equals(type)) {
+            parts.add(new DesignSpec.ThreeDPart("handle", "side", 2, accent, 1.0, 0.0));
+            parts.add(new DesignSpec.ThreeDPart("weave", "surface", Math.max(8, repeatCount(pattern)), accent, 0.56, 0.0));
+        } else if ("planter".equals(type)) {
+            parts.add(new DesignSpec.ThreeDPart("leg", "bottom", 3, accent, 0.82, 0.0));
+            parts.add(new DesignSpec.ThreeDPart("band", "middle", 2, accent, 1.0, 0.0));
+        } else {
+            parts.add(new DesignSpec.ThreeDPart("band", "middle", Math.max(2, repeatCount(pattern) / 4), accent, 1.0, 0.0));
+        }
+        if (pattern != null && pattern.contains("circular")) {
+            parts.add(new DesignSpec.ThreeDPart("perforation", "surface", Math.max(8, repeatCount(pattern)), accent, 0.5, 0.0));
+        }
+        return parts;
+    }
+
     private int safeDimension(Integer value) {
         return value == null ? 0 : Math.max(0, value);
     }
@@ -754,21 +823,41 @@ public class DesignAgentService {
                 ),
                 "required", List.of("heightCm", "widthCm", "depthCm", "diameterCm")
         );
-        Map<String, Object> threeD = Map.of(
+        Map<String, Object> threeDPart = Map.of(
                 "type", "object",
                 "additionalProperties", false,
                 "properties", Map.of(
-                        "template", Map.of("type", "string"),
-                        "height", Map.of("type", "number"),
-                        "radius", Map.of("type", "number"),
-                        "taper", Map.of("type", "number"),
-                        "curvature", Map.of("type", "number"),
-                        "materialColor", Map.of("type", "string"),
-                        "accentColor", Map.of("type", "string"),
-                        "patternStyle", Map.of("type", "string"),
-                        "repeatCount", Map.of("type", "integer")
+                        "kind", Map.of("type", "string", "enum", List.of("band", "handle", "leg", "rim", "weave", "perforation", "base", "shade")),
+                        "placement", Map.of("type", "string", "enum", List.of("top", "middle", "bottom", "side", "surface")),
+                        "repeatCount", Map.of("type", "integer"),
+                        "color", Map.of("type", "string"),
+                        "scale", Map.of("type", "number"),
+                        "rotation", Map.of("type", "number")
                 ),
-                "required", List.of("template", "height", "radius", "taper", "curvature", "materialColor", "accentColor", "patternStyle", "repeatCount")
+                "required", List.of("kind", "placement", "repeatCount", "color", "scale", "rotation")
+        );
+        Map<String, Object> threeD = Map.of(
+                "type", "object",
+                "additionalProperties", false,
+                "properties", Map.ofEntries(
+                        Map.entry("template", Map.of("type", "string", "enum", List.of("lamp", "vase", "basket", "tray", "planter", "mural", "jewelry", "centerpiece"))),
+                        Map.entry("height", Map.of("type", "number")),
+                        Map.entry("radius", Map.of("type", "number")),
+                        Map.entry("taper", Map.of("type", "number")),
+                        Map.entry("curvature", Map.of("type", "number")),
+                        Map.entry("materialColor", Map.of("type", "string")),
+                        Map.entry("accentColor", Map.of("type", "string")),
+                        Map.entry("patternStyle", Map.of("type", "string")),
+                        Map.entry("repeatCount", Map.of("type", "integer")),
+                        Map.entry("engineVersion", Map.of("type", "string")),
+                        Map.entry("materialPreset", Map.of("type", "string", "enum", List.of("guadua", "barro", "fique", "iraca", "madera", "ceramica", "lana"))),
+                        Map.entry("detailLevel", Map.of("type", "string", "enum", List.of("baja", "media", "alta"))),
+                        Map.entry("cameraPreset", Map.of("type", "string", "enum", List.of("studio_three_quarter", "hero_tall", "top_oblique"))),
+                        Map.entry("surfaceTexture", Map.of("type", "string", "enum", List.of("fibra", "veta", "barro", "tejido", "liso", "esmaltado"))),
+                        Map.entry("ornamentStyle", Map.of("type", "string")),
+                        Map.entry("parts", Map.of("type", "array", "items", threeDPart))
+                ),
+                "required", List.of("template", "height", "radius", "taper", "curvature", "materialColor", "accentColor", "patternStyle", "repeatCount", "engineVersion", "materialPreset", "detailLevel", "cameraPreset", "surfaceTexture", "ornamentStyle", "parts")
         );
         Map<String, Object> priceBreakdown = Map.of(
                 "type", "object",

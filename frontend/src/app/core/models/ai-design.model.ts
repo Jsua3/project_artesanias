@@ -15,6 +15,22 @@ export interface DesignThreeDParameters {
   accentColor: string;
   patternStyle: string;
   repeatCount: number;
+  engineVersion?: string | null;
+  materialPreset?: string | null;
+  detailLevel?: string | null;
+  cameraPreset?: string | null;
+  surfaceTexture?: string | null;
+  ornamentStyle?: string | null;
+  parts?: DesignThreeDPart[] | null;
+}
+
+export interface DesignThreeDPart {
+  kind: 'band' | 'handle' | 'leg' | 'rim' | 'weave' | 'perforation' | 'base' | 'shade' | string;
+  placement: 'top' | 'middle' | 'bottom' | 'side' | 'surface' | string;
+  repeatCount?: number | null;
+  color?: string | null;
+  scale?: number | null;
+  rotation?: number | null;
 }
 
 export interface PriceBreakdown {

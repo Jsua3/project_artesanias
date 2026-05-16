@@ -37,6 +37,22 @@ public record DesignSpec(
             String materialColor,
             String accentColor,
             String patternStyle,
-            Integer repeatCount
+            Integer repeatCount,
+            String engineVersion,
+            String materialPreset,
+            String detailLevel,
+            String cameraPreset,
+            String surfaceTexture,
+            String ornamentStyle,
+            List<ThreeDPart> parts
+    ) {}
+
+    public record ThreeDPart(
+            String kind,
+            String placement,
+            Integer repeatCount,
+            String color,
+            Double scale,
+            Double rotation
     ) {}
 }

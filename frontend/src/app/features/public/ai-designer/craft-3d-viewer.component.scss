@@ -1,0 +1,179 @@
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 420px;
+}
+
+.craft-viewer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: inherit;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(circle at 50% 18%, rgba(255, 255, 255, 0.68), transparent 16rem),
+    radial-gradient(circle at 72% 72%, rgba(201, 162, 83, 0.16), transparent 18rem),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(112, 74, 46, 0.08));
+}
+
+.craft-viewer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(120deg, transparent 0 42%, rgba(255, 255, 255, 0.26) 48%, transparent 58%),
+    radial-gradient(ellipse at 50% 83%, rgba(62, 39, 35, 0.22), transparent 38%);
+  opacity: 0.72;
+  pointer-events: none;
+}
+
+.craft-viewer__stage {
+  width: 100%;
+  height: 100%;
+  min-height: inherit;
+  touch-action: none;
+}
+
+.craft-viewer__stage canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.craft-viewer__hud {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 2;
+  display: inline-flex;
+  gap: 8px;
+  padding: 7px;
+  border: 1px solid rgba(255, 255, 255, 0.58);
+  border-radius: 999px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.66), rgba(255, 255, 255, 0.20)),
+    rgba(245, 240, 232, 0.42);
+  backdrop-filter: blur(18px) saturate(1.35);
+  -webkit-backdrop-filter: blur(18px) saturate(1.35);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.72),
+    0 18px 42px rgba(62, 39, 35, 0.16);
+}
+
+.craft-viewer__button {
+  width: 40px;
+  height: 40px;
+  color: #704a2e;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.56), rgba(255, 255, 255, 0.16)),
+    rgba(255, 255, 255, 0.32);
+  border: 1px solid rgba(255, 255, 255, 0.54);
+  border-radius: 50%;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.64);
+  transition: transform 180ms cubic-bezier(.2, .8, .2, 1), box-shadow 180ms ease, background 180ms ease;
+}
+
+.craft-viewer__button:hover,
+.craft-viewer__button:focus-visible,
+.craft-viewer__button.is-active {
+  transform: translateY(-1px);
+  background:
+    linear-gradient(145deg, rgba(201, 162, 83, 0.32), rgba(255, 255, 255, 0.20)),
+    rgba(255, 255, 255, 0.42);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.74),
+    0 12px 28px rgba(112, 74, 46, 0.20);
+}
+
+.craft-viewer__caption {
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: min(420px, calc(100% - 32px));
+  padding: 9px 14px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  color: rgba(62, 39, 35, 0.82);
+  font: 700 12px/1.25 Outfit, sans-serif;
+  text-align: center;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.60), rgba(255, 255, 255, 0.18)),
+    rgba(245, 240, 232, 0.42);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(16px) saturate(1.28);
+  -webkit-backdrop-filter: blur(16px) saturate(1.28);
+}
+
+.craft-viewer__caption mat-icon {
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+  color: #a17b34;
+}
+
+.craft-viewer__fallback {
+  display: grid;
+  min-height: inherit;
+  place-items: center;
+  align-content: center;
+  gap: 10px;
+  padding: 32px;
+  color: #3e2723;
+  text-align: center;
+}
+
+.craft-viewer__fallback mat-icon {
+  width: 54px;
+  height: 54px;
+  font-size: 54px;
+  color: #c9a253;
+}
+
+.craft-viewer__fallback h3 {
+  margin: 0;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(32px, 6vw, 48px);
+}
+
+.craft-viewer__fallback p {
+  max-width: 420px;
+  margin: 0;
+  font: 500 15px/1.6 Outfit, sans-serif;
+}
+
+@media (max-width: 640px) {
+  :host {
+    min-height: 340px;
+  }
+
+  .craft-viewer__hud {
+    top: 12px;
+    right: 12px;
+    gap: 6px;
+    padding: 6px;
+  }
+
+  .craft-viewer__button {
+    width: 38px;
+    height: 38px;
+  }
+
+  .craft-viewer__caption {
+    bottom: 12px;
+    padding: 8px 11px;
+    font-size: 11px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .craft-viewer__button {
+    transition: none;
+  }
+}

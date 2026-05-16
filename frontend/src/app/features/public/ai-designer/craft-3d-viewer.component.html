@@ -1,0 +1,26 @@
+<div class="craft-viewer" [class.craft-viewer--fallback]="webglFailed">
+  @if (!webglFailed) {
+    <div #stage class="craft-viewer__stage" aria-label="Preview 3D interactivo de la artesania"></div>
+    <div class="craft-viewer__hud" aria-label="Controles del modelo 3D">
+      <button type="button" class="rb-icon-button craft-viewer__button" matTooltip="Recentrar camara" (click)="resetCamera()">
+        <mat-icon>center_focus_strong</mat-icon>
+      </button>
+      <button type="button" class="rb-icon-button craft-viewer__button" matTooltip="Rotacion suave" (click)="toggleAutoRotate()" [class.is-active]="autoRotateEnabled">
+        <mat-icon>{{ autoRotateEnabled ? 'pause' : '360' }}</mat-icon>
+      </button>
+      <button type="button" class="rb-icon-button craft-viewer__button" matTooltip="Capturar miniatura" (click)="captureCurrentModel()">
+        <mat-icon>photo_camera</mat-icon>
+      </button>
+    </div>
+    <div class="craft-viewer__caption">
+      <mat-icon>view_in_ar</mat-icon>
+      <span>Arrastra para girar. Pellizca o usa la rueda para acercar.</span>
+    </div>
+  } @else {
+    <div class="craft-viewer__fallback">
+      <mat-icon>view_in_ar_off</mat-icon>
+      <h3>Preview 3D no disponible</h3>
+      <p>Tu navegador no activo WebGL. Conservamos la ficha artesanal para que puedas continuar.</p>
+    </div>
+  }
+</div>

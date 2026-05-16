@@ -38,6 +38,7 @@ Estado importante al 2026-05-15:
 - Rebecca V1.1 es la version visual canonica actual: base responsive, botones normalizados, header/bottom nav, hero por zonas, animaciones premium controladas y auditoria visual V1.1.1.
 - V1.1.1 cerro la interfaz principal: header simetrico, CTA del hero separado de metricas, panel privado animado con Liquid Glass, textura premium global y nuevo apartado publico de Artesania 3D.
 - V1.1.2 cerro la primera optimizacion visual: build frontend sin warnings de presupuesto, bundle inicial aproximado `802.14 kB`, fuentes externas reducidas, Chart.js fuera del root y CSS muerto eliminado.
+- V1.2 esta implementada localmente y verificada: `/disena-tu-pieza` usa un visor 3D real con Three.js, OrbitControls, geometria procedural artesanal, texturas, sombras, captura de miniatura y fallback WebGL. Pendiente despliegue controlado.
 - Se mejoro la separacion entre datos publicos y datos internos.
 - Productos y artesanos publicos deben usar DTOs reducidos.
 - Rutas administrativas de catalogo viven bajo `/api/products/admin/**` y `/api/artesanos/admin/**`.
@@ -49,6 +50,7 @@ Estado importante al 2026-05-15:
 - El release V1.1 fue organizado, probado, autorizado y desplegado. Para releases futuros, no desplegar sin una autorizacion nueva y verificacion fresca.
 - El flujo IA de producto personalizado ya no es solo conceptual: existe agente, solicitudes, revision de taller, detalle individual, conversion a producto, notificaciones internas y persistencia de boceto visual.
 - La creacion 3D de artesanias esta disponible para visitantes y usuarios comunes en `/disena-tu-pieza`: `message` y `preview` son publicos via gateway con token interno; `confirm`, `mine`, `review`, detalle, notificaciones y cambios de estado siguen protegidos por rol.
+- En V1.2 el chat interno genera una ficha `DesignSpec.threeD` enriquecida; el frontend interpreta esos parametros en una escena WebGL real. No usar text-to-3D externo en esta fase.
 - El lenguaje visual Liquid Glass premium fue promovido a capa global transversal del frontend.
 - Existe panel admin `/admin/system-health` para revisar servicios, version, healthchecks, OpenAI, Stripe y checklist interno de release antes de desplegar.
 
@@ -1679,6 +1681,7 @@ Esta seccion existe para que una IA futura no dependa de buscar contexto en prom
 - `SECURITY-ROUTES.md`: matriz viva de rutas publicas y privadas. Debe mantenerse sincronizada con el gateway.
 - `RELEASE-CHECKLIST.md`: checklist de release controlado; obligatorio antes de desplegar.
 - `documentos/REBECCA-V1.1.md`: bitacora de fases V1.1, V1.1.1 y V1.1.2; queda absorbida por este canon.
+- `documentos/REBECCA-V1.2.md`: bitacora de la artesania 3D real con Three.js, contrato `threeD` enriquecido, QA visual y reglas de despliegue pendiente.
 - `cliente/INTEGRACION-ANGULAR.md`: guia historica para migrar prototipo cliente a Angular 21, tokens SCSS, Three.js y rendimiento.
 - `Almacen Artesanias Design System/`: design system externo con tokens, UI kits cliente/admin y reglas de marca. Se considera material absorbido por las secciones visuales de este maestro.
 
@@ -2061,13 +2064,15 @@ Admin DB:
 
 ### 31.10 AI, diseno 3D y producto personalizado
 
-`ai-service` es un microservicio separado y privado tras gateway. Angular no llama OpenAI directamente. El acceso publico permitido pasa por el gateway, que inyecta `X-Internal-Token`, y se limita a conversacion/preview.
+`ai-service` es un microservicio separado y privado tras gateway. Angular no llama OpenAI directamente. El acceso publico permitido pasa por el gateway, que inyecta `X-Internal-Token`, y se limita a conversacion/preview. V1.2 usa Three.js en el frontend para mostrar una artesania 3D real, rotatable y observable. El chat no genera mallas arbitrarias; genera parametros estructurados que el motor 3D controlado de Rebecca interpreta.
 
 Mecanica:
 
 - Visitante, CLIENTE o rol interno entra a `/disena-tu-pieza`.
 - Conversa con agente sin requerir login para idear y previsualizar.
 - El agente devuelve `DesignSpec`: tipo, titulo, historia, territorio, materiales, paleta, dimensiones, patron, acabado, complejidad, precio estimado, desglose, dias, pasos de fabricacion y parametros 3D.
+- `DesignSpec.threeD` conserva los campos historicos y agrega campos opcionales para V1.2: `engineVersion`, `materialPreset`, `detailLevel`, `cameraPreset`, `surfaceTexture`, `ornamentStyle` y `parts`.
+- El visor 3D soporta inicialmente `lamp`, `vase`, `tray` y `planter` mediante geometria procedural; `GLTFLoader` queda preparado para modulos `.glb` artesanales hechos en Blender.
 - Si `OPENAI_API_KEY` falta o OpenAI falla, fallback local crea una propuesta util.
 - Preview 3D local funciona sin OpenAI.
 - Boceto visual con OpenAI es opcional.
@@ -2272,14 +2277,17 @@ Completado y documentado en este canon:
 10. V1.1.1: auditoria/cierre visual de interfaz principal con header simetrico, CTA separado de metricas, panel privado animado, fondo texturizado y nuevo apartado publico de Artesania 3D.
 11. V1.1.2: optimizacion inicial despues de la auditoria: build sin warnings de presupuesto, bundle inicial alrededor de `802.14 kB`, fuentes reducidas, Chart.js fuera del root y CSS muerto eliminado.
 12. Release V1.1 desplegado en EC2 y verificado por smoke tests publicos/privados el 2026-05-15.
+13. Rebecca V1.2 implementada localmente: visor Three.js real en `/disena-tu-pieza`, `DesignSpec.threeD` enriquecido, fallback local mejorado, miniatura 3D y QA visual en `qa-screenshots/v12-3d/`.
 
 Backlog recomendado despues de este punto:
 
-1. QA visual ampliado de rutas secundarias: catalogo, carrito, checkout, mis pedidos, detalle de disenos, revision admin, dashboard, productos, ventas, pedidos, stock y entregas.
-2. Pruebas E2E del flujo IA completo con usuario real: crear diseno, preview, confirmar, cambiar estado, notificar, abrir detalle y convertir a producto.
-3. Email o push opcional tomando `custom_design_notifications` como fuente de verdad.
-4. UI admin para editar reglas de precio sin tocar `.env`; hoy existen variables de entorno, pero no pantalla administrativa.
-5. Migraciones robustas con Flyway/Liquibase para cambios futuros de schema.
-6. Siguiente release: no desplegar sin autorizacion nueva, build limpio, pruebas, backup, smoke tests y checklist actualizado.
+1. Despliegue controlado de V1.2: build Docker, smoke tests de `/disena-tu-pieza`, IA publica y rutas privadas.
+2. QA visual ampliado de rutas secundarias: catalogo, carrito, checkout, mis pedidos, detalle de disenos, revision admin, dashboard, productos, ventas, pedidos, stock y entregas.
+3. Pruebas E2E del flujo IA completo con usuario real: crear diseno, preview 3D, confirmar, cambiar estado, notificar, abrir detalle y convertir a producto.
+4. Biblioteca futura `.glb` hecha en Blender para asas, tejidos, bordes, pantallas y ornamentos artesanales.
+5. Email o push opcional tomando `custom_design_notifications` como fuente de verdad.
+6. UI admin para editar reglas de precio sin tocar `.env`; hoy existen variables de entorno, pero no pantalla administrativa.
+7. Migraciones robustas con Flyway/Liquibase para cambios futuros de schema.
+8. Siguiente release: no desplegar sin autorizacion nueva, build limpio, pruebas, backup, smoke tests y checklist actualizado.
 
 Regla de ejecucion: avanzar en estos puntos sin desplegar hasta que el dueno autorice un nuevo release.

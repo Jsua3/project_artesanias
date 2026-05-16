@@ -13,7 +13,7 @@
       <h1>Diseña una pieza artesanal a tu medida.</h1>
       <p>
         Conversa con el taller inteligente de Rebeca. El agente convierte tu idea en una ficha fabricable,
-        una historia de oficio y un preview 3D parametrico para cotizar con artesanos.
+        una historia de oficio y un modelo 3D real para girar, acercar y cotizar con artesanos.
       </p>
     </div>
   </section>
@@ -64,14 +64,13 @@
 
     <section class="preview-panel">
       <div class="preview-stage">
-        @if (previewImage(); as image) {
-          <img class="generated-preview" [src]="image" alt="Boceto generado por IA">
+        @if (spec()) {
+          <app-craft-3d-viewer [spec]="spec()" (captured)="onModelCaptured($event)"></app-craft-3d-viewer>
         } @else {
-          <div class="preview-floor"></div>
-          <div [class]="previewClass()" [ngStyle]="previewStyle()">
-            <span class="preview-object__band preview-object__band--top"></span>
-            <span class="preview-object__band preview-object__band--middle"></span>
-            <span class="preview-object__band preview-object__band--bottom"></span>
+          <div class="preview-stage__empty">
+            <mat-icon>view_in_ar</mat-icon>
+            <h2>Tu modelo 3D aparecera aqui</h2>
+            <p>El agente generara una pieza real para girar, acercar y observar.</p>
           </div>
         }
       </div>
@@ -153,6 +152,20 @@
             }
             Generar boceto visual
           </button>
+
+          @if (previewImage(); as image) {
+            <figure class="visual-sketch">
+              <img [src]="image" alt="Boceto visual generado por IA">
+              <figcaption>Boceto 2D de apoyo; el modelo 3D interactivo permanece arriba.</figcaption>
+            </figure>
+          }
+
+          @if (modelPreviewBase64()) {
+            <p class="capture-state">
+              <mat-icon>photo_camera</mat-icon>
+              Miniatura 3D lista para adjuntarse al encargo.
+            </p>
+          }
 
           <div class="confirm-box">
             <mat-form-field appearance="outline">
