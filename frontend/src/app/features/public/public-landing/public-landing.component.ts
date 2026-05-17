@@ -63,6 +63,12 @@ interface OficioHighlight {
   meta: string;
 }
 
+interface CollectionRow {
+  town: string;
+  pieces: Pieza[];
+  isScrollable: boolean;
+}
+
 @Component({
   selector: 'app-public-landing',
   standalone: true,
@@ -202,6 +208,44 @@ export class PublicLandingComponent implements OnInit, AfterViewInit, OnDestroy 
     const cat = this.selectedCategory();
     const list = this.piezas();
     return cat === 'Todas' ? list : list.filter(p => p.category === cat);
+  });
+
+  readonly collectionRows = computed<CollectionRow[]>(() => {
+    const byTown = new Map<string, Pieza[]>();
+    for (const piece of this.filteredPiezas()) {
+      const town = this.pieceOrigin(piece);
+      byTown.set(town, [...(byTown.get(town) ?? []), piece]);
+    }
+
+    const preferredOrder = [
+      'Salento',
+      'Filandia',
+      'Quimbaya',
+      'Armenia',
+      'Calarca',
+      'Circasia',
+      'Pijao',
+      'Montenegro',
+      'Buenavista',
+      'Cordoba',
+      'Genova',
+      'La Tebaida',
+      'Eje Cafetero'
+    ];
+
+    const orderIndex = (town: string) => {
+      const normalizedTown = this.normalizeText(town);
+      const index = preferredOrder.findIndex(item => this.normalizeText(item) === normalizedTown);
+      return index === -1 ? Number.MAX_SAFE_INTEGER : index;
+    };
+
+    return Array.from(byTown.entries())
+      .sort(([a], [b]) => orderIndex(a) - orderIndex(b) || a.localeCompare(b, 'es-CO'))
+      .map(([town, pieces]) => ({
+        town,
+        pieces,
+        isScrollable: pieces.length > 3
+      }));
   });
 
   readonly cartCount = computed(() => this.cart.count());
