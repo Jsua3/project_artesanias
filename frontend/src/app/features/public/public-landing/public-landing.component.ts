@@ -21,6 +21,7 @@ import { ThemeService } from '../../../core/services/theme.service';
 import { EventosPublicosService, EventoPublico } from '../../../core/services/eventos-publicos.service';
 import { LiquidPointerDirective } from '../../../core/directives/liquid-pointer.directive';
 import { Artesano, Category, Product } from '../../../core/models/catalog.model';
+import { QUINDIO_MUNICIPALITIES } from '../territory/quindio-municipalities.data';
 
 export interface Pieza {
   id: string;                 // productId UUID cuando viene de backend; string numérico para mocks
@@ -153,16 +154,14 @@ export class PublicLandingComponent implements OnInit, AfterViewInit, OnDestroy 
 
   readonly categories = signal<string[]>(['Todas', 'Alfarería', 'Tejido', 'Guadua', 'Textil', 'Madera']);
 
-  readonly territorioPlaces = ['Filandia', 'Salento', 'Pijao', 'Circasia', 'Calarcá', 'Armenia'];
+  readonly territorioPlaces = QUINDIO_MUNICIPALITIES.map(({ name, slug }) => ({ name, slug }));
 
-  readonly territorioMapPoints: { x: number; y: number; name: string }[] = [
-    { x: 110, y:  90, name: 'Filandia' },
-    { x: 180, y: 120, name: 'Salento'  },
-    { x:  90, y: 170, name: 'Circasia' },
-    { x: 170, y: 200, name: 'Calarcá'  },
-    { x: 220, y: 160, name: 'Pijao'    },
-    { x: 140, y: 230, name: 'Armenia'  }
-  ];
+  readonly territorioMapPoints = QUINDIO_MUNICIPALITIES.map(({ name, slug, mapPoint }) => ({
+    name,
+    slug,
+    x: mapPoint.x,
+    y: mapPoint.y
+  }));
 
   readonly oficioHighlights: OficioHighlight[] = [
     {

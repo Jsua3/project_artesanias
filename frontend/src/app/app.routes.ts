@@ -15,6 +15,10 @@ const PUBLIC_ROUTES: Routes = [
     loadComponent: () => import('./features/public/public-landing/public-landing.component').then(m => m.PublicLandingComponent)
   },
   {
+    path: 'territorio/:slug',
+    loadComponent: () => import('./features/public/territory/municipality-profile.component').then(m => m.MunicipalityProfileComponent)
+  },
+  {
     path: 'carrito',
     loadComponent: () => import('./features/public/cart-page/cart-page.component').then(m => m.CartPageComponent)
   },

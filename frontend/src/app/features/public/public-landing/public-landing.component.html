@@ -159,7 +159,7 @@
         </div>
         <div class="hero__metaDiv"></div>
         <div class="hero__meta-stat">
-          <div class="hero__metaNum">7</div>
+          <div class="hero__metaNum">12</div>
           <div class="eyebrow hero__metaLabel">municipios</div>
         </div>
         <div class="hero__metaDiv"></div>
@@ -471,12 +471,12 @@
           Quindío.<br/><em>Donde nace</em><br/>la pieza.
         </h2>
         <p class="territorio__lead">
-          Filandia, Salento, Pijao, Circasia. Pueblos de bahareque sobre montañas cafeteras.
-          Palma de cera, guadua, el murmullo del Cocora al amanecer.
+          Doce municipios sobre montañas cafeteras: bahareque, palma de cera, guadua,
+          barro, lana y el murmullo del Cocora al amanecer.
         </p>
         <div class="territorio__places">
-          @for (t of territorioPlaces; track t) {
-            <span class="territorio__place">{{ t }}</span>
+          @for (t of territorioPlaces; track t.slug) {
+            <a class="territorio__place" [routerLink]="['/territorio', t.slug]">{{ t.name }}</a>
           }
         </div>
       </div>
