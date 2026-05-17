@@ -19,7 +19,10 @@ import com.inventory.ai.repository.CustomDesignRequestRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.server.ResponseStatusException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -39,6 +42,7 @@ import java.util.regex.Pattern;
 @Service
 public class DesignAgentService {
 
+    private static final Logger log = LoggerFactory.getLogger(DesignAgentService.class);
     private static final List<String> REBECCA_PALETTE = List.of("#704A2E", "#C9A253", "#F5F0E8");
 
     private final WebClient openAiWebClient;
@@ -66,6 +70,7 @@ public class DesignAgentService {
 
     public Mono<DesignTurnResponse> nextTurn(String userId, DesignTurnRequest request) {
         if (!properties.enabled()) {
+            log.warn("OpenAI API key is not configured; using local design fallback");
             return Mono.just(applyPricing(fallbackTurn(request)));
         }
 
@@ -92,7 +97,10 @@ public class DesignAgentService {
                 .timeout(Duration.ofSeconds(70))
                 .map(this::parseDesignResponse)
                 .map(this::applyPricing)
-                .onErrorResume(error -> Mono.just(applyPricing(fallbackTurn(request))));
+                .onErrorResume(error -> {
+                    log.warn("OpenAI design request failed; using local fallback: {}", summarizeOpenAiError(error));
+                    return Mono.just(applyPricing(fallbackTurn(request)));
+                });
     }
 
     public Mono<PreviewResponse> generatePreview(String userId, DesignSpec spec) {
@@ -244,11 +252,14 @@ public class DesignAgentService {
                 Convierte deseos del cliente en una propuesta fabricable por artesanos locales y en parametros para una escena 3D real en Three.js.
 
                 Reglas:
+                - Disena exactamente la pieza solicitada por el cliente. No reutilices el tipo anterior si el cliente pide otro objeto.
+                - Si el cliente pide un reloj artesanal, usa productType clock y threeD.template clock.
                 - Responde solo JSON valido segun el schema.
                 - Mantén tono calido, colombiano neutro, sin emojis.
                 - Diseña piezas posibles: lampara, vasija, canasto, bandeja, matera, mural, joya, centro de mesa.
                 - Usa materiales coherentes: guadua, barro, fique, iraca, madera, lana, ceramica.
                 - Usa paleta Rebecca: #704A2E, #C9A253, #F5F0E8, #8A9A7B, #A88696.
+                - threeD.template tambien acepta clock para relojes artesanales de pared o mesa.
                 - En threeD.template usa preferiblemente: lamp, vase, tray o planter; si el cliente pide canasto usa basket.
                 - En threeD.materialPreset usa: guadua, barro, fique, iraca, madera, ceramica o lana.
                 - En threeD.surfaceTexture usa: fibra, veta, barro, tejido, liso o esmaltado.
@@ -516,6 +527,7 @@ public class DesignAgentService {
     }
 
     private String pickType(String message, DesignSpec current) {
+        if (message.contains("reloj") || message.contains("hora") || message.contains("relojero")) return "clock";
         if (message.contains("lampara") || message.contains("luz") || message.contains("pantalla")) return "lamp";
         if (message.contains("canasto") || message.contains("cesto")) return "basket";
         if (message.contains("matera") || message.contains("planta")) return "planter";
@@ -530,12 +542,15 @@ public class DesignAgentService {
         if (message.contains("guadua")) return "guadua";
         if (message.contains("bejuco")) return "bejuco";
         if (message.contains("barro") || message.contains("ceram")) return "barro";
+        if ("tray".equals(type) && message.contains("madera")) return "madera";
+        if ("clock".equals(type) && message.contains("madera")) return "madera";
         if (message.contains("fique")) return "fique";
         if (message.contains("iraca")) return "iraca";
         if (message.contains("madera")) return "madera";
         if (message.contains("lana")) return "lana";
         return switch (type) {
             case "lamp" -> "guadua";
+            case "clock" -> "guadua";
             case "basket" -> "fique";
             case "jewelry" -> "madera y filamento dorado";
             case "tray" -> "madera";
@@ -624,10 +639,15 @@ public class DesignAgentService {
             case "lamp" -> Math.max(18, Math.round(height * 0.48f));
             case "tray" -> Math.max(30, mentioned != null ? Math.round(height * 1.45f) : 42);
             case "jewelry" -> 8;
+            case "clock" -> Math.max(22, height);
             default -> Math.max(16, Math.round(height * 0.62f));
         };
-        int depth = type.equals("tray") ? Math.max(18, Math.round(width * 0.62f)) : width;
-        int diameter = type.equals("lamp") || type.equals("vase") || type.equals("planter") ? width : 0;
+        int depth = switch (type) {
+            case "tray" -> Math.max(18, Math.round(width * 0.62f));
+            case "clock" -> 7;
+            default -> width;
+        };
+        int diameter = type.equals("lamp") || type.equals("vase") || type.equals("planter") || type.equals("clock") ? width : 0;
         return new DesignSpec.Dimensions(height, width, depth, diameter);
     }
 
@@ -639,6 +659,7 @@ public class DesignAgentService {
     private int defaultHeight(String type) {
         return switch (type) {
             case "lamp" -> 35;
+            case "clock" -> 32;
             case "tray" -> 28;
             case "jewelry" -> 8;
             case "basket", "planter" -> 24;
@@ -662,6 +683,7 @@ public class DesignAgentService {
             case "jewelry" -> "Joya";
             case "tray" -> "Bandeja";
             case "mural" -> "Mural";
+            case "clock" -> "Reloj";
             default -> "Vasija";
         };
         String accent = pattern.equals("aros_circulares") ? "con aros circulares" : "con " + pattern.replace('_', ' ');
@@ -677,6 +699,15 @@ public class DesignAgentService {
     }
 
     private List<String> makingSteps(String type, String material, String pattern, String finish) {
+        if ("clock".equals(type)) {
+            return List.of(
+                    "Validar diametro, estilo de numeros y ubicacion final del reloj.",
+                    "Seleccionar " + material + " y laminar la caratula con veta o fibra visible.",
+                    "Construir aro, soporte posterior y marcadores horarios segun plantilla 3D tipo clock.",
+                    "Instalar manecillas, mecanismo silencioso y acabado " + finish + ".",
+                    "Probar lectura, estabilidad, empaque y entrega al cliente."
+            );
+        }
         return List.of(
                 "Validar uso, medidas y paleta final con el cliente.",
                 "Seleccionar " + material + " y preparar corte, tejido o secado segun tecnica.",
@@ -688,6 +719,7 @@ public class DesignAgentService {
 
     private double heightParameter(String type, DesignSpec.Dimensions dimensions) {
         double base = Math.max(0.35, safeDimension(dimensions.heightCm()) / 30.0);
+        if (type.equals("clock")) return Math.min(1.55, Math.max(0.92, base));
         return type.equals("jewelry") ? 0.38 : Math.min(1.85, base);
     }
 
@@ -701,6 +733,7 @@ public class DesignAgentService {
             case "lamp" -> 0.28;
             case "tray" -> 0.08;
             case "basket" -> 0.16;
+            case "clock" -> 0.05;
             default -> 0.2;
         };
     }
@@ -740,6 +773,7 @@ public class DesignAgentService {
         return switch (type) {
             case "tray" -> "top_oblique";
             case "lamp" -> "hero_tall";
+            case "clock" -> "studio_front";
             default -> "studio_three_quarter";
         };
     }
@@ -760,6 +794,11 @@ public class DesignAgentService {
         } else if ("planter".equals(type)) {
             parts.add(new DesignSpec.ThreeDPart("leg", "bottom", 3, accent, 0.82, 0.0));
             parts.add(new DesignSpec.ThreeDPart("band", "middle", 2, accent, 1.0, 0.0));
+        } else if ("clock".equals(type)) {
+            parts.add(new DesignSpec.ThreeDPart("face", "surface", 1, base, 1.0, 0.0));
+            parts.add(new DesignSpec.ThreeDPart("marker", "surface", 12, accent, 0.72, 0.0));
+            parts.add(new DesignSpec.ThreeDPart("hands", "surface", 2, accent, 0.86, 0.0));
+            parts.add(new DesignSpec.ThreeDPart("band", "middle", 1, accent, 1.0, 0.0));
         } else {
             parts.add(new DesignSpec.ThreeDPart("band", "middle", Math.max(2, repeatCount(pattern) / 4), accent, 1.0, 0.0));
         }
@@ -771,6 +810,13 @@ public class DesignAgentService {
 
     private int safeDimension(Integer value) {
         return value == null ? 0 : Math.max(0, value);
+    }
+
+    private String summarizeOpenAiError(Throwable error) {
+        if (error instanceof WebClientResponseException responseException) {
+            return "HTTP " + responseException.getStatusCode().value();
+        }
+        return error.getClass().getSimpleName();
     }
 
     private String secondaryMaterialsPhrase(List<String> materials) {
@@ -827,7 +873,7 @@ public class DesignAgentService {
                 "type", "object",
                 "additionalProperties", false,
                 "properties", Map.of(
-                        "kind", Map.of("type", "string", "enum", List.of("band", "handle", "leg", "rim", "weave", "perforation", "base", "shade")),
+                        "kind", Map.of("type", "string", "enum", List.of("band", "handle", "leg", "rim", "weave", "perforation", "base", "shade", "face", "marker", "hands")),
                         "placement", Map.of("type", "string", "enum", List.of("top", "middle", "bottom", "side", "surface")),
                         "repeatCount", Map.of("type", "integer"),
                         "color", Map.of("type", "string"),
@@ -840,7 +886,7 @@ public class DesignAgentService {
                 "type", "object",
                 "additionalProperties", false,
                 "properties", Map.ofEntries(
-                        Map.entry("template", Map.of("type", "string", "enum", List.of("lamp", "vase", "basket", "tray", "planter", "mural", "jewelry", "centerpiece"))),
+                        Map.entry("template", Map.of("type", "string", "enum", List.of("lamp", "vase", "basket", "tray", "planter", "mural", "jewelry", "centerpiece", "clock"))),
                         Map.entry("height", Map.of("type", "number")),
                         Map.entry("radius", Map.of("type", "number")),
                         Map.entry("taper", Map.of("type", "number")),
@@ -852,7 +898,7 @@ public class DesignAgentService {
                         Map.entry("engineVersion", Map.of("type", "string")),
                         Map.entry("materialPreset", Map.of("type", "string", "enum", List.of("guadua", "barro", "fique", "iraca", "madera", "ceramica", "lana"))),
                         Map.entry("detailLevel", Map.of("type", "string", "enum", List.of("baja", "media", "alta"))),
-                        Map.entry("cameraPreset", Map.of("type", "string", "enum", List.of("studio_three_quarter", "hero_tall", "top_oblique"))),
+                        Map.entry("cameraPreset", Map.of("type", "string", "enum", List.of("studio_three_quarter", "hero_tall", "top_oblique", "studio_front"))),
                         Map.entry("surfaceTexture", Map.of("type", "string", "enum", List.of("fibra", "veta", "barro", "tejido", "liso", "esmaltado"))),
                         Map.entry("ornamentStyle", Map.of("type", "string")),
                         Map.entry("parts", Map.of("type", "array", "items", threeDPart))

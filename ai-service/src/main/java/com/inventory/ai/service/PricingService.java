@@ -73,6 +73,7 @@ public class PricingService {
             case "planter", "matera" -> BigDecimal.valueOf(65000);
             case "jewelry", "joya", "collar", "arete" -> BigDecimal.valueOf(45000);
             case "tray", "bandeja" -> BigDecimal.valueOf(55000);
+            case "clock", "reloj" -> BigDecimal.valueOf(80000);
             case "mural", "centerpiece", "centro de mesa" -> BigDecimal.valueOf(100000);
             default -> BigDecimal.valueOf(70000);
         };
@@ -140,6 +141,7 @@ public class PricingService {
     private Integer estimatedDaysFor(String productType, String complexity, DesignSpec.Dimensions dimensions) {
         int days = switch (key(productType)) {
             case "jewelry", "joya", "collar", "arete" -> 6;
+            case "clock", "reloj" -> 10;
             case "lamp", "lampara", "mural", "centerpiece", "centro de mesa" -> 12;
             default -> 9;
         };

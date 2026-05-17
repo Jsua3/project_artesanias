@@ -80,4 +80,32 @@ class DesignAgentServiceTest {
                 })
                 .verifyComplete();
     }
+
+    @Test
+    void fallbackSwitchesToClockWhenCustomerAsksForAClockAfterAnotherDesign() {
+        DesignAgentService service = new DesignAgentService(
+                WebClient.builder().baseUrl("http://localhost").build(),
+                new OpenAiProperties("", "gpt-5-mini", "gpt-image-1", "https://api.openai.com/v1"),
+                new ObjectMapper(),
+                new PricingService(new PricingRulesProperties(null, null, null, null, null, null, null)),
+                mock(CustomDesignRequestRepository.class),
+                mock(CustomDesignNotificationRepository.class)
+        );
+
+        StepVerifier.create(service.nextTurn("public", new DesignTurnRequest(
+                "Y un reloj de guadua para pared",
+                null
+        )))
+                .assertNext(response -> {
+                    assertThat(response.reply()).containsIgnoringCase("reloj");
+                    assertThat(response.spec().productType()).isEqualTo("clock");
+                    assertThat(response.spec().primaryMaterial()).isEqualTo("guadua");
+                    assertThat(response.spec().threeD().template()).isEqualTo("clock");
+                    assertThat(response.spec().threeD().cameraPreset()).isEqualTo("studio_front");
+                    assertThat(response.spec().threeD().parts())
+                            .anySatisfy(part -> assertThat(part.kind()).isEqualTo("hands"))
+                            .anySatisfy(part -> assertThat(part.kind()).isEqualTo("marker"));
+                })
+                .verifyComplete();
+    }
 }

@@ -281,6 +281,9 @@ export class Craft3DViewerComponent implements AfterViewInit, OnChanges, OnDestr
       case 'planter':
         this.buildPlanter(group, params);
         break;
+      case 'clock':
+        this.buildClock(group, params);
+        break;
       default:
         this.buildVase(group, params);
         break;
@@ -394,6 +397,70 @@ export class Craft3DViewerComponent implements AfterViewInit, OnChanges, OnDestr
     this.addTrayHandles(group, accentMat);
     this.addTrayWeave(group, accentMat, Math.max(8, params.repeatCount));
     group.rotation.x = -0.08;
+  }
+
+  private buildClock(group: THREE.Group, params: Normalized3D): void {
+    const bodyMat = this.createMaterial(params, params.baseColor);
+    const accentMat = this.createMaterial(params, params.accentColor, true);
+    const faceMat = new THREE.MeshStandardMaterial({
+      color: new THREE.Color('#f5f0e8'),
+      roughness: 0.82,
+      metalness: 0.01,
+      map: this.createTexture(params.texture, '#f5f0e8', params.baseColor)
+    });
+    const radius = Math.max(0.58, params.radius);
+
+    const back = new THREE.Mesh(new THREE.CylinderGeometry(radius, radius * 0.96, 0.12, 96), bodyMat);
+    back.rotation.x = Math.PI / 2;
+    back.castShadow = true;
+    back.receiveShadow = true;
+    group.add(back);
+
+    const face = new THREE.Mesh(new THREE.CylinderGeometry(radius * 0.82, radius * 0.82, 0.045, 96), faceMat);
+    face.rotation.x = Math.PI / 2;
+    face.position.z = 0.075;
+    face.castShadow = true;
+    face.receiveShadow = true;
+    group.add(face);
+
+    const rim = new THREE.Mesh(new THREE.TorusGeometry(radius * 0.92, 0.035, 18, 112), accentMat);
+    rim.position.z = 0.11;
+    rim.castShadow = true;
+    group.add(rim);
+
+    const markerGeo = new THREE.BoxGeometry(0.035, 0.13, 0.018);
+    for (let i = 0; i < 12; i += 1) {
+      const angle = (i / 12) * Math.PI * 2;
+      const marker = new THREE.Mesh(markerGeo.clone(), accentMat);
+      const longMarker = i % 3 === 0;
+      marker.scale.set(longMarker ? 1.35 : 0.82, longMarker ? 1.25 : 0.82, 1);
+      marker.position.set(Math.sin(angle) * radius * 0.68, Math.cos(angle) * radius * 0.68, 0.14);
+      marker.rotation.z = -angle;
+      marker.castShadow = true;
+      group.add(marker);
+    }
+
+    const hourHand = new THREE.Mesh(new THREE.BoxGeometry(0.042, radius * 0.42, 0.02), accentMat);
+    hourHand.position.set(radius * 0.11, radius * 0.15, 0.165);
+    hourHand.rotation.z = -0.62;
+    hourHand.castShadow = true;
+    group.add(hourHand);
+
+    const minuteHand = new THREE.Mesh(new THREE.BoxGeometry(0.026, radius * 0.58, 0.018), this.darkInteriorMaterial());
+    minuteHand.position.set(-radius * 0.09, radius * 0.24, 0.18);
+    minuteHand.rotation.z = 0.34;
+    minuteHand.castShadow = true;
+    group.add(minuteHand);
+
+    const pin = new THREE.Mesh(new THREE.SphereGeometry(0.055, 24, 14), accentMat);
+    pin.position.z = 0.205;
+    pin.castShadow = true;
+    group.add(pin);
+
+    if (params.detailLevel.includes('alta')) {
+      this.addSurfaceOrnaments(group, { ...params, ornament: 'geometria_cafetera' }, radius * 0.48, 0, accentMat);
+    }
+    group.position.y = 0.04;
   }
 
   private roundedRectShape(width: number, depth: number, radius: number): THREE.Shape {
@@ -575,6 +642,7 @@ export class Craft3DViewerComponent implements AfterViewInit, OnChanges, OnDestr
     if (value.includes('lamp')) return 'lamp';
     if (value.includes('tray')) return 'tray';
     if (value.includes('planter') || value.includes('matera')) return 'planter';
+    if (value.includes('clock') || value.includes('reloj')) return 'clock';
     return 'vase';
   }
 
@@ -603,8 +671,10 @@ export class Craft3DViewerComponent implements AfterViewInit, OnChanges, OnDestr
     if (!this.camera || !this.controls) return;
     const tall = params.template === 'lamp';
     const tray = params.template === 'tray' || params.cameraPreset === 'top_oblique';
+    const clock = params.template === 'clock' || params.cameraPreset === 'studio_front';
     this.camera.position.set(tray ? 2.7 : 2.35, tall ? 1.6 : 1.2, tray ? 2.8 : 3.15);
     if (params.cameraPreset === 'hero_tall') this.camera.position.set(2.15, 1.95, 3.35);
+    if (clock) this.camera.position.set(0.2, 0.42, 3.2);
     this.controls.target.set(0, tray ? 0.02 : 0, 0);
     this.controls.update();
   }
