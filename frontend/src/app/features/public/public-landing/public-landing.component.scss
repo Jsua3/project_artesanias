@@ -1068,94 +1068,6 @@
   .piece__stock--warn { color: var(--ember-deep); }
   .piece__stock--warn .dot { background: var(--ember); }
 
-  .piece.liquid-glass {
-    min-height: 440px;
-    padding: 10px;
-    border-radius: 22px;
-    background:
-      linear-gradient(145deg, rgba(255,255,255,0.52), rgba(255,255,255,0.22)),
-      rgba(255,255,255,0.40);
-    border-color: rgba(255,255,255,0.48);
-    box-shadow:
-      0 8px 32px rgba(0,0,0,0.10),
-      0 24px 58px -36px rgba(58,50,40,0.58),
-      inset 0 1px 0 rgba(255,255,255,0.58),
-      inset 0 -1px 0 rgba(255,255,255,0.12),
-      inset 0 0 10px 5px rgba(255,255,255,0.28);
-  }
-  .piece.liquid-glass::before {
-    z-index: 2;
-    opacity: 0;
-    background:
-      radial-gradient(circle at var(--mx, 50%) var(--my, 50%),
-        rgba(255,255,255,0.48),
-        rgba(255,255,255,0.16) 22%,
-        transparent 52%);
-  }
-  .piece.liquid-glass::after {
-    z-index: 2;
-  }
-  .piece.liquid-glass:hover::before {
-    opacity: 1;
-  }
-  .piece.liquid-glass:hover {
-    box-shadow:
-      0 12px 36px rgba(0,0,0,0.12),
-      0 30px 68px -36px rgba(58,50,40,0.62),
-      inset 0 1px 0 rgba(255,255,255,0.70),
-      inset 0 -1px 0 rgba(255,255,255,0.16),
-      inset 0 0 12px 6px rgba(255,255,255,0.34);
-  }
-  .piece.liquid-glass .piece__imgWrap {
-    border-radius: 16px;
-    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.26);
-  }
-  .piece.liquid-glass .piece__body {
-    position: relative;
-    z-index: 3;
-    margin: -42px 6px 0;
-    padding: 18px 18px 16px;
-    border-radius: 18px;
-    background:
-      linear-gradient(145deg, rgba(255,255,255,0.70), rgba(255,255,255,0.30)),
-      rgba(255,255,255,0.40);
-    border: 1px solid rgba(255,255,255,0.52);
-    backdrop-filter: blur(14px) saturate(1.16);
-    -webkit-backdrop-filter: blur(14px) saturate(1.16);
-    box-shadow:
-      0 14px 34px -28px rgba(58,50,40,0.55),
-      inset 0 1px 0 rgba(255,255,255,0.74);
-  }
-  .piece__reveal {
-    max-height: 0;
-    opacity: 0;
-    overflow: hidden;
-    transform: translateY(8px);
-    transition:
-      max-height 520ms cubic-bezier(.2,.8,.2,1),
-      opacity 420ms ease,
-      transform 420ms ease;
-  }
-  .piece:hover .piece__reveal {
-    max-height: 112px;
-    opacity: 1;
-    transform: translateY(0);
-    transition-delay: 1.25s;
-  }
-  .piece__reveal p {
-    margin: 4px 0 8px;
-    color: rgba(58,50,40,0.72);
-    font-size: 12.5px;
-    line-height: 1.5;
-  }
-  .piece__reveal span {
-    color: var(--moss);
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-  }
-
   /* ============ MAESTROS ============ */
   /* ───────────────────────────────────────────────────────
      MAESTROS — tarjetas premium con expansión en hover
@@ -3419,10 +3331,10 @@ body[data-theme="dark"] .public-landing {
     position: relative;
     isolation: isolate;
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 0fr;
+    grid-template-columns: 1fr;
     grid-template-rows: minmax(290px, 1fr) auto;
     gap: 0;
-    overflow: hidden;
+    overflow: visible;
     padding: 10px;
     border-radius: var(--piece-radius);
     cursor: pointer;
@@ -3442,24 +3354,21 @@ body[data-theme="dark"] .public-landing {
       rotateX(calc(var(--rx, 0deg) * 0.55))
       rotateY(calc(var(--ry, 0deg) * 0.55));
     transition:
-      grid-column 520ms cubic-bezier(0.2, 0.8, 0.2, 1),
-      grid-template-columns 680ms cubic-bezier(0.2, 0.8, 0.2, 1),
-      transform 420ms cubic-bezier(0.16, 1, 0.3, 1),
+      transform 620ms cubic-bezier(0.16, 1, 0.3, 1),
       border-color 280ms ease,
       box-shadow 420ms cubic-bezier(0.16, 1, 0.3, 1),
       background 320ms ease;
-    will-change: transform, grid-template-columns;
+    will-change: transform;
   }
 
   .piece:hover,
   .piece:focus-within {
-    grid-column: span 4;
-    grid-template-columns: minmax(260px, 0.86fr) minmax(300px, 1.14fr);
+    z-index: 30;
     transform:
       translate3d(0, -8px, 44px)
       perspective(1200px)
-      rotateX(var(--rx, 0deg))
-      rotateY(var(--ry, 0deg));
+      rotateX(calc(var(--rx, 0deg) * 0.72))
+      rotateY(calc(var(--ry, 0deg) * 0.72));
     border-color: rgba(255, 255, 255, 0.74);
     box-shadow:
       0 36px 90px -44px rgba(58, 50, 40, 0.72),
@@ -3635,31 +3544,47 @@ body[data-theme="dark"] .public-landing {
   }
 
   .piece__drawer {
-    grid-column: 2;
-    grid-row: 1 / span 2;
-    position: relative;
-    z-index: 4;
-    min-width: 0;
-    width: 100%;
+    position: absolute;
+    top: 10px;
+    bottom: 10px;
+    left: calc(100% + 14px);
+    z-index: 8;
+    width: min(500px, calc(100vw - 64px));
     overflow: hidden;
     opacity: 0;
-    transform: translateX(-16px) scaleX(0.96);
+    pointer-events: none;
+    transform: translate3d(-28px, 0, 0) scale(0.965);
     transform-origin: left center;
+    clip-path: inset(0 100% 0 0 round 24px);
+    filter: blur(8px) saturate(0.94);
     transition:
-      opacity 420ms ease,
-      transform 620ms cubic-bezier(0.16, 1, 0.3, 1);
+      opacity 260ms ease,
+      transform 760ms cubic-bezier(0.16, 1, 0.3, 1),
+      clip-path 780ms cubic-bezier(0.16, 1, 0.3, 1),
+      filter 620ms ease;
+  }
+
+  .piece:nth-child(3n) .piece__drawer {
+    left: auto;
+    right: calc(100% + 14px);
+    transform: translate3d(28px, 0, 0) scale(0.965);
+    transform-origin: right center;
+    clip-path: inset(0 0 0 100% round 24px);
   }
 
   .piece:hover .piece__drawer,
   .piece:focus-within .piece__drawer {
     opacity: 1;
-    transform: translateX(0) scaleX(1);
-    transition-delay: 80ms;
+    pointer-events: auto;
+    transform: translate3d(0, 0, 0) scale(1);
+    clip-path: inset(0 0 0 0 round 24px);
+    filter: blur(0) saturate(1.08);
+    transition-delay: 70ms;
   }
 
   .piece__drawer-scroll {
     height: 100%;
-    max-height: calc(clamp(520px, 43vw, 620px) - 20px);
+    max-height: none;
     overflow-y: auto;
     overscroll-behavior: contain;
     padding: clamp(20px, 2.1vw, 30px);
@@ -3795,6 +3720,7 @@ body[data-theme="dark"] .public-landing {
     background: rgba(255, 255, 255, 0.32);
     border: 1px solid rgba(166, 124, 82, 0.16);
   }
+
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -3814,7 +3740,25 @@ body[data-theme="dark"] .public-landing {
 
   .public-landing .piece:hover,
   .public-landing .piece:focus-within {
-    grid-column: span 4;
+    grid-column: span 2;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) and (min-width: 761px) and (max-width: 1180px) {
+  .public-landing .piece:nth-child(3n) .piece__drawer {
+    left: calc(100% + 14px);
+    right: auto;
+    transform: translate3d(-28px, 0, 0) scale(0.965);
+    transform-origin: left center;
+    clip-path: inset(0 100% 0 0 round 24px);
+  }
+
+  .public-landing .piece:nth-child(even) .piece__drawer {
+    left: auto;
+    right: calc(100% + 14px);
+    transform: translate3d(28px, 0, 0) scale(0.965);
+    transform-origin: right center;
+    clip-path: inset(0 0 0 100% round 24px);
   }
 }
 
@@ -3861,10 +3805,16 @@ body[data-theme="dark"] .public-landing {
   }
 
   .public-landing .piece__drawer {
+    position: relative;
+    inset: auto;
+    width: 100%;
     grid-column: 1;
     grid-row: 3;
     opacity: 1;
+    pointer-events: auto;
     transform: none;
+    clip-path: none;
+    filter: none;
     margin-top: 10px;
   }
 
@@ -3875,6 +3825,14 @@ body[data-theme="dark"] .public-landing {
 
   .public-landing .piece__reveal {
     max-height: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .public-landing .piece__drawer-head,
+  .public-landing .piece__spec-grid,
+  .public-landing .piece__artisan,
+  .public-landing .piece__notes {
     opacity: 1;
     transform: none;
   }
@@ -3917,9 +3875,15 @@ body[data-theme="dark"] .public-landing {
   }
 
   .public-landing .piece__drawer {
+    position: relative;
+    inset: auto;
+    width: 100%;
     grid-column: 1;
     grid-row: 3;
     margin-top: 10px;
+    pointer-events: auto;
+    clip-path: none;
+    filter: none;
   }
 
   .public-landing .piece__drawer,
@@ -3935,6 +3899,14 @@ body[data-theme="dark"] .public-landing {
 
   .public-landing .piece__reveal {
     max-height: none;
+  }
+
+  .public-landing .piece__drawer-head,
+  .public-landing .piece__spec-grid,
+  .public-landing .piece__artisan,
+  .public-landing .piece__notes {
+    opacity: 1;
+    transform: none;
   }
 }
 
