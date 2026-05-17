@@ -94,6 +94,7 @@ export class PublicLandingComponent implements OnInit, AfterViewInit, OnDestroy 
   readonly selectedCategory = signal<string>('Todas');
   readonly openPiece = signal<Pieza | null>(null);
   readonly toast = signal<string | null>(null);
+  readonly themeBurst = signal(false);
 
   /** Producto crudo del API guardado para pasarlo a CartService al agregar. */
   private readonly productsById = new Map<string, Product>();
@@ -253,6 +254,7 @@ export class PublicLandingComponent implements OnInit, AfterViewInit, OnDestroy 
   readonly currentUsername = computed(() => this.auth.currentUser()?.username ?? null);
 
   private slideInterval: ReturnType<typeof setInterval> | null = null;
+  private themeBurstTimeout: ReturnType<typeof setTimeout> | null = null;
   private revealObserver: IntersectionObserver | null = null;
   private reducedMotion = false;
   private readonly municipalityNames = QUINDIO_MUNICIPALITIES.map(m => m.name);
@@ -277,6 +279,10 @@ export class PublicLandingComponent implements OnInit, AfterViewInit, OnDestroy 
     if (this.slideInterval) {
       clearInterval(this.slideInterval);
       this.slideInterval = null;
+    }
+    if (this.themeBurstTimeout) {
+      clearTimeout(this.themeBurstTimeout);
+      this.themeBurstTimeout = null;
     }
     this.revealObserver?.disconnect();
     this.revealObserver = null;
@@ -496,6 +502,22 @@ export class PublicLandingComponent implements OnInit, AfterViewInit, OnDestroy 
 
   goToCart(): void {
     this.router.navigate(['/carrito']);
+  }
+
+  toggleTheme(): void {
+    this.theme.toggle();
+    if (this.reducedMotion) return;
+
+    this.themeBurst.set(false);
+    if (this.themeBurstTimeout) {
+      clearTimeout(this.themeBurstTimeout);
+    }
+
+    requestAnimationFrame(() => this.themeBurst.set(true));
+    this.themeBurstTimeout = setTimeout(() => {
+      this.themeBurst.set(false);
+      this.themeBurstTimeout = null;
+    }, 760);
   }
 
   goToMisPedidos(): void {

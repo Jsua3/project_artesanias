@@ -4,7 +4,11 @@
     <button mat-icon-button (click)="toggleSidenav()" class="menu-btn">
       <mat-icon>{{ sidenavOpen() ? 'close' : 'menu' }}</mat-icon>
     </button>
-    <span class="toolbar-brand">REBECA</span>
+    <img
+      class="toolbar-brand-logo"
+      src="/assets/rebecca-wordmark.png"
+      alt="Rebbeca ecosistema artesanal"
+    />
     <span class="toolbar-spacer"></span>
     <button mat-icon-button class="toolbar-theme-btn" (click)="theme.toggle()"
             [title]="theme.isDark() ? 'Modo claro' : 'Modo oscuro'">
@@ -32,14 +36,10 @@
 
     <div class="brand" routerLink="/dashboard" (click)="closeMobileSidenav()">
       <div class="brand-icon">
-        <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="20" cy="20" r="18" stroke="currentColor" stroke-width="1.5" opacity="0.3"/>
-          <path d="M20 8C20 8 14 14 14 20C14 26 20 32 20 32C20 32 26 26 26 20C26 14 20 8 20 8Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
-          <circle cx="20" cy="20" r="4" stroke="currentColor" stroke-width="1.5"/>
-        </svg>
+        <img src="/assets/rebecca-mark.png" alt="" aria-hidden="true" />
       </div>
       <div class="brand-text">
-        <span class="brand-name">REBECA</span>
+        <span class="brand-name">REBBECA</span>
         <span class="brand-sub">sistema de gestión</span>
       </div>
     </div>

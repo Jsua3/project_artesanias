@@ -32,13 +32,17 @@ Postura obligatoria de cualquier IA que trabaje sobre este proyecto:
 - Respetar Angular 21, Spring WebFlux, R2DBC, Docker Compose, nginx y la identidad visual Rebecca.
 - Proteger siempre la frontera publica/privada del catalogo.
 
-Estado importante al 2026-05-15:
+Estado importante al 2026-05-17:
 
-- La app esta desplegada publicamente en `http://56.126.102.113.nip.io` con el commit `e786f89` (`Release Rebecca V1.1 visual and 3D design`), verificado el 2026-05-15.
+- La app esta desplegada publicamente en `http://56.126.102.113.nip.io` con el commit `a74b06b` (`Release Rebecca V1.2 3D craft designer`), verificado el 2026-05-15.
 - Rebecca V1.1 es la version visual canonica actual: base responsive, botones normalizados, header/bottom nav, hero por zonas, animaciones premium controladas y auditoria visual V1.1.1.
 - V1.1.1 cerro la interfaz principal: header simetrico, CTA del hero separado de metricas, panel privado animado con Liquid Glass, textura premium global y nuevo apartado publico de Artesania 3D.
 - V1.1.2 cerro la primera optimizacion visual: build frontend sin warnings de presupuesto, bundle inicial aproximado `802.14 kB`, fuentes externas reducidas, Chart.js fuera del root y CSS muerto eliminado.
 - V1.2 esta desplegada y verificada: `/disena-tu-pieza` usa un visor 3D real con Three.js, OrbitControls, geometria procedural artesanal, texturas, sombras, captura de miniatura y fallback WebGL.
+- V1.2.1 queda como canon posterior a V1.2 en codigo local: `af6245f` (`Fix 3D designer resize loop`) evita loops de `ResizeObserver` en el canvas 3D con resize diferido por `requestAnimationFrame`, cache de ancho/alto/DPR y estilos de canvas estables.
+- V1.2.2 queda como canon posterior a V1.2 en codigo local: `e7dd7fa` (`Improve 3D design agent specificity`) mejora la especificidad del agente 3D, agrega soporte para relojes artesanales (`productType`/`threeD.template` `clock`), camara `studio_front`, partes `face`/`marker`/`hands`, precio base y dias estimados para reloj.
+- V1.3 queda como canon visual posterior: la marca propia Rebbeca reemplaza el isotipo generico anterior. Se derivaron assets web desde `imagenes/logo.png`: `frontend/public/assets/rebecca-mark.png` para el espiral y `frontend/public/assets/rebecca-wordmark.png` para usos compactos. La navegacion publica usa espiral + texto `REBBECA` renderizado en CSS; login/registro usan espiral + nombre; sidebar/backoffice usa el espiral como sello.
+- V1.3 agrega microinteracciones Liquid Glass tipo gota: en mobile el header se divide al hacer scroll en dos capsulas (marca izquierda y acciones derecha), el espiral gira sutilmente al recogerse, el boton de tema emite una onda liquida, las cards de producto muestran una perla al abrir detalle y la seccion Artesania 3D conecta CTA/preview con gotas suaves. Siempre respetar `prefers-reduced-motion`.
 - Se mejoro la separacion entre datos publicos y datos internos.
 - Productos y artesanos publicos deben usar DTOs reducidos.
 - Rutas administrativas de catalogo viven bajo `/api/products/admin/**` y `/api/artesanos/admin/**`.
@@ -91,7 +95,7 @@ Repositorio:
 - Rama principal: `master`
 - Carpeta local actual: `D:\Sua_Files\IdeaProjects\almacen-arle`
 - Carpeta esperada en servidor: `/home/ubuntu/project_artesanias`
-- Ultimo commit desplegado y verificado: `e786f89` (`Release Rebecca V1.1 visual and 3D design`), 2026-05-15. Antes de un nuevo despliegue o rollback, verificar el commit real en EC2 con `git rev-parse --short HEAD`.
+- Ultimo commit desplegado y verificado: `a74b06b` (`Release Rebecca V1.2 3D craft designer`), 2026-05-15. Commits canonicos posteriores en codigo local: `af6245f` (`Fix 3D designer resize loop`) y `e7dd7fa` (`Improve 3D design agent specificity`). Antes de un nuevo despliegue o rollback, verificar el commit real en EC2 con `git rev-parse --short HEAD`.
 - URL publica recomendada: `http://56.126.102.113.nip.io`
 - URL por IP directa: `http://56.126.102.113`
 - Nota Google OAuth: el origen autorizado documentado es `http://56.126.102.113.nip.io`; entrar por IP directa puede romper el boton de Google.
@@ -1660,7 +1664,9 @@ La app esta desplegada y funcional en AWS EC2 (Sao Paulo, instancia de memoria l
 
 Ultimo despliegue verificado: commit `a74b06b` (`Release Rebecca V1.2 3D craft designer`), 2026-05-15 America/Bogota, en `http://56.126.102.113.nip.io`. Se actualizaron fuentes en EC2, se reconstruyeron sin cache `ai-service` y `frontend`, se levantaron contenedores, `ai-service` quedo healthy y los smoke tests principales pasaron. Antes de cualquier despliegue nuevo, verificar el commit real en EC2 con `git rev-parse --short HEAD`.
 
-Estado documental actualizado al 2026-05-15: este archivo es el prompt maestro canonico. V1.1/V1.1.1/V1.1.2 estan integradas al canon: interfaz principal premium responsive, artesania 3D publica para visitantes/usuarios comunes, endpoints IA publicos solo para `message`/`preview`, rutas privadas protegidas, textura global Liquid Glass, auditoria visual y primera optimizacion de bundle/CSS.
+Estado canonico posterior a V1.2 en codigo local: `af6245f` arreglo el loop de resize del visor 3D y `e7dd7fa` mejoro la especificidad del agente 3D. Estos commits quedan absorbidos por este maestro como V1.2.1/V1.2.2 documental, pero no deben describirse como desplegados en produccion hasta hacer verificacion fresca en EC2.
+
+Estado documental actualizado al 2026-05-17: este archivo es el prompt maestro canonico. V1.1/V1.1.1/V1.1.2 estan integradas al canon: interfaz principal premium responsive, artesania 3D publica para visitantes/usuarios comunes, endpoints IA publicos solo para `message`/`preview`, rutas privadas protegidas, textura global Liquid Glass, auditoria visual y primera optimizacion de bundle/CSS. V1.2/V1.2.1/V1.2.2 tambien quedan integradas: visor Three.js real, contrato `threeD` enriquecido, arreglo de resize del canvas y soporte especifico de agente/visor/precio para relojes artesanales `clock`. V1.3 queda integrada como evolucion visual de marca e interaccion: logo propio Rebbeca, espiral como sello, header mobile dividido con animacion liquida, microinteracciones de gota en tema/productos/Artesania 3D y assets web derivados del logo original.
 
 ## 31. Canon consolidado absoluto de documentos y prompts
 
@@ -2072,7 +2078,11 @@ Mecanica:
 - Conversa con agente sin requerir login para idear y previsualizar.
 - El agente devuelve `DesignSpec`: tipo, titulo, historia, territorio, materiales, paleta, dimensiones, patron, acabado, complejidad, precio estimado, desglose, dias, pasos de fabricacion y parametros 3D.
 - `DesignSpec.threeD` conserva los campos historicos y agrega campos opcionales para V1.2: `engineVersion`, `materialPreset`, `detailLevel`, `cameraPreset`, `surfaceTexture`, `ornamentStyle` y `parts`.
-- El visor 3D soporta inicialmente `lamp`, `vase`, `tray` y `planter` mediante geometria procedural; `GLTFLoader` queda preparado para modulos `.glb` artesanales hechos en Blender.
+- El visor 3D soporta `lamp`, `vase`, `tray`, `planter` y `clock` mediante geometria procedural; `GLTFLoader` queda preparado para modulos `.glb` artesanales hechos en Blender.
+- `clock` es canon desde `e7dd7fa`: se usa para relojes artesanales de pared o mesa, con camara `studio_front`, caratula, aro, marcadores horarios, manecillas y partes `face`, `marker`, `hands` en `DesignSpec.threeD.parts`.
+- El fallback local del agente debe cambiar a `clock` cuando el cliente pida reloj, hora o pieza relojera, aunque la conversacion anterior viniera de otro tipo de pieza. No debe arrastrar un `productType` anterior si el usuario pide claramente otro objeto.
+- El precio base canonico para `clock`/`reloj` es `80000` COP y la estimacion base es de `10` dias, antes de multiplicadores de tamano, complejidad, materiales y acabado.
+- El canvas del visor 3D debe mantener el arreglo de `af6245f`: `ResizeObserver` agenda resize con `requestAnimationFrame`, evita `setSize` si ancho/alto/DPR no cambiaron, cancela el frame pendiente en destroy y mantiene estilos `width/height/maxWidth/maxHeight: 100%`. No volver a un resize directo que pueda crear loop o parpadeo.
 - Si `OPENAI_API_KEY` falta o OpenAI falla, fallback local crea una propuesta util.
 - Preview 3D local funciona sin OpenAI.
 - Boceto visual con OpenAI es opcional.
@@ -2151,6 +2161,8 @@ Patrones:
 - `CartService` usa localStorage.
 - Catalogo publico tiene fallback visual si backend devuelve vacio/falla.
 - Mocks de productos publicos deben tener prefijo `mock-` y no agregarse al carrito real.
+- Desde V1.3 el frontend publico usa `toggleTheme()` en `public-landing.component.ts` para activar `theme.toggle()` y disparar la clase temporal `is-theme-burst`. No volver a conectar directamente todos los botones a `theme.toggle()` si se quiere conservar la onda liquida del cambio de tema.
+- Las microinteracciones liquidas del header/productos/3D son CSS-first y viven en `public-landing.component.scss` con keyframes `rbMobileHeaderMelt`, `rbMobileDropLeft`, `rbMobileDropRight`, `rbMobileDropBead`, `rbThemeLiquidBloom`, `rbThemeLiquidBead`, `rbPieceDrawerDrop`, `rbModalLiquidBead`, `rbCraftLiquidLink` y `rbCraftCardDrop`. Mantenerlas sutiles, sin saltos bruscos y siempre anuladas o suavizadas por `prefers-reduced-motion`.
 
 ### 31.12 Design system canonico
 
@@ -2190,14 +2202,19 @@ Iconografia:
 - Material Icons / Material Symbols en admin.
 - Lucide o iconografia lineal equivalente en cliente si se introduce.
 - Iconos custom aceptables para guadua, vasija, telar, grano de cafe, torno, palma.
+- Marca V1.3: el logo propio se escribe visualmente como `REBBECA` y el subtitulo de origen es `ecosistema artesanal`. El espiral cafe/dorado es el sello principal. Evitar volver al isotipo generico de hoja/semilla.
+- Assets de marca canonicos: `frontend/public/assets/rebecca-mark.png` para espiral/isotipo y `frontend/public/assets/rebecca-wordmark.png` para usos compactos donde convenga imagen. La navegacion publica debe preferir espiral + texto renderizado por CSS para conservar nitidez y responsive fino.
+- La imagen original de referencia vive en `imagenes/logo.png`, pero `imagenes/` esta ignorada por Git; no depender de esa ruta en runtime.
 
 Hero/landing:
 
 - La captura inicial actual usa hero fotografico territorial con header Liquid Glass, marca Rebeca, navegacion Colecciones/Maestros/Territorio/Oficio, CTA y contadores.
 - En V1.1 el hero se organiza por zonas reales: header, contenido central, acciones y rail de metricas. El CTA `Pasa al taller` y `Disena tu pieza 3D` no deben quedar encima de texto ni metricas.
 - En mobile, header minimo y bottom nav compacto; el bottom nav reserva espacio en el layout y no puede tapar contenido.
+- En V1.3 mobile, al hacer scroll el header publico se recoge y se divide en dos capsulas Liquid Glass: izquierda con espiral + `REBBECA`, derecha con modo claro/oscuro y carrito. La separacion se comunica con una gota/perla breve, sin desplazar contenido ni tapar el hero.
 - Las texturas premium deben ser sobrias: ruido fino, vetas/desaturacion y profundidad suficiente para que el Liquid Glass refracte sin competir con imagenes o texto.
 - Animaciones premium permitidas: entrada escalonada, brillo por puntero en desktop, micro-movimiento de flechas, hover con elevacion minima y scroll reveal. Siempre respetar `prefers-reduced-motion`.
+- Animaciones premium V1.3 permitidas y canonicas: giro corto del espiral al recogerse el header, gotas en separacion de header mobile, onda liquida del boton de tema, perla al abrir detalle de producto y gotas CTA/preview en Artesania 3D. Usarlas como acentos puntuales; no aplicarlas a cada card/boton de forma indiscriminada.
 - El prompt historico pedia Three.js con vasijas LatheGeometry, guaduas, palmas de cera, particulas doradas y niebla. No es obligatorio si la implementacion actual usa foto/preview, pero si se retoma debe ser sutil, no invasivo, sin OrbitControls visibles, con reduced motion.
 - Hero no debe ser landing generica SaaS.
 
@@ -2278,6 +2295,9 @@ Completado y documentado en este canon:
 11. V1.1.2: optimizacion inicial despues de la auditoria: build sin warnings de presupuesto, bundle inicial alrededor de `802.14 kB`, fuentes reducidas, Chart.js fuera del root y CSS muerto eliminado.
 12. Release V1.1 desplegado en EC2 y verificado por smoke tests publicos/privados el 2026-05-15.
 13. Rebecca V1.2 desplegada en EC2: visor Three.js real en `/disena-tu-pieza`, `DesignSpec.threeD` enriquecido, fallback local mejorado, miniatura 3D, QA visual en `qa-screenshots/v12-3d/` y smoke test productivo del flujo publico.
+14. V1.2.1 canon local: `af6245f` corrige el loop de resize del visor 3D con resize diferido, cache de dimensiones/DPR y estilos estables del canvas.
+15. V1.2.2 canon local: `e7dd7fa` mejora la especificidad del agente 3D y agrega soporte integral para relojes artesanales `clock`: prompt, fallback, schema, partes `face`/`marker`/`hands`, camara `studio_front`, geometria procedural en frontend, precio base y prueba de regresion.
+16. V1.3 visual/interaccion: marca propia Rebbeca integrada en frontend publico/auth/backoffice, assets `rebecca-mark.png` y `rebecca-wordmark.png`, header mobile dividido en dos capsulas al hacer scroll, giro sutil del espiral, onda liquida para cambio de tema, detalle de producto con perla de apertura y Artesania 3D con microgotas CTA/preview.
 
 Backlog recomendado despues de este punto:
 

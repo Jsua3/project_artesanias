@@ -52,21 +52,26 @@
   width: fit-content;
   display: inline-flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
   color: var(--rb-crema-50);
   text-decoration: none;
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 0.82rem;
-  letter-spacing: 0.42em;
-  text-transform: uppercase;
-  text-shadow: 0 8px 28px rgba(0, 0, 0, 0.28);
+  filter: drop-shadow(0 8px 22px rgba(0, 0, 0, 0.32));
 }
 
-.auth-brand svg {
-  width: 36px;
-  height: 36px;
-  flex: 0 0 auto;
+.auth-brand__mark {
+  display: block;
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+}
+
+.auth-brand__name {
+  font-family: var(--font-display);
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: 0.32em;
+  line-height: 1;
+  text-transform: uppercase;
 }
 
 .auth-story {
@@ -141,9 +146,11 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.74);
 }
 
-.auth-logo svg {
+.auth-logo img {
   width: 56px;
   height: 56px;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 16px rgba(166, 124, 82, 0.20));
 }
 
 .auth-title {
@@ -444,14 +451,14 @@
     margin-bottom: 12px;
   }
 
-  .auth-logo svg {
+  .auth-logo img {
     width: 44px;
     height: 44px;
   }
 
   .auth-title {
-    font-size: 1.6rem;
-    letter-spacing: 0.14em;
+    font-size: 1.72rem;
+    letter-spacing: 0.16em;
   }
 
   .auth-subtitle {

@@ -29,6 +29,16 @@
     margin-left: 4px;
   }
 
+  .toolbar-brand-logo {
+    display: block;
+    width: 118px;
+    height: auto;
+    max-height: 30px;
+    margin-left: 4px;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 8px rgba(255, 255, 255, 0.36));
+  }
+
   .toolbar-spacer {
     flex: 1;
   }
@@ -116,12 +126,13 @@
     .brand-icon {
       width: 40px;
       height: 40px;
-      color: var(--terracotta-light);
       flex-shrink: 0;
 
-      svg {
+      img {
         width: 100%;
         height: 100%;
+        object-fit: contain;
+        filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.22));
       }
     }
 
@@ -495,6 +506,12 @@
     text-overflow: ellipsis;
   }
 
+  .toolbar-brand-logo {
+    width: clamp(104px, 30vw, 122px);
+    max-height: 28px;
+    margin-left: 0;
+  }
+
   .toolbar-user,
   .toolbar-avatar {
     width: 40px;
@@ -645,6 +662,11 @@
     .toolbar-brand {
       max-width: 42vw;
     }
+
+    .toolbar-brand-logo {
+      width: 108px;
+      max-width: 38vw;
+    }
   }
 
   .sidenav.mobile {
@@ -673,6 +695,11 @@
       font-size: 0.98rem;
       letter-spacing: 1.6px;
       max-width: 36vw;
+    }
+
+    .toolbar-brand-logo {
+      width: 96px;
+      max-width: 34vw;
     }
 
     .menu-btn,

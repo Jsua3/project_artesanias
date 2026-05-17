@@ -5,18 +5,14 @@
     appLiquidPointer
     [liquidTiltStrength]="1.5"
   >
-    <a href="#" class="cliente-header__brand">
-      <svg width="32" height="32" viewBox="0 0 50 50" fill="none">
-        <path
-          d="M25 7C25 7 17 15 17 25C17 35 25 43 25 43C25 43 33 35 33 25C33 15 25 7 25 7Z"
-          stroke="currentColor"
-          stroke-width="1.5"
-          stroke-linejoin="round"
-          fill="none"
-        />
-        <circle cx="25" cy="25" r="4.5" stroke="currentColor" stroke-width="1.5" fill="none" />
-      </svg>
-      <span>REBECA</span>
+    <a href="#" class="cliente-header__brand" aria-label="Rebbeca ecosistema artesanal">
+      <img
+        src="/assets/rebecca-mark.png"
+        alt=""
+        aria-hidden="true"
+        class="cliente-header__brand-mark"
+      />
+      <span class="cliente-header__brand-name">REBBECA</span>
     </a>
     <nav class="cliente-header__nav">
       @for (l of navLinks; track l.label) {
@@ -52,7 +48,8 @@
       }
       <button
         class="icon-btn icon-btn--theme"
-        (click)="theme.toggle()"
+        [class.is-theme-burst]="themeBurst()"
+        (click)="toggleTheme()"
         [title]="theme.isDark() ? 'Modo claro' : 'Modo oscuro'"
         [attr.aria-label]="theme.isDark() ? 'Activar modo claro' : 'Activar modo oscuro'"
       >
@@ -146,7 +143,8 @@
     <button
       class="rb-floating-bar__item rb-floating-bar__item--theme"
       type="button"
-      (click)="theme.toggle()"
+      [class.is-theme-burst]="themeBurst()"
+      (click)="toggleTheme()"
       [attr.aria-label]="theme.isDark() ? 'Modo claro' : 'Modo oscuro'"
     >
       @if (theme.isDark()) {
@@ -298,6 +296,9 @@
         </p>
         <div class="craft-3d-section__actions">
           <a routerLink="/disena-tu-pieza" class="btn btn--primary">Diseñar pieza 3D</a>
+          <span class="craft-3d-section__liquid-link" aria-hidden="true">
+            <span></span>
+          </span>
           <a href="#coleccion" class="btn btn--text">Ver piezas reales</a>
         </div>
       </div>
@@ -307,6 +308,8 @@
         appLiquidPointer
         [liquidTiltStrength]="3"
       >
+        <span class="craft-3d-card__drop craft-3d-card__drop--one" aria-hidden="true"></span>
+        <span class="craft-3d-card__drop craft-3d-card__drop--two" aria-hidden="true"></span>
         <div class="craft-3d-card__stage" aria-hidden="true">
           <div class="craft-3d-model">
             <span class="craft-3d-model__ring craft-3d-model__ring--top"></span>
@@ -527,6 +530,7 @@
                 (click)="onOpenPiece(p)"
               >
                 <div class="piece__aura" aria-hidden="true"></div>
+                <span class="piece__liquid-bridge" aria-hidden="true"></span>
                 <div class="piece__stage">
                   <div class="piece__imgWrap">
                     <img [src]="p.img" [alt]="p.name" />
@@ -905,6 +909,7 @@
 @if (openPiece(); as piece) {
   <div class="modal-backdrop" (click)="onClosePiece()">
     <div class="modal" (click)="$event.stopPropagation()">
+      <span class="modal__liquid-bead" aria-hidden="true"></span>
       <button class="modal__close" (click)="onClosePiece()" aria-label="cerrar">
         <svg
           width="18"
