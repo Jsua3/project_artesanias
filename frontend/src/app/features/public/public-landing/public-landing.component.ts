@@ -255,6 +255,7 @@ export class PublicLandingComponent implements OnInit, AfterViewInit, OnDestroy 
   private slideInterval: ReturnType<typeof setInterval> | null = null;
   private revealObserver: IntersectionObserver | null = null;
   private reducedMotion = false;
+  private readonly municipalityNames = QUINDIO_MUNICIPALITIES.map(m => m.name);
 
   ngOnInit(): void {
     this.reducedMotion = typeof window !== 'undefined'
@@ -406,7 +407,13 @@ export class PublicLandingComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   pieceOrigin(p: Pieza): string {
-    return p.town?.trim() || 'Eje Cafetero';
+    const town = p.town?.trim();
+    if (town) return town;
+
+    const categoryAsTown = this.municipalityNames.find(
+      municipality => this.normalizeText(municipality) === this.normalizeText(p.category)
+    );
+    return categoryAsTown || 'Eje Cafetero';
   }
 
   artisanStory(p: Pieza): string {
