@@ -326,9 +326,13 @@
 
   <!-- ========= COLLECTION ========= -->
   <section id="coleccion" class="section story-reveal">
-    <div class="section__head section__head--centered">
+    <div class="section__head section__head--centered section__head--atelier">
       <div class="eyebrow">La colección · abril 2026</div>
-      <h2 class="section__title">Del <em>taller</em> a tu casa.</h2>
+      <h2 class="section__title">Piezas que responden<br/><em>a la luz.</em></h2>
+      <p class="collection-lead">
+        Mueve el cursor sobre cada pieza para abrir su vitrina liquida, explorar detalles
+        del oficio y deslizar la historia del artesano.
+      </p>
       <div class="section__filters">
         @for (c of categories(); track c) {
           <button class="tag" [class.is-active]="c === selectedCategory()" (click)="setCategory(c)">
@@ -341,8 +345,10 @@
       @for (p of filteredPiezas(); track p.id) {
         <article class="piece liquid-glass liquid-tilt"
                  appLiquidPointer
-                 [liquidTiltStrength]="4"
+                 [liquidTiltStrength]="5.5"
                  (click)="onOpenPiece(p)">
+          <div class="piece__aura" aria-hidden="true"></div>
+          <div class="piece__stage">
           <div class="piece__imgWrap">
             <img [src]="p.img" [alt]="p.name"/>
             <span class="piece__cat chip-cat" [ngClass]="categoryClass[p.category] || ''">{{ p.category }}</span>
@@ -350,14 +356,18 @@
               <span class="piece__sold">Adoptada</span>
             }
           </div>
+            <div class="piece__lens" aria-hidden="true"></div>
+            <div class="piece__halo" aria-hidden="true"></div>
+          </div>
           <div class="piece__body">
+            <span class="piece__kicker">{{ pieceTechnique(p) }}</span>
             <h3 class="piece__title">{{ p.name }}</h3>
             <div class="piece__meta">
               <em>{{ p.maestro }}</em> <span class="piece__dot">·</span> {{ p.town }}
             </div>
             <div class="piece__reveal">
               <p>{{ pieceDescription(p) }}</p>
-              <span>Detalles del taller</span>
+              <span>Abre la vitrina</span>
             </div>
             <div class="piece__foot">
               <div class="price-cop">{{ formatPrice(p.price) }}</div>
@@ -369,6 +379,38 @@
               }
             </div>
           </div>
+          <aside class="piece__drawer" (click)="$event.stopPropagation()">
+            <div class="piece__drawer-scroll">
+              <div class="piece__drawer-head">
+                <span class="eyebrow">{{ p.category }} &middot; {{ pieceOrigin(p) }}</span>
+                <h4>{{ p.name }}</h4>
+                <p>{{ artisanStory(p) }}</p>
+              </div>
+              <div class="piece__spec-grid">
+                @for (spec of pieceSpecs(p); track spec.label) {
+                  <div class="piece__spec">
+                    <span>{{ spec.label }}</span>
+                    <strong>{{ spec.value }}</strong>
+                  </div>
+                }
+              </div>
+              <div class="piece__artisan">
+                <div class="piece__artisan-orb" aria-hidden="true">
+                  <span></span>
+                </div>
+                <div>
+                  <span class="eyebrow">Artesano</span>
+                  <strong>{{ p.maestro }}</strong>
+                  <p>{{ artisanQuote(p) }}</p>
+                </div>
+              </div>
+              <div class="piece__notes">
+                @for (note of craftNotes(p); track note) {
+                  <span>{{ note }}</span>
+                }
+              </div>
+            </div>
+          </aside>
         </article>
       }
     </div>

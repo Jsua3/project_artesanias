@@ -352,6 +352,51 @@ export class PublicLandingComponent implements OnInit, AfterViewInit, OnDestroy 
       || 'Pieza artesanal seleccionada por su oficio, material y trazos propios del taller.';
   }
 
+  pieceTechnique(p: Pieza): string {
+    const value = this.normalizeText(p.category);
+    if (value.includes('alfarer')) return 'Torno y fuego lento';
+    if (value.includes('tejido') || value.includes('textil')) return 'Telar y fibra natural';
+    if (value.includes('guadua')) return 'Guadua curvada a mano';
+    if (value.includes('madera')) return 'Talla y veta sellada';
+    return 'Oficio de taller';
+  }
+
+  pieceOrigin(p: Pieza): string {
+    return p.town?.trim() || 'Eje Cafetero';
+  }
+
+  artisanStory(p: Pieza): string {
+    const origin = this.pieceOrigin(p);
+    return `${p.maestro} trabaja esta pieza desde ${origin}, cuidando la textura, el remate y las pequenas variaciones que vuelven unico cada objeto.`;
+  }
+
+  artisanQuote(p: Pieza): string {
+    const category = this.normalizeText(p.category);
+    if (category.includes('guadua')) return 'La fibra manda el ritmo: uno acompana la curva hasta que encuentra luz.';
+    if (category.includes('tejido') || category.includes('textil')) return 'Cada pasada del hilo deja una medida del tiempo y de la mano.';
+    if (category.includes('madera')) return 'La veta ya trae dibujo; el taller solo revela su camino.';
+    if (category.includes('alfarer')) return 'El barro recuerda el pulso de quien lo levanta.';
+    return 'La pieza queda lista cuando se siente honesta en la mano.';
+  }
+
+  pieceSpecs(p: Pieza): { label: string; value: string }[] {
+    return [
+      { label: 'Tecnica', value: this.pieceTechnique(p) },
+      { label: 'Origen', value: this.pieceOrigin(p) },
+      { label: 'Entrega', value: p.status === 'lowstock' ? 'Prioritaria' : '5 a 7 dias' },
+      { label: 'Serie', value: p.id.startsWith('mock-') ? 'Muestra' : 'Catalogo real' }
+    ];
+  }
+
+  craftNotes(p: Pieza): string[] {
+    const category = this.normalizeText(p.category);
+    if (category.includes('guadua')) return ['corte lunar', 'fibra visible', 'ensamble limpio'];
+    if (category.includes('tejido') || category.includes('textil')) return ['trama manual', 'tacto calido', 'color estable'];
+    if (category.includes('madera')) return ['veta natural', 'pulido suave', 'acabado protector'];
+    if (category.includes('alfarer')) return ['arcilla local', 'fuego lento', 'huella de torno'];
+    return ['hecho a mano', 'pieza unica', 'oficio local'];
+  }
+
   piezasForMaestro(m: Maestro): string[] {
     const normalizedName = this.normalizeText(m.name);
     const lastNames = normalizedName.split(' ').slice(-2).join(' ');
