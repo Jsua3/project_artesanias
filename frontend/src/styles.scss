@@ -2373,7 +2373,7 @@ body :where(.mat-mdc-progress-bar:not(.mdc-linear-progress--indeterminate))::aft
   }
 }
 
-@media (hover: none), (prefers-reduced-motion: reduce) {
+@media (prefers-reduced-motion: reduce) {
   .liquid-tilt {
     transform: none !important;
     transition: none;

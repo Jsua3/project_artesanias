@@ -336,6 +336,7 @@ export class PublicLandingComponent implements OnInit, AfterViewInit, OnDestroy 
   readonly cartCount = computed(() => this.cart.count());
 
   readonly currentUsername = computed(() => this.auth.currentUser()?.username ?? null);
+  readonly accountLabel = computed(() => this.currentUsername() ?? 'Cuenta');
 
   private slideInterval: ReturnType<typeof setInterval> | null = null;
   private themeBurstTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -606,6 +607,20 @@ export class PublicLandingComponent implements OnInit, AfterViewInit, OnDestroy 
 
   goToMisPedidos(): void {
     this.router.navigate(['/mis-pedidos']);
+  }
+
+  goToAccount(): void {
+    if (!this.auth.isLoggedIn()) {
+      this.goToLogin();
+      return;
+    }
+
+    if (this.auth.isCliente()) {
+      this.goToMisPedidos();
+      return;
+    }
+
+    this.goToPanel();
   }
 
   goToLogin(): void {

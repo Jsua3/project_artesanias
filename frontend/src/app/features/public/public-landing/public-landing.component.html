@@ -5,7 +5,13 @@
     appLiquidPointer
     [liquidTiltStrength]="1.5"
   >
-    <a href="#" class="cliente-header__brand" aria-label="Rebbeca ecosistema artesanal">
+    <a
+      href="#"
+      class="cliente-header__brand"
+      aria-label="Rebbeca ecosistema artesanal"
+      appLiquidPointer
+      [liquidTiltStrength]="0.9"
+    >
       <img
         src="/assets/rebecca-mark.png"
         alt=""
@@ -14,7 +20,7 @@
       />
       <span class="cliente-header__brand-name">REBBECA</span>
     </a>
-    <nav class="cliente-header__nav">
+    <nav class="cliente-header__nav" appLiquidPointer [liquidTiltStrength]="1.1">
       @for (l of navLinks; track l.label) {
         <a [href]="l.anchor" [attr.aria-label]="l.label" [title]="l.label">
           <span class="cliente-header__nav-icon" aria-hidden="true">
@@ -55,7 +61,7 @@
         </a>
       }
     </nav>
-    <div class="cliente-header__actions">
+    <div class="cliente-header__actions" appLiquidPointer [liquidTiltStrength]="0.9">
       @if (!auth.isLoggedIn()) {
         <button class="btn-mini btn-mini--ghost" (click)="goToLogin()">Iniciar sesión</button>
         <button class="btn-mini btn-mini--solid" (click)="goToRegister()">Registrarse</button>
@@ -137,6 +143,22 @@
           <span class="icon-btn__badge">{{ cartCount() }}</span>
         }
       </button>
+      <button
+        class="user-chip account-pill--header"
+        type="button"
+        (click)="goToAccount()"
+        [title]="auth.isLoggedIn() ? accountLabel() : 'Iniciar sesión'"
+        [attr.aria-label]="auth.isLoggedIn() ? 'Abrir cuenta de ' + accountLabel() : 'Iniciar sesión'"
+        style="max-width: min(148px, 34vw); min-width: 0; appearance: none; cursor: pointer"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="flex: 0 0 17px">
+          <circle cx="12" cy="8" r="4" />
+          <path d="M5 21c1.2-4 4-6 7-6s5.8 2 7 6" />
+        </svg>
+        <span style="min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">
+          {{ accountLabel() }}
+        </span>
+      </button>
     </div>
   </div>
 </header>
@@ -163,43 +185,17 @@
       </svg>
       <span>Ruta</span>
     </a>
-    <button
-      class="rb-floating-bar__item"
-      type="button"
-      (click)="
-        auth.isLoggedIn() ? (auth.isCliente() ? goToMisPedidos() : goToPanel()) : goToLogin()
-      "
+    <a
+      class="rb-floating-bar__item rb-floating-bar__item--3d"
+      routerLink="/disena-tu-pieza"
+      aria-label="Crear pieza 3D"
     >
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
-        <path d="M4 5h16v14H4z" />
-        <path d="M8 9h8M8 13h5" />
+        <path d="M12 2 4 6v12l8 4 8-4V6l-8-4Z" />
+        <path d="M4 6l8 4 8-4M12 10v12" />
       </svg>
-      <span>Cuenta</span>
-    </button>
-    <button
-      class="rb-floating-bar__item rb-floating-bar__item--theme"
-      type="button"
-      [class.is-theme-burst]="themeBurst()"
-      (click)="toggleTheme()"
-      [attr.aria-label]="theme.isDark() ? 'Modo claro' : 'Modo oscuro'"
-    >
-      @if (theme.isDark()) {
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
-          <circle cx="12" cy="12" r="5" />
-          <line x1="12" y1="1" x2="12" y2="3" />
-          <line x1="12" y1="21" x2="12" y2="23" />
-          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-          <line x1="1" y1="12" x2="3" y2="12" />
-          <line x1="21" y1="12" x2="23" y2="12" />
-        </svg>
-      } @else {
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
-          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-        </svg>
-      }
-      <span>{{ theme.isDark() ? 'Claro' : 'Oscuro' }}</span>
-    </button>
+      <span>Crear 3D</span>
+    </a>
   </div>
   <button
     class="rb-floating-bar__action"
