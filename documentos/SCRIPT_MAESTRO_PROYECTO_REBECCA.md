@@ -43,6 +43,7 @@ Estado importante al 2026-05-17:
 - V1.2.2 queda como canon posterior a V1.2 en codigo local: `e7dd7fa` (`Improve 3D design agent specificity`) mejora la especificidad del agente 3D, agrega soporte para relojes artesanales (`productType`/`threeD.template` `clock`), camara `studio_front`, partes `face`/`marker`/`hands`, precio base y dias estimados para reloj.
 - V1.3 queda como canon visual posterior: la marca propia Rebbeca reemplaza el isotipo generico anterior. Se derivaron assets web desde `imagenes/logo.png`: `frontend/public/assets/rebecca-mark.png` para el espiral y `frontend/public/assets/rebecca-wordmark.png` para usos compactos. La navegacion publica usa espiral + texto `REBBECA` renderizado en CSS; login/registro usan espiral + nombre; sidebar/backoffice usa el espiral como sello.
 - V1.3 agrega microinteracciones Liquid Glass tipo gota: en mobile el header se divide al hacer scroll en dos capsulas (marca izquierda y acciones derecha), el espiral gira sutilmente al recogerse, el boton de tema emite una onda liquida, las cards de producto muestran una perla al abrir detalle y la seccion Artesania 3D conecta CTA/preview con gotas suaves. Siempre respetar `prefers-reduced-motion`.
+- V1.4 esta en desarrollo local como fase `Scroll Premium & Editorial Landing`: busca que la landing deje de sentirse basica mediante scroll narrativo, transiciones premium, hero mas vivo, tarjetas editoriales, seccion `Taller vivo`, mejor ritmo visual, microinteracciones con proposito y mejor integracion de `/disena-tu-pieza`. Al 2026-05-17 ya se implementaron en `frontend/src/app/features/public/public-landing/*` el recorrido editorial `Rebecca V1.4`, `Taller vivo`, header mediano responsive en tres capsulas solo al hacer scroll, iconos con texto corto para navegacion mediana y eliminacion de gotas/circulos decorativos sin funcion. Las gotas Liquid Glass deben entenderse como comportamiento de controles/botones, no como circulos flotantes ornamentales.
 - Se mejoro la separacion entre datos publicos y datos internos.
 - Productos y artesanos publicos deben usar DTOs reducidos.
 - Rutas administrativas de catalogo viven bajo `/api/products/admin/**` y `/api/artesanos/admin/**`.
@@ -2298,6 +2299,44 @@ Completado y documentado en este canon:
 14. V1.2.1 canon local: `af6245f` corrige el loop de resize del visor 3D con resize diferido, cache de dimensiones/DPR y estilos estables del canvas.
 15. V1.2.2 canon local: `e7dd7fa` mejora la especificidad del agente 3D y agrega soporte integral para relojes artesanales `clock`: prompt, fallback, schema, partes `face`/`marker`/`hands`, camara `studio_front`, geometria procedural en frontend, precio base y prueba de regresion.
 16. V1.3 visual/interaccion: marca propia Rebbeca integrada en frontend publico/auth/backoffice, assets `rebecca-mark.png` y `rebecca-wordmark.png`, header mobile dividido en dos capsulas al hacer scroll, giro sutil del espiral, onda liquida para cambio de tema, detalle de producto con perla de apertura y Artesania 3D con microgotas CTA/preview.
+
+### 31.16 Fase activa Rebecca V1.4: Scroll Premium & Editorial Landing
+
+Objetivo activo: elevar la landing publica para que se sienta profesional, editorial y viva, sin convertirla en una pagina generica de startup ni saturarla con efectos. V1.4 debe sentirse como una tienda/museo artesanal del Eje Cafetero: desplazarse por la pagina debe parecer entrar al taller, no bajar por bloques apilados.
+
+Plan de trabajo canonico V1.4:
+
+1. Scroll narrativo. Convertir la landing en una experiencia por capitulos: territorio, oficio, maestros, piezas, diseno 3D y compra. Cada seccion debe sentirse como una escena nueva. Impacto alto; riesgo medio si se exagera la animacion.
+2. Transiciones premium entre secciones. Agregar entradas escalonadas, cambios suaves de fondo, capas con textura, imagenes con profundidad y parallax moderado. Todo sobrio, artesanal y nada `startup tech`. Regla obligatoria: respetar `prefers-reduced-motion`.
+3. Hero mas vivo. Dar mas presencia a la primera pantalla con imagen territorial cinematografica, niebla/textura suave, metricas mejor integradas, CTA con microinteraccion liquida y pista visual de contenido debajo. Impacto muy alto.
+4. Tarjetas de producto mas editoriales. Pasar de grilla de producto a pieza con historia: hover con apertura parcial, nombre del artesano, municipio, material, linea narrativa y glow/perla liquida solo cuando aporta a la accion de abrir detalle.
+5. Seccion `Taller vivo`. Crear una seccion inmersiva del proceso artesanal: material, mano, forma, revision, taller/pieza terminada. Puede ser horizontal o vertical y animarse suavemente al hacer scroll. Debe hacer que Rebecca se sienta menos catalogo y mas experiencia.
+6. Mejor ritmo visual. Alternar secciones grandes y respiradas, secciones densas, imagen dominante y cards pequenas. No todas las secciones deben tener el mismo peso.
+7. Microinteracciones con proposito. Botones, tema claro/oscuro, carrito, cards, navegacion mobile/mediana, CTA de 3D y modales pueden tener respuestas liquidas. No aplicar gotas o brillos a todo. Evitar circulos/gotas flotantes sin funcion.
+8. Pagina 3D mas integrada. `/disena-tu-pieza` ya es una ventaja principal; la landing debe vender mejor esa experiencia con preview visual mas seductor, mockup del taller digital o mini escena 3D, y transicion clara desde inspiracion hacia diseno de pieza.
+
+Orden recomendado para ejecutar V1.4:
+
+1. Rehacer ritmo del hero y primera pantalla.
+2. Crear scroll narrativo por capitulos.
+3. Mejorar cards de producto/artesano.
+4. Anadir seccion `Taller vivo`.
+5. Pulir microinteracciones y responsive mobile/mediano.
+
+Estado local de V1.4 al 2026-05-17:
+
+- Ya se implemento una primera capa local en `frontend/src/app/features/public/public-landing/public-landing.component.html`, `.scss` y `.ts`.
+- Ya existe el bloque editorial `Rebecca V1.4` con capitulos y el bloque `Taller vivo`.
+- Ya se reforzo el hero con una experiencia mas cinematografica, scroll cue y mejor ritmo visual, pero debe seguirse revisando contra capturas reales.
+- Ya se cambio la navegacion mediana: sin desplazarse conserva una sola barra; al hacer scroll se divide en tres capsulas (marca, navegacion, acciones). La capsula central usa icono + texto corto (`Piezas`, `Maestros`, `Taller`, `Ruta`, `Oficio`), inspirada en la barra inferior mobile.
+- Se corrigio la interpretacion de `gotas`: deben ser microinteracciones de botones/controles tipo Liquid Glass, no circulos decorativos flotantes. Las gotas/circulos sin funcion fueron eliminadas de la fase local.
+- Se ajusto `angular.json` para que `anyComponentStyle.maximumWarning` sea `120kB`, manteniendo `maximumError` en `200kB`, porque la landing publica es ahora un componente editorial grande. No subir presupuestos de nuevo sin justificarlo con build limpio y revision de peso.
+- Verificacion local conocida de esta fase: `cd frontend && npm run build` y `cd frontend && npm test -- --watch=false` pasaron. El warning de npm sobre `--watch` no es bloqueo actual.
+
+Punto actual del plan:
+
+- Estamos entre los pasos 2 y 5 del orden recomendado: el scroll narrativo y `Taller vivo` ya existen como primera implementacion; quedan pendientes una auditoria visual mas fina de tarjetas producto/artesano, pulir microinteracciones con proposito, integrar mejor `/disena-tu-pieza` en la narrativa y hacer QA responsive amplio.
+- No desplegar V1.4 sin autorizacion expresa, build limpio fresco, screenshots de escritorio/tablet/mobile, pruebas frontend y smoke publico.
 
 Backlog recomendado despues de este punto:
 

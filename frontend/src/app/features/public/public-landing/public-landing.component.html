@@ -16,7 +16,43 @@
     </a>
     <nav class="cliente-header__nav">
       @for (l of navLinks; track l.label) {
-        <a [href]="l.anchor">{{ l.label }}</a>
+        <a [href]="l.anchor" [attr.aria-label]="l.label" [title]="l.label">
+          <span class="cliente-header__nav-icon" aria-hidden="true">
+            @switch (l.icon) {
+              @case ('bag') {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                  <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+                  <path d="M3 6h18M16 10a4 4 0 0 1-8 0" />
+                </svg>
+              }
+              @case ('user') {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                  <circle cx="12" cy="8" r="4" />
+                  <path d="M5 21c1.2-4 4-6 7-6s5.8 2 7 6" />
+                </svg>
+              }
+              @case ('spark') {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                  <path d="M12 2 9.8 8.6 3 11l6.8 2.4L12 20l2.2-6.6L21 11l-6.8-2.4L12 2Z" />
+                </svg>
+              }
+              @case ('pin') {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                  <path d="M12 21s7-5.2 7-12a7 7 0 1 0-14 0c0 6.8 7 12 7 12z" />
+                  <circle cx="12" cy="9" r="2.5" />
+                </svg>
+              }
+              @case ('leaf') {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                  <path d="M5 19c9 0 14-5 14-14-9 0-14 5-14 14Z" />
+                  <path d="M5 19c3.8-5.6 7-8.2 14-14" />
+                </svg>
+              }
+            }
+          </span>
+          <span class="cliente-header__nav-label cliente-header__nav-label--full">{{ l.label }}</span>
+          <span class="cliente-header__nav-label cliente-header__nav-label--short">{{ l.shortLabel }}</span>
+        </a>
       }
     </nav>
     <div class="cliente-header__actions">
@@ -249,6 +285,10 @@
         </div>
       </div>
     </div>
+
+    <a class="hero__scroll-cue" href="#recorrido-v14" aria-label="Bajar al recorrido Rebecca V1.4">
+      <span></span>
+    </a>
   </section>
 
   <!-- ── Separador difuminado liquid glass ── -->
@@ -487,6 +527,44 @@
     </div>
   </section>
 
+  <!-- ========= REBECCA V1.4 SCROLL EDITORIAL ========= -->
+  <section id="recorrido-v14" class="v14-scroll-suite story-reveal" aria-label="Recorrido editorial Rebecca V1.4">
+    <div class="v14-scroll-suite__inner">
+      <div class="v14-scroll-suite__sticky">
+        <span class="eyebrow">Rebecca V1.4</span>
+        <h2>Desplazarse debe sentirse como entrar al taller.</h2>
+        <p>
+          Cada bloque de la pagina ahora conduce al siguiente: territorio, curaduria, maestros,
+          taller y creacion personalizada. Mas profundidad, menos catalogo plano.
+        </p>
+        <div class="v14-scroll-suite__rail" aria-hidden="true">
+          @for (chapter of journeyChapters; track chapter.index) {
+            <span></span>
+          }
+        </div>
+      </div>
+
+      <div class="v14-chapters">
+        @for (chapter of journeyChapters; track chapter.index) {
+          <article class="v14-chapter liquid-glass" appLiquidPointer [liquidTiltStrength]="2.5">
+            <div class="v14-chapter__media">
+              <img [src]="chapter.image" [alt]="chapter.title" />
+            </div>
+            <div class="v14-chapter__body">
+              <div class="v14-chapter__number">{{ chapter.index }}</div>
+              <div>
+                <span class="eyebrow">{{ chapter.eyebrow }}</span>
+                <h3>{{ chapter.title }}</h3>
+                <p>{{ chapter.text }}</p>
+                <strong>{{ chapter.metric }}</strong>
+              </div>
+            </div>
+          </article>
+        }
+      </div>
+    </div>
+  </section>
+
   <!-- ========= STATEMENT ========= -->
   <div class="rb-statement story-reveal">
     <p>No son souvenirs.<br /><em>Son oficios vivos.</em></p>
@@ -703,6 +781,32 @@
                 </a>
               </div>
             </div>
+          </div>
+        </article>
+      }
+    </div>
+  </section>
+
+  <!-- ========= TALLER VIVO ========= -->
+  <section id="taller-vivo" class="v14-atelier story-reveal">
+    <div class="v14-atelier__head">
+      <span class="eyebrow">Taller vivo</span>
+      <h2>Del material a la pieza,<br /><em>sin perder la huella.</em></h2>
+      <p>
+        Un tramo mas sensorial para que Rebecca se sienta profesional, tactil y conectada al oficio:
+        imagen real, vidrio liquido, gotas suaves y lectura clara.
+      </p>
+    </div>
+
+    <div class="v14-atelier__grid">
+      @for (moment of atelierMoments; track moment.label; let i = $index) {
+        <article class="v14-atelier-card" [class.v14-atelier-card--wide]="i === 1">
+          <img [src]="moment.image" [alt]="moment.title" />
+          <div class="v14-atelier-card__glass liquid-glass" appLiquidPointer [liquidTiltStrength]="2">
+            <span class="eyebrow">{{ moment.label }}</span>
+            <h3>{{ moment.title }}</h3>
+            <p>{{ moment.text }}</p>
+            <strong>{{ moment.detail }}</strong>
           </div>
         </article>
       }

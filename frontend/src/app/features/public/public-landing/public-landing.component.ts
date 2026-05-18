@@ -69,6 +69,23 @@ interface CollectionRow {
   isScrollable: boolean;
 }
 
+interface JourneyChapter {
+  index: string;
+  eyebrow: string;
+  title: string;
+  text: string;
+  image: string;
+  metric: string;
+}
+
+interface AtelierMoment {
+  label: string;
+  title: string;
+  text: string;
+  image: string;
+  detail: string;
+}
+
 @Component({
   selector: 'app-public-landing',
   standalone: true,
@@ -136,11 +153,12 @@ export class PublicLandingComponent implements OnInit, AfterViewInit, OnDestroy 
 
   readonly captions: HeroCaption[] = this.heroSlides.map(slide => slide.caption);
 
-  readonly navLinks: { label: string; anchor: string }[] = [
-    { label: 'Colecciones', anchor: '#coleccion' },
-    { label: 'Maestros', anchor: '#maestros' },
-    { label: 'Territorio', anchor: '#territorio' },
-    { label: 'Oficio', anchor: '#oficio' }
+  readonly navLinks: { label: string; shortLabel: string; anchor: string; icon: 'bag' | 'user' | 'spark' | 'pin' | 'leaf' }[] = [
+    { label: 'Colecciones', shortLabel: 'Piezas', anchor: '#coleccion', icon: 'bag' },
+    { label: 'Maestros', shortLabel: 'Maestros', anchor: '#maestros', icon: 'user' },
+    { label: 'Taller vivo', shortLabel: 'Taller', anchor: '#taller-vivo', icon: 'spark' },
+    { label: 'Territorio', shortLabel: 'Ruta', anchor: '#territorio', icon: 'pin' },
+    { label: 'Oficio', shortLabel: 'Oficio', anchor: '#oficio', icon: 'leaf' }
   ];
 
   /** Piezas finalmente mostradas: empiezan como mock y se sustituyen por las del API si existen. */
@@ -194,6 +212,72 @@ export class PublicLandingComponent implements OnInit, AfterViewInit, OnDestroy 
       title: 'Hilo con memoria',
       text: 'Telares, nudos y urdimbres que guardan el ritmo de quien trabaja sin prisa.',
       meta: 'Textil'
+    }
+  ];
+
+  readonly journeyChapters: JourneyChapter[] = [
+    {
+      index: '01',
+      eyebrow: 'Entrada',
+      title: 'La pagina respira como una vitrina de museo.',
+      text: 'El recorrido empieza con territorio, niebla y una direccion clara: mirar primero, comprar despues.',
+      image: '/assets/hero-filandia-iglesia.jpg',
+      metric: 'Hero editorial'
+    },
+    {
+      index: '02',
+      eyebrow: 'Curaduria',
+      title: 'Cada coleccion se ordena por origen y oficio.',
+      text: 'La vitrina deja de ser una grilla plana y se vuelve una mesa de taller con capas, detalle y procedencia.',
+      image: '/assets/imagenes/artesanias3.jpeg',
+      metric: 'Piezas con relato'
+    },
+    {
+      index: '03',
+      eyebrow: 'Encuentro',
+      title: 'El comprador entiende quien hizo la pieza.',
+      text: 'Maestros, municipio y tecnica aparecen como parte del objeto, no como informacion secundaria.',
+      image: '/assets/photo-pueblo.jpg',
+      metric: 'Oficio visible'
+    },
+    {
+      index: '04',
+      eyebrow: 'Creacion',
+      title: 'La experiencia 3D se siente como extension del taller.',
+      text: 'Rebecca invita a imaginar una pieza nueva sin romper la frontera humana: el taller revisa antes de publicar.',
+      image: '/assets/hero-detalle-flor.jpg',
+      metric: 'IA con taller'
+    }
+  ];
+
+  readonly atelierMoments: AtelierMoment[] = [
+    {
+      label: 'Materia',
+      title: 'La fibra se escoge antes de tocar la mesa.',
+      text: 'Guadua, barro, lana o fique entran al taller con humedad, color y memoria del lugar.',
+      image: '/assets/imagenes/artesanias.jpeg',
+      detail: 'Textura real'
+    },
+    {
+      label: 'Mano',
+      title: 'La pieza cambia con el pulso del maestro.',
+      text: 'No buscamos borrar la huella manual: la vitrina debe hacerla visible y deseable.',
+      image: '/assets/imagenes/artesanias4.jpeg',
+      detail: 'Oficio vivo'
+    },
+    {
+      label: 'Forma',
+      title: 'Rebecca convierte el objeto en historia navegable.',
+      text: 'La tarjeta, el modal y el diseno 3D comparten una misma logica de vidrio, profundidad y detalle.',
+      image: '/assets/imagenes/artesanias5.jpeg',
+      detail: 'Liquid Glass'
+    },
+    {
+      label: 'Revision',
+      title: 'La compra conserva control humano.',
+      text: 'Los encargos personalizados no se publican solos: el taller cotiza, responde y aprueba.',
+      image: '/assets/section-oficio-flor.jpg',
+      detail: 'Flujo seguro'
     }
   ];
 
